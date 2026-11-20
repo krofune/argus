@@ -1,0 +1,204 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=1280">
+<title>Argus Research · 회원 관리</title><meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<meta name="ag-base" content="">
+<style>
+body.ag-locked>:not(#ag-gate):not(script){display:none!important}
+#ag-gate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#f3f5f8;font-family:'IBM Plex Sans KR','Pretendard','Apple SD Gothic Neo',sans-serif;color:#1d2733}
+#ag-gate .box{width:380px;background:#fff;border:1px solid #dfe3e9;border-top:3px solid #14243b;padding:34px 34px 26px;box-shadow:0 18px 50px rgba(20,36,59,.08)}
+#ag-gate .br{display:flex;align-items:center;gap:10px;font-weight:600;font-size:18px;letter-spacing:.2px}
+#ag-gate .br small{font-weight:400;color:#5b6675;font-size:13px}
+#ag-gate h1{font-size:19px;font-weight:600;margin:26px 0 6px;color:#1d2733;letter-spacing:0}
+#ag-gate p{font-size:13px;line-height:1.65;color:#5b6675;margin:0}
+#ag-gate .gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:44px;margin-top:22px;border:1px solid #c9d0d9;background:#fff;font:500 14px inherit;font-family:inherit;color:#1d2733;cursor:pointer}
+#ag-gate .gbtn:hover{border-color:#14243b;background:#f8fafc}
+#ag-gate form{margin-top:18px}#ag-gate label{display:block;font-size:12px;color:#5b6675;margin-top:10px}
+#ag-gate input{display:block;width:100%;box-sizing:border-box;height:40px;margin-top:4px;border:1px solid #c9d0d9;padding:0 11px;font:inherit;font-size:14px;color:#1d2733;outline:0}
+#ag-gate input:focus{border-color:#14243b}
+#ag-gate .pbtn{width:100%;height:42px;margin-top:16px;background:#14243b;color:#fff;border:0;font:inherit;font-size:14px;font-weight:500;cursor:pointer}#ag-gate .pbtn:disabled{opacity:.6}
+#ag-gate .err{color:#b3364a;font-size:12.5px;margin-top:10px;min-height:0}
+#ag-gate .sw{font-size:12.5px;color:#5b6675;margin-top:14px}#ag-gate .sw button{background:none;border:0;color:#2463a8;font:inherit;cursor:pointer;padding:0}
+#ag-gate .lnk{background:none;border:0;color:#2463a8;font:inherit;font-size:12.5px;cursor:pointer;padding:0;margin-top:16px}
+#ag-gate .ft{margin-top:24px;padding-top:14px;border-top:1px solid #eef1f4;font-size:11.5px;color:#8b95a3;line-height:1.6}
+#ag-gate .who{display:flex;align-items:center;gap:10px;margin-top:18px;padding:10px 12px;background:#f6f8fa;font-size:13px}
+#ag-gate .who img,#ag-gate .who i{width:28px;height:28px;border-radius:50%;background:#dfe7f2;display:grid;place-items:center;font-style:normal;font-weight:600;color:#14243b}
+#ag-gate .badge{display:inline-block;font-size:11px;padding:2px 8px;margin-top:20px;font-weight:600}
+#ag-gate .badge.p{background:#fbf3e3;color:#8a5a00}#ag-gate .badge.r{background:#fcedef;color:#b3364a}#ag-gate .badge.e{background:#eef1f5;color:#5b6675}
+#ag-gate .spin{width:22px;height:22px;border:2px solid #dfe3e9;border-top-color:#14243b;border-radius:50%;animation:agspin .8s linear infinite;margin:20px auto 0}
+@keyframes agspin{to{transform:rotate(360deg)}}
+.ag-user{display:flex;align-items:center;gap:8px;margin-left:14px;font-size:12px;white-space:nowrap}
+.ag-user img,.ag-user i{width:24px;height:24px;border-radius:50%;background:#dfe7f2;color:#14243b;display:grid;place-items:center;font-style:normal;font-weight:600;font-size:11px}
+.ag-user a,.ag-user button{background:none;border:0;color:inherit;opacity:.8;font:inherit;cursor:pointer;text-decoration:none;padding:0}
+.ag-user a:hover,.ag-user button:hover{opacity:1;text-decoration:underline}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+<style>
+body{margin:0;font-family:'IBM Plex Sans KR',sans-serif;color:#1d2733;background:#f3f5f8;min-width:1100px}
+header{display:flex;align-items:center;gap:12px;height:48px;padding:0 24px;background:#14243b;color:#fff;font-size:14px}
+header .t{font-weight:600}header a{color:#c9d6e6;text-decoration:none;font-size:12.5px}
+main{max-width:1180px;margin:28px auto;padding:0 24px}
+h1{font-size:20px;margin:0 0 4px}.sub{color:#5b6675;font-size:13px}
+.tabs{display:flex;gap:4px;margin:20px 0 12px}.tabs button{border:1px solid #dfe3e9;background:#fff;padding:7px 14px;font:inherit;font-size:13px;cursor:pointer}
+.tabs button.on{background:#14243b;border-color:#14243b;color:#fff}.tabs b{font-family:'IBM Plex Mono';font-weight:500;margin-left:4px}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #dfe3e9;font-size:13px}
+th{text-align:left;font-weight:500;color:#5b6675;font-size:12px;padding:10px 12px;border-bottom:1px solid #dfe3e9;background:#fafbfc}
+td{padding:10px 12px;border-bottom:1px solid #eef1f4;vertical-align:middle}
+.u{display:flex;align-items:center;gap:10px}.u img,.u i{width:28px;height:28px;border-radius:50%;background:#dfe7f2;display:grid;place-items:center;font-style:normal;font-weight:600}
+.mono{font-family:'IBM Plex Mono';font-size:12px;color:#5b6675}
+.st{font-size:11px;padding:2px 8px;font-weight:600}.st.pending{background:#fbf3e3;color:#8a5a00}.st.approved{background:#eaf6ef;color:#1f7a52}.st.rejected{background:#fcedef;color:#b3364a}
+.act button{border:1px solid #c9d0d9;background:#fff;padding:5px 10px;font:inherit;font-size:12px;cursor:pointer;margin-right:4px}
+.act .ok{background:#14243b;border-color:#14243b;color:#fff}.lk{background:none;border:0;color:#2463a8;font:inherit;font-size:11.5px;cursor:pointer;padding:0;margin-left:6px}.act .no{color:#b3364a}
+input.memo{width:100%;border:1px solid #e3e7ec;padding:5px 8px;font:inherit;font-size:12px}
+.empty{text-align:center;color:#8b95a3;padding:36px}
+.views{display:flex;gap:18px;margin:22px 0 0;border-bottom:1px solid #dfe3e9}.views button{background:none;border:0;border-bottom:2px solid transparent;padding:8px 2px;font:inherit;font-size:14px;color:#5b6675;cursor:pointer}.views button.on{border-color:#14243b;color:#1d2733;font-weight:600}
+.fbar{display:flex;gap:8px;margin:18px 0 12px}.fbar select,.fbar button{border:1px solid #c9d0d9;background:#fff;height:32px;padding:0 10px;font:inherit;font-size:13px}
+.sum{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.sum div{background:#fff;border:1px solid #dfe3e9;padding:10px 14px}.sum b{display:block;font:500 20px 'IBM Plex Mono'}.sum span{font-size:12px;color:#5b6675}
+.ac{font-size:11px;padding:2px 7px;font-weight:600}.ac.login{background:#eef1f5;color:#3b4552}.ac.view{background:#eaf2fb;color:#1f5fa8}.ac.download{background:#fbf3e3;color:#8a5a00}.ac.open{background:#f4ecfb;color:#7b3fb3}
+.tgt{font-size:12.5px;word-break:break-all}.more{text-align:center;margin:12px 0}.more button{border:1px solid #c9d0d9;background:#fff;padding:6px 16px;font:inherit;font-size:12.5px;cursor:pointer}.msg{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#14243b;color:#fff;padding:9px 16px;font-size:13px;display:none}
+</style></head><body class="ag-locked">
+<div id="ag-gate" role="dialog" aria-modal="true" aria-label="로그인"></div>
+<script>
+(function(){
+const U="https://rxrpwwjibvjetlgdpjod.supabase.co",K="sb_publishable_Q6gikKDsSKSJjCf5Qe5WWA_iR2FVX5p",G=document.getElementById('ag-gate');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const BRAND=`<div class="br"><svg viewBox="0 0 20 20" width="30" height="30" aria-hidden="true"><g fill="none" stroke="#8fa3bd" stroke-width="1.2"><circle cx="4" cy="4" r="2"/><circle cx="10" cy="4" r="2"/><circle cx="16" cy="4" r="2"/><circle cx="4" cy="10" r="2"/><circle cx="16" cy="10" r="2"/><circle cx="4" cy="16" r="2"/><circle cx="10" cy="16" r="2"/><circle cx="16" cy="16" r="2"/></g><circle cx="10" cy="10" r="2.6" fill="#6ea6dd"/></svg><span>Argus <small>Research</small></span></div>`;
+const FT='<div class="ft">승인된 회원만 이용할 수 있는 비공개 리서치 사이트입니다. 서비스 운영과 보안을 위해 접속·열람·다운로드 기록이 저장되며 관리자가 확인할 수 있습니다.</div>';
+const av=p=>p&&p.avatar?`<img src="${esc(p.avatar)}" alt="" referrerpolicy="no-referrer">`:`<i>${esc(((p&&(p.name||p.email))||'?').slice(0,1))}</i>`;
+let sb=null;
+function view(state,p,msg){
+  if(!G)return;
+  const who=p?`<div class="who">${av(p)}<div><div>${esc(p.name||'')}</div><div style="color:#8b95a3;font-size:12px">${esc(p.email||'')}</div></div></div>`:'';
+  const out='<button class="lnk" id="ag-out">다른 계정으로 로그인</button>';
+  G.innerHTML=`<div class="box">${BRAND}${
+    state==='loading'?'<div class="spin" aria-label="확인 중"></div>':
+    state==='login'?`<h1>로그인</h1><form id="ag-f"><label>이메일<input name="email" type="email" autocomplete="username" required></label><label>비밀번호<input name="pw" type="password" autocomplete="current-password" required minlength="8"></label><div class="err" id="ag-err"></div><button class="pbtn">로그인</button></form><div class="sw">처음이신가요? <button id="ag-to-up">회원가입</button> · <button id="ag-forgot">비밀번호를 잊으셨나요?</button></div>`:
+    state==='signup'?`<h1>회원가입</h1><p>가입 후 관리자가 승인하면 이용할 수 있습니다.</p><form id="ag-f"><label>이름<input name="name" required maxlength="40" autocomplete="name"></label><label>소속 (회사·팀)<input name="org" maxlength="60" autocomplete="organization"></label><label>이메일<input name="email" type="email" autocomplete="username" required></label><label>비밀번호 (8자 이상)<input name="pw" type="password" autocomplete="new-password" required minlength="8"></label><div class="err" id="ag-err"></div><button class="pbtn">가입 신청</button></form><div class="sw">이미 계정이 있나요? <button id="ag-to-in">로그인</button></div>`:
+    state==='forgot'?`<h1>비밀번호 재설정</h1><p>비밀번호를 잊으셨다면 관리자에게 연락해 주세요. 관리자가 임시 비밀번호를 정해 드리면, 로그인한 뒤 화면 오른쪽 위 「비밀번호 변경」에서 새 비밀번호로 바꿀 수 있습니다.</p><div class="sw"><button id="ag-to-in">로그인으로 돌아가기</button></div>`:
+    state==='pending'?`<span class="badge p">승인 대기</span><h1>가입 신청이 접수되었습니다</h1><p>관리자가 승인하면 바로 이용할 수 있습니다. 승인 후 이 페이지를 새로고침하세요.</p>${who}${out}`:
+    state==='rejected'?`<span class="badge r">이용 불가</span><h1>이용 승인이 되지 않은 계정입니다</h1><p>다른 계정으로 로그인하거나 관리자에게 문의해 주세요.</p>${who}${out}`:
+    `<span class="badge e">연결 오류</span><h1>잠시 후 다시 시도해 주세요</h1><p>${esc(msg||'데이터를 불러오지 못했습니다.')}</p><button class="lnk" id="ag-re">다시 시도</button>`
+  }${FT}</div>`;
+  const on=(id,f)=>{const e=document.getElementById(id);if(e)e.onclick=f};
+  on('ag-to-up',()=>view('signup'));on('ag-to-in',()=>view('login'));on('ag-forgot',()=>view('forgot'));
+  const f=document.getElementById('ag-f');
+  if(f)f.onsubmit=async ev=>{ev.preventDefault();const d=Object.fromEntries(new FormData(f));const btn=f.querySelector('button');const er=document.getElementById('ag-err');er.textContent='';btn.disabled=true;
+    const KO={'Invalid login credentials':'이메일 또는 비밀번호가 맞지 않습니다.','User already registered':'이미 가입된 이메일입니다. 로그인해 주세요.','Email not confirmed':'이메일 확인이 필요한 설정으로 되어 있습니다. 관리자에게 알려 주세요.','Email address not authorized':'가입 메일을 보낼 수 없는 설정입니다. 관리자에게 알려 주세요.'};
+    const msg=e=>KO[e.message]||(/rate limit/i.test(e.message)?'잠시 후 다시 시도해 주세요.':/Password should be/i.test(e.message)?'비밀번호는 8자 이상으로 정해 주세요.':e.message);
+    try{
+      if(state==='signup'){
+        const {data,error}=await sb.auth.signUp({email:d.email.trim(),password:d.pw,options:{data:{full_name:d.name.trim(),org:(d.org||'').trim()}}});
+        if(error)throw error;
+        if(!data.session){view('error',null,'가입은 접수되었지만 로그인하지 못했습니다. 관리자에게 \'가입 확인 메일 끄기\' 설정을 확인해 달라고 알려 주세요.');return}
+      }else{
+        const {error}=await sb.auth.signInWithPassword({email:d.email.trim(),password:d.pw});if(error)throw error;
+      }
+      boot();
+    }catch(e){er.textContent=msg(e);btn.disabled=false}};
+  const first=G.querySelector('input');if(first)first.focus();
+  const o=document.getElementById('ag-out');if(o)o.onclick=async()=>{await sb.auth.signOut();view('login')};
+  const r=document.getElementById('ag-re');if(r)r.onclick=()=>location.reload();
+}
+function chip(p){
+  const host=document.querySelector('[data-ag-user]')||document.querySelector('.topnav .navr')||document.querySelector('.topnav .wrap')||document.querySelector('header');
+  if(!host||document.querySelector('.ag-user'))return;
+  const base=document.querySelector('meta[name=ag-base]');const b=base?base.content:'';
+  host.insertAdjacentHTML('beforeend',`<div class="ag-user">${av(p)}<span>${esc(p.name||p.email)}</span>${p.role==='admin'?`<a href="${b}admin.html">회원 관리</a>`:''}<button id="ag-pw">비밀번호 변경</button><button id="ag-logout">로그아웃</button></div>`);
+  document.getElementById('ag-pw').onclick=async()=>{const a=prompt('새 비밀번호 (8자 이상)');if(!a)return;if(a.length<8){alert('8자 이상으로 정해 주세요.');return}if(prompt('새 비밀번호를 한 번 더 입력하세요')!==a){alert('두 번 입력한 비밀번호가 다릅니다.');return}
+    const {error}=await sb.auth.updateUser({password:a});alert(error?'변경하지 못했습니다: '+error.message:'비밀번호를 바꿨습니다.')};
+  document.getElementById('ag-logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
+}
+let ready=null;const waiters=[];
+window.ArgusAuth={ready(cb){ready?cb(ready):waiters.push(cb)},client:()=>sb,
+  async file(name){const {data,error}=await sb.storage.from('private').createSignedUrl(name,120,{download:name});if(error)throw error;window.ArgusAuth.log&&window.ArgusAuth.log('download',name);return data.signedUrl}};
+async function boot(){
+  view('loading');ready=null;
+  if(!window.supabase){view('error',null,'로그인 모듈을 불러오지 못했습니다. 네트워크를 확인해 주세요.');return}
+  sb=sb||window.supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'pkce'}});
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){view('login');return}
+  const {data:p,error}=await sb.rpc('touch_me');
+  if(error||!p){view('error',null,error?error.message:'회원 정보를 찾지 못했습니다.');return}
+  if(p.status!=='approved'){view(p.status==='rejected'?'rejected':'pending',p);return}
+  if(/[?&](code|error)=/.test(location.search))history.replaceState(null,'',location.pathname);
+  ready={sb,profile:p};
+  const log=(a,t,m)=>sb.rpc('log_event',{p_action:a,p_target:t||null,p_meta:m||null}).then(()=>{},()=>{});
+  window.ArgusAuth.log=log;
+  try{if(!sessionStorage.getItem('ag-login')){sessionStorage.setItem('ag-login','1');log('login',location.pathname)}}catch(_){}
+  log('view',location.pathname+location.hash);
+  document.addEventListener('click',e=>{const a=e.target.closest('a[href^="http"]');if(a&&a.host!==location.host)log('open',a.href,{text:(a.textContent||'').trim().slice(0,120)})},true);
+  try{for(const w of waiters)await w(ready)}catch(e){view('error',null,e.message);return}
+  G&&G.remove();document.body.classList.remove('ag-locked');chip(p);
+  sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT')location.reload()});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+
+<header><span class="t">Argus Research</span><span style="opacity:.5">·</span><span>회원 관리</span><span style="flex:1"></span><a href="./">← 사이트로</a><span data-ag-user style="display:flex"></span></header>
+<main><h1>회원 관리</h1><div class="sub">회원가입한 사람은 '승인 대기'로 들어옵니다. 승인한 계정만 사이트와 데이터를 볼 수 있습니다.</div>
+<div class="views" id="views"><button data-v="m" class="on">회원</button><button data-v="a">활동 기록</button></div>
+<section id="v-m">
+<div class="tabs" id="tabs"><button data-s="pending" class="on">승인 대기<b id="n-pending">0</b></button><button data-s="approved">승인됨<b id="n-approved">0</b></button><button data-s="rejected">거절<b id="n-rejected">0</b></button></div>
+<table><thead><tr><th>회원</th><th>이메일</th><th>가입일</th><th>최근 접속</th><th>30일 접속·다운로드</th><th>상태</th><th style="width:18%">메모 (소속 등)</th><th>처리</th></tr></thead><tbody id="tb"></tbody></table></section>
+<section id="v-a" style="display:none">
+<div class="fbar"><select id="f-u"><option value="">전체 회원</option></select><select id="f-a"><option value="">모든 기록</option><option value="login">로그인</option><option value="view">페이지 열람</option><option value="download">다운로드</option><option value="open">원문·외부 링크 열기</option></select><select id="f-d"><option value="7">최근 7일</option><option value="30" selected>최근 30일</option><option value="90">최근 90일</option><option value="3650">전체</option></select><span style="flex:1"></span><button id="f-csv">CSV로 받기</button></div>
+<div class="sum" id="sum"></div>
+<table><thead><tr><th style="width:150px">시각</th><th style="width:200px">회원</th><th style="width:120px">기록</th><th>대상</th></tr></thead><tbody id="ta"></tbody></table><div class="more"><button id="f-more">더 보기</button></div>
+</section></main>
+<div class="msg" id="msg"></div>
+<script>
+ArgusAuth.ready(async ({sb,profile})=>{
+  if(profile.role!=='admin'){document.querySelector('main').innerHTML='<h1>관리자만 볼 수 있는 페이지입니다</h1><p class="sub"><a href="./">사이트로 돌아가기</a></p>';return}
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const d=t=>t?new Date(t).toLocaleString('ko-KR',{dateStyle:'short',timeStyle:'short'}):'–';
+  let rows=[],tab='pending';
+  const say=t=>{const m=document.getElementById('msg');m.textContent=t;m.style.display='block';setTimeout(()=>m.style.display='none',2000)};
+  let stat={};
+  async function load(){const r=await sb.from('profiles').select('*').order('created_at',{ascending:false});if(r.error){say(r.error.message);return}rows=r.data;
+    const since=new Date(Date.now()-30*864e5).toISOString();const a=await sb.from('activity_log').select('user_id,action').gte('at',since).in('action',['login','download']).limit(10000);
+    stat={};(a.data||[]).forEach(x=>{const s=stat[x.user_id]=stat[x.user_id]||{login:0,download:0};s[x.action]++});
+    const fu=document.getElementById('f-u');fu.innerHTML='<option value="">전체 회원</option>'+rows.map(x=>`<option value="${x.id}">${esc(x.name||'')} · ${esc(x.email)}</option>`).join('');draw()}
+  function draw(){
+    ['pending','approved','rejected'].forEach(s=>document.getElementById('n-'+s).textContent=rows.filter(x=>x.status===s).length);
+    document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.s===tab));
+    const a=rows.filter(x=>x.status===tab);
+    document.getElementById('tb').innerHTML=a.map(x=>`<tr data-id="${x.id}"><td><div class="u">${x.avatar?`<img src="${esc(x.avatar)}" referrerpolicy="no-referrer" alt="">`:`<i>${esc((x.name||x.email||'?').slice(0,1))}</i>`}<div>${esc(x.name||'')}${x.role==='admin'?' <span class="st approved">관리자</span>':''}</div></div></td>
+      <td class="mono">${esc(x.email)}</td><td class="mono">${d(x.created_at)}</td><td class="mono">${d(x.last_seen)}</td><td class="mono">${(stat[x.id]||{}).login||0}회 · ${(stat[x.id]||{}).download||0}건 <button class="lk" data-log="${x.id}">기록 보기</button></td><td><span class="st ${x.status}">${{pending:'승인 대기',approved:'승인됨',rejected:'거절'}[x.status]}</span></td>
+      <td><input class="memo" value="${esc(x.memo||'')}" placeholder="소속·관계 등"></td>
+      <td class="act">${x.id===profile.id?'<span class="mono">본인</span>':
+        x.status==='pending'?'<button class="ok" data-a="approved">승인</button><button class="no" data-a="rejected">거절</button>':
+        x.status==='approved'?`<button class="no" data-a="rejected">이용 중지</button>${x.role==='admin'?'<button data-a="member">관리자 해제</button>':'<button data-a="admin">관리자 지정</button>'}<button data-a="pw">임시 비밀번호</button>`:
+        '<button class="ok" data-a="approved">승인</button>'}</td></tr>`).join('')||'<tr><td colspan="8" class="empty">해당하는 회원이 없습니다</td></tr>';
+  }
+  document.getElementById('tabs').onclick=e=>{const b=e.target.closest('button');if(b){tab=b.dataset.s;draw()}};
+  document.getElementById('tb').onclick=async e=>{const lg=e.target.closest('[data-log]');if(lg){show('a');document.getElementById('f-u').value=lg.dataset.log;loadA(true);return}
+    const b=e.target.closest('button[data-a]');if(!b)return;const tr=b.closest('tr'),x=rows.find(r=>r.id===tr.dataset.id),a=b.dataset.a;
+    if(a==='pw'){const pw=prompt(`${x.email} 계정의 임시 비밀번호 (8자 이상). 회원에게 전달한 뒤 로그인해서 바꾸도록 안내하세요.`);if(!pw)return;const r=await sb.rpc('admin_set_password',{target:x.id,new_password:pw});say(r.error?r.error.message:'임시 비밀번호를 정했습니다');return}
+    if(a==='rejected'&&!confirm(`${x.email} 계정의 이용을 막을까요?`))return;
+    const st=a==='admin'||a==='member'?x.status:a,role=a==='admin'?'admin':a==='member'?'member':null;
+    const r=await sb.rpc('set_member',{target:x.id,new_status:st,new_role:role,new_memo:tr.querySelector('.memo').value});
+    if(r.error){say(r.error.message);return}say('저장했습니다');load()};
+  document.getElementById('tb').addEventListener('change',async e=>{if(!e.target.classList.contains('memo'))return;const tr=e.target.closest('tr'),x=rows.find(r=>r.id===tr.dataset.id);
+    const r=await sb.rpc('set_member',{target:x.id,new_status:x.status,new_role:null,new_memo:e.target.value});say(r.error?r.error.message:'메모를 저장했습니다')});
+  // 활동 기록
+  const AL={login:'로그인',view:'페이지 열람',download:'다운로드',open:'원문·링크 열기'};let aRows=[],page=0;const PG=200;
+  function show(v){document.querySelectorAll('#views button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));document.getElementById('v-m').style.display=v==='m'?'':'none';document.getElementById('v-a').style.display=v==='a'?'':'none'}
+  document.getElementById('views').onclick=e=>{const b=e.target.closest('button');if(!b)return;show(b.dataset.v);if(b.dataset.v==='a'&&!aRows.length)loadA(true)};
+  async function loadA(reset){if(reset){aRows=[];page=0}
+    const u=document.getElementById('f-u').value,ac=document.getElementById('f-a').value,dd=+document.getElementById('f-d').value;
+    let q=sb.from('activity_log').select('*').gte('at',new Date(Date.now()-dd*864e5).toISOString()).order('at',{ascending:false}).range(page*PG,page*PG+PG-1);
+    if(u)q=q.eq('user_id',u);if(ac)q=q.eq('action',ac);const r=await q;if(r.error){say(r.error.message);return}
+    aRows=aRows.concat(r.data);page++;document.getElementById('f-more').style.display=r.data.length===PG?'':'none';drawA()}
+  function drawA(){const nm=id=>{const p=rows.find(x=>x.id===id);return p?(p.name||p.email):'(탈퇴)'};
+    const c=k=>aRows.filter(x=>x.action===k).length;
+    document.getElementById('sum').innerHTML=`<div><b>${new Set(aRows.map(x=>x.user_id)).size}</b><span>활동한 회원</span></div><div><b>${c('login')}</b><span>로그인</span></div><div><b>${c('view')}</b><span>페이지 열람</span></div><div><b>${c('download')}</b><span>다운로드</span></div>`;
+    document.getElementById('ta').innerHTML=aRows.map(x=>`<tr><td class="mono">${d(x.at)}</td><td>${esc(nm(x.user_id))}<div class="mono">${esc(x.email||'')}</div></td><td><span class="ac ${x.action}">${AL[x.action]||x.action}</span></td><td class="tgt">${x.action==='open'?`<a href="${esc(x.target)}" target="_blank" rel="noopener">${esc((x.meta&&x.meta.text)||x.target)}</a>`:esc(x.target||'')}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">기록이 없습니다</td></tr>'}
+  ['f-u','f-a','f-d'].forEach(id=>document.getElementById(id).onchange=()=>loadA(true));
+  document.getElementById('f-more').onclick=()=>loadA(false);
+  document.getElementById('f-csv').onclick=()=>{const nm=id=>{const p=rows.find(x=>x.id===id);return p?(p.name||''):''};
+    const csv='\ufeff'+[['시각','이름','이메일','기록','대상'],...aRows.map(x=>[new Date(x.at).toLocaleString('ko-KR'),nm(x.user_id),x.email||'',AL[x.action]||x.action,x.target||''])].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='argus_활동기록.csv';a.click()};
+  await load();
+});
+</script></body></html>
