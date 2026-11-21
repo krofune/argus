@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=1280">
+<title>Argus Research · 리서치 센터</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{color-scheme:light;--top:#14243b;--bg:#eef1f5;--line:#dbe0e7;--line2:#e9edf2;--tx:#1d2733;--tx2:#5b6675;--tx3:#8b95a3;--ac:#2463a8;--ac-bg:#e8f0fa;--ac2:#1a4f8a;--mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font:13px/1.45 'IBM Plex Sans KR',system-ui,sans-serif;color:var(--tx);background:var(--bg);display:grid;grid-template-rows:40px 1fr;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+*{scrollbar-width:thin;scrollbar-color:#cfd5dd transparent}::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-thumb{background:#d3d9e0}::-webkit-scrollbar-thumb:hover{background:#aeb7c3}::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.top{background:var(--top);color:#dfe7f1;display:flex;align-items:center;gap:14px;padding:0 14px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:600;color:#fff}.brand small{font-weight:400;color:#8fa3bd;margin-left:-3px}
+.top .sep{width:1px;height:18px;background:#2c4263}.top .crumb{color:#a9b9cd}.top .crumb b{color:#fff;font-weight:500}.top .sp{flex:1}.top .meta{color:#8fa3bd;font-size:12px}
+.main{display:grid;grid-template-columns:52px 1fr;min-height:0}
+.rail{background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding-top:8px;gap:2px}
+.rail a{width:44px;padding:7px 0 5px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--tx3);font-size:10px;border-left:2px solid transparent}
+.rail svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}.rail a.on{color:var(--ac);border-left-color:var(--ac);background:var(--ac-bg)}
+.work{display:grid;grid-template-rows:auto 1fr;min-height:0;min-width:0}
+.ph{background:#fff;border-bottom:1px solid var(--line);padding:0 18px;display:flex;align-items:flex-end;gap:22px;height:44px}
+.ph h1{font-size:15px;font-weight:600;align-self:center}
+.tabs{display:flex;gap:20px;align-self:stretch}.tabs a{border-bottom:2px solid transparent;color:var(--tx2);display:flex;align-items:center}.tabs a.on{color:var(--tx);border-bottom-color:var(--ac);font-weight:500}.tabs a.dis{color:#b4bcc7;cursor:default}
+.ph .sp{flex:1}
+.srch{align-self:center;display:flex;align-items:center;gap:6px;border:1px solid var(--line);height:26px;padding:0 8px;width:280px;color:var(--tx3);background:#fff}
+.srch:focus-within{border-color:#9db6d4}.srch input{border:0;outline:0;font:inherit;width:100%;color:var(--tx);background:#fff}
+#view{min-height:0;overflow:hidden}
+.src{display:inline-block;font-size:10px;padding:0 4px;line-height:15px;border:1px solid;white-space:nowrap}
+.src.o{color:var(--ac);border-color:#bcd0e8;background:#f2f7fd}.src.b{color:#6b7684;border-color:#d4d9e0;background:#f6f7f9}.src.n{color:#a3abb6;border-color:#e2e6eb;background:#fff}
+.wk{font-size:10px;color:var(--ac2);border:1px solid #9db6d4;padding:0 4px;line-height:15px;font-weight:500;white-space:nowrap}
+.legend{display:flex;gap:14px;font-size:11px;color:var(--tx3);align-items:center;flex-wrap:wrap}
+.meta2{font-size:11px;color:var(--tx3);display:flex;gap:6px;align-items:center;margin-top:2px;white-space:nowrap;overflow:hidden}
+.meta2 i{width:2px;height:2px;background:#b9c1cc;border-radius:50%;flex:none}
+/* home */
+.home{height:100%;overflow:auto;padding:16px 18px 24px}
+.home .hd{display:flex;align-items:center;gap:16px;margin-bottom:10px}.home .hd h2{font-size:13px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.card{background:#fff;border:1px solid var(--line);display:flex;flex-direction:column}
+.card .ch{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;border-bottom:1px solid var(--line2);background:#f8f9fb}
+.card .ch b{font-size:12.5px;font-weight:600}.card .ch a{font-size:11px;color:var(--tx3)}.card .ch a:hover{color:var(--ac)}
+.card ul{list-style:none;padding:0 12px}.card li{padding:6px 0;border-bottom:1px solid var(--line2)}.card li:last-child{border-bottom:0}
+.card .tt{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.card a.tt:hover{color:var(--ac);text-decoration:underline}
+/* detail */
+.dd{display:grid;grid-template-columns:220px 1fr;height:100%;min-height:0}
+.lf{background:#fff;border-right:1px solid var(--line);overflow:auto;padding:8px 0 30px}
+.lf .fg h4{font-size:11px;color:var(--tx3);font-weight:500;padding:8px 14px 4px;letter-spacing:.3px;display:flex;justify-content:space-between;cursor:pointer;user-select:none}
+.lf .fg h4 span{font:400 13px var(--mono)}
+.lf .fg+.fg{border-top:1px solid var(--line2)}
+.lf .fg.closed ul{display:none}
+.lf ul{list-style:none;padding-bottom:4px}
+.lf li{display:flex;align-items:center;gap:7px;padding:3px 14px;font-size:12.5px;color:var(--tx2);cursor:pointer}
+.lf li:hover{color:var(--tx)}
+.lf li .cb{width:12px;height:12px;border:1px solid #aab4c1;flex:none;display:grid;place-items:center;background:#fff}
+.lf li.on .cb{background:var(--ac);border-color:var(--ac)}
+.lf li.on .cb:after{content:"";width:6px;height:3px;border:solid #fff;border-width:0 0 1.5px 1.5px;transform:rotate(-45deg) translate(0,-1px)}
+.lf li .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lf li .ct{font:11px var(--mono);color:var(--tx3)}
+.lf li.zero{opacity:.45}
+.lf .more{font-size:11px;color:var(--ac);padding:2px 14px 4px 33px;cursor:pointer}
+.lf .reset{display:flex;justify-content:space-between;align-items:center;padding:2px 10px 6px 10px;font-size:11px;color:var(--tx3);border-bottom:1px solid var(--line2)}.lf .reset button{color:var(--ac);font-size:11px}
+.rt{display:grid;grid-template-rows:auto auto auto auto 1fr auto;min-height:0;background:#fff;min-width:0}
+.bc{padding:12px 18px 0;font-size:12px;color:var(--tx3)}.bc a:hover{color:var(--ac)}.bc b{color:var(--tx);font-weight:500}
+.dh2{padding:6px 18px 10px;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.dh2 h2{font-size:18px;font-weight:600}.dh2 .s{font-size:12px;color:var(--tx3);padding-bottom:3px}
+.subs{display:flex;padding:0 18px;border-bottom:1px solid var(--line);overflow-x:auto}
+.subs button{padding:7px 14px;font-size:12.5px;color:var(--tx2);border:1px solid transparent;border-bottom:0;margin-bottom:-1px;display:flex;gap:6px;align-items:center;white-space:nowrap}
+.subs button .n{font:11px var(--mono);color:var(--tx3)}
+.subs button.on{background:#fff;border-color:var(--line);color:var(--tx);font-weight:600;box-shadow:inset 0 2px 0 var(--ac)}
+.hl{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line);background:#f8f9fb}
+.hl>div{padding:9px 18px;border-right:1px solid var(--line2);min-width:0}.hl>div:last-child{border-right:0}
+.hl .l{font-size:10.5px;color:var(--tx3)}.hl .t{font-size:12.5px;font-weight:500;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scroll{overflow:auto;min-height:0}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:860px}
+th{position:sticky;top:0;z-index:2;background:#f6f8fa;font-weight:500;color:var(--tx2);font-size:11px;text-align:left;padding:0 10px;height:28px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
+th .ar{color:var(--ac);margin-left:3px}
+td{padding:0 10px;height:31px;border-bottom:1px solid var(--line2);white-space:nowrap;font-size:12.5px}
+tr:hover td{background:#f5f8fc}
+td.t{max-width:520px;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+td.t a:hover{color:var(--ac);text-decoration:underline}
+td.m{color:var(--tx2)}
+.sc{display:inline-block;font-size:11px;color:var(--tx2);border:1px solid var(--line);padding:0 6px;line-height:17px}
+.foot{border-top:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:6px 14px;font-size:12px;color:var(--tx2)}
+.foot .sp{flex:1}.note{font-size:11px;color:var(--tx3)}
+.pg{display:flex;gap:2px;align-items:center}.pg button{min-width:24px;height:22px;border:1px solid transparent;font:12px var(--mono);color:var(--tx2)}
+.pg button.on{border-color:var(--line);color:var(--tx);font-weight:500}.pg button:disabled{opacity:.35;cursor:default}.pg .gap{min-width:18px;text-align:center;color:var(--tx3);font:12px var(--mono)}
+.psel{position:relative}.psel>button{height:24px;border:1px solid var(--line);padding:0 8px 0 10px;display:flex;align-items:center;gap:8px;font-size:12px}
+.psel ul{display:none;position:absolute;right:0;bottom:calc(100% + 3px);background:#fff;border:1px solid var(--line);box-shadow:0 6px 16px rgba(20,36,59,.1);list-style:none;z-index:20;padding:3px 0;min-width:100%}
+.psel.open ul{display:block}.psel li{padding:4px 12px;font-size:12px;cursor:pointer;white-space:nowrap}.psel li:hover{background:#f3f6fa}.psel li.on{color:var(--ac);font-weight:600;background:var(--ac-bg)}
+.dd{transition:grid-template-columns .18s ease}
+.dd.nof{grid-template-columns:46px 1fr}
+.dd.nof .lf{overflow:hidden}
+.dd.nof .lf>*:not(.reset),.dd.nof .reset span,.dd.nof #rst{display:none}
+.dd.nof .reset{border-bottom:0;justify-content:center;padding:4px 0}
+.reset .l{display:flex;align-items:center;gap:8px}
+.sbt{width:26px;height:24px;display:grid;place-items:center;border:1px solid var(--line);color:var(--tx2);flex:none;background:#fff}
+.sbt svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.6}
+.sbt:hover{color:var(--tx);border-color:#b9c2ce}
+.sbt.on{background:var(--ac-bg);color:var(--ac2);border-color:#c6d6ea}
+.sbt.on svg .fill{fill:currentColor}
+.empty{padding:30px;text-align:center;color:var(--tx3)}
+@media (max-width:900px){.main{grid-template-columns:1fr}.rail,.top .crumb,.top .sep,.top .meta{display:none}.grid{grid-template-columns:1fr}.dd{grid-template-columns:1fr}.lf{display:none}.hl{grid-template-columns:1fr 1fr}.srch{width:160px}.ph .tabs{display:none}.foot .note{display:none}.psel>button{white-space:nowrap}}
+/* 워크스페이스 공용 (메뉴·토스트·대화상자) */
+.wmenu{position:fixed;z-index:200;background:#fff;border:1px solid var(--line);box-shadow:0 10px 28px rgba(20,36,59,.16);padding:5px;min-width:190px;border-radius:8px}
+.wmenu button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:7px 9px;font-size:12.5px;color:var(--tx);border-radius:5px}
+.wmenu button:hover{background:#f2f5f9}.wmenu button .note{margin-left:auto}
+.wmenu button.chk{background:#eef3fa}.wmenu button.chk:after{content:"✓";margin-left:auto;color:var(--ac)}
+.wmenu button.has{color:var(--tx2)}
+.wmenu .danger{color:#c62828}.wmenu hr{border:0;border-top:1px solid var(--line2);margin:4px 2px}
+.wmenu .mh5{font-size:11px;color:var(--tx3);padding:5px 9px 4px}
+.mic{width:16px;display:inline-grid;place-items:center;flex:none}.mic svg{width:14px;height:14px}
+.wtoast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#14243b;color:#fff;padding:10px 16px;font-size:12.5px;z-index:300;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);animation:tin .18s ease}
+.wtoast a{color:#9cc6f2;margin-left:6px;font-weight:600;text-decoration:none}.wtoast a:hover{text-decoration:underline}
+@keyframes tin{from{opacity:0;transform:translate(-50%,8px)}}
+#wdlg{position:fixed;inset:0;background:rgba(14,24,40,.5);display:none;align-items:center;justify-content:center;z-index:100;padding:24px}
+#wdlg.open{display:flex}
+.wbox{background:#fff;width:440px;max-width:100%;max-height:92vh;overflow:auto;padding:22px 24px 20px;position:relative;border-radius:12px;box-shadow:0 24px 64px rgba(0,0,0,.28)}
+.wbox.mid{width:560px}.wbox.wide{width:640px;display:flex;flex-direction:column;padding-bottom:0}
+.wbox h3{font-size:17px;font-weight:600;margin-bottom:4px}.wbox>p{font-size:13px;color:var(--tx2);margin:8px 0}
+.wx{position:absolute;right:16px;top:14px;font-size:22px;color:var(--tx3);line-height:1;z-index:2}.wx:hover{color:var(--tx)}
+.fld{display:block;font-size:12.5px;font-weight:500;margin-top:14px;color:var(--tx)}.fld i{color:#d93838;font-style:normal}
+.fld input,.fld textarea,.fld select,.inv input,.inv select{display:block;width:100%;margin-top:6px;border:1px solid var(--line);border-radius:7px;padding:9px 11px;font:inherit;font-size:13px;color:var(--tx);background:#fff;outline:0;font-weight:400}
+.fld input:focus,.fld textarea:focus,.fld select:focus{border-color:#14243b}
+.fld.bad input,.fld.bad textarea{border-color:#d93838;background:#fff7f7}
+.unit{position:relative;display:block}.unit input{text-align:right;padding-right:34px}.unit em{position:absolute;right:11px;top:15px;font-style:normal;color:var(--tx2);font-size:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wfoot{display:flex;gap:10px;margin:20px -24px 0;padding:14px 24px;border-top:1px solid var(--line2);position:sticky;bottom:0;background:#fff}
+.wfoot button{flex:1;height:40px;border:1px solid var(--line);border-radius:7px;font-size:13px;font-weight:500}
+.wbox:not(.wide) .wfoot{border:0;justify-content:flex-end;padding-top:0}.wbox:not(.wide) .wfoot button{flex:none;padding:0 18px}
+.wok{background:#14243b;border-color:#14243b!important;color:#fff}.wok:disabled{background:#9aa3ae;border-color:#9aa3ae!important;cursor:not-allowed}
+.wok.danger{background:#c62828;border-color:#c62828!important}
+.seg2{display:flex;background:#f1f3f6;border-radius:9px;padding:4px;margin:14px 0 2px}
+.seg2 button{flex:1;padding:8px 0;font-size:13px;color:var(--tx2);border-radius:6px}.seg2 button.on{background:#fff;color:var(--tx);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.wscroll{overflow:auto;flex:1;padding-bottom:4px}
+.cfrow{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12px}.cfrow span{width:96px;color:var(--tx2);flex:none}.cfrow input{flex:1;border:1px solid var(--line);border-radius:6px;padding:6px 9px;font:inherit;font-size:12.5px;outline:0}
+.cfchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.cfchips button,.cfadd button{border:1px solid var(--line);border-radius:14px;padding:4px 10px;font-size:12px;color:var(--tx2);background:#fff}
+.cfchips button:hover,.cfadd button:hover{border-color:#14243b;color:var(--tx)}.cfadd{margin-top:8px}
+hr.sep{border:0;border-top:1px solid var(--line2);margin:18px 0 0}
+.ownpick{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.ownpick button{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:16px;padding:3px 10px 3px 4px;font-size:12px}
+.ownpick button.on{border-color:#14243b;background:#eef3fa}
+.av{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#dfe7f2;color:#14243b;font-size:11px;font-weight:600;flex:none;border:2px solid #fff}
+.av.sm{width:20px;height:20px;font-size:10px;border-width:1px}
+.av+.av{margin-left:-6px}
+.inv{display:flex;gap:6px;margin-top:6px}.inv input{flex:1;margin:0}.inv select{width:92px;margin:0}.inv button{background:#14243b;color:#fff;border-radius:7px;padding:0 16px;font-size:12.5px}
+.mems{list-style:none;margin-top:12px;border-top:1px solid var(--line2)}.mems li{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid var(--line2);font-size:13px}
+.mems select{border:1px solid var(--line);border-radius:6px;padding:4px 6px;font:inherit;font-size:12px}
+.linkdanger{margin-top:16px;color:#fff;background:#c62828;border-radius:7px;padding:9px 16px;font-size:13px}.linkdanger:disabled{opacity:.4;cursor:not-allowed}
+.loglist{list-style:none;margin-top:12px;max-height:60vh;overflow:auto}.loglist li{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line2);font-size:13px}
+.cdel{color:var(--tx3);font-size:16px;line-height:1;padding:0 4px}.cdel:hover{color:#c62828}
+
+/* 배지·태그 */
+.btag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:5px;border:1px solid;font-weight:500;white-space:nowrap}
+.btag.g{color:#1f7a52;background:#eaf6ef;border-color:#c5e6d3}.btag.b{color:#1f5fa8;background:#eaf2fb;border-color:#c6daf1}
+.btag.p{color:#7b3fb3;background:#f4ecfb;border-color:#e0cdf2}.btag.t{color:#8a5a00;background:#fbf3e3;border-color:#efdcb3}.btag.r{color:#b3364a;background:#fcedef;border-color:#f3cdd4}
+.spill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;border:1px solid var(--line);border-radius:6px;padding:2px 8px 2px 6px;background:#fff}
+.spill svg,.sic svg,.pbtn svg,.pic svg,.cmt svg{width:14px;height:14px;display:block}
+.sic{display:inline-grid}.pic{display:inline-grid;vertical-align:-2px}
+
+/* 워크스페이스 페이지 */
+.wsapp{display:grid;grid-template-columns:230px 1fr;min-height:0;height:100%;background:#fff}
+.wsside{border-right:1px solid var(--line);padding:18px 12px;overflow:auto}
+.wsside .lbl{font-size:11px;font-weight:600;color:var(--tx3);letter-spacing:.6px;padding:0 10px 10px}
+.wsgrp{display:flex;align-items:center;gap:6px;padding:6px 10px;font-size:13px;color:var(--tx2);cursor:pointer;user-select:none}
+.wsgrp .car{transition:transform .15s;font-size:10px}.fold .wsgrp .car{transform:rotate(-90deg)}.fold .wsl{display:none}
+.wsgrp .sp{flex:1}#wsnew{font-size:17px;color:var(--tx3);line-height:1;padding:0 4px}#wsnew:hover{color:var(--tx)}
+.wsl{margin:2px 0 10px}
+.wsi{display:flex;align-items:center;width:100%;padding:9px 12px;border-radius:8px;font-size:13.5px;text-align:left;color:var(--tx)}
+.wsi span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wsi small{color:var(--tx3);font-size:11px}
+.wsi:hover{background:#f4f6f9}.wsi.on{background:#eef1f5;font-weight:600}
+.wsno{padding:4px 12px;font-size:11.5px}
+.wsmain{display:flex;flex-direction:column;min-height:0;overflow:auto;padding:24px 32px 32px}
+.wshead{display:flex;align-items:flex-start;gap:12px}
+.wshead h1{font-size:21px;font-weight:700}.wshead .desc{font-size:13px;color:var(--tx2);margin-top:8px}
+.wshead .sp{flex:1}.wsmem{display:flex;margin-right:6px;align-self:center}
+.wbtn{display:flex;align-items:center;gap:6px;height:36px;padding:0 14px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:13px;font-weight:500;color:var(--tx)}
+.wbtn:hover{border-color:#9aa6b4}.wbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7}
+.wstool{display:flex;align-items:center;gap:8px;margin:22px 0 16px}
+.wstool .sp{flex:1}
+.vtog{display:flex;border:1px solid var(--line);border-radius:8px;padding:3px;gap:2px}
+.vtog button{width:32px;height:28px;display:grid;place-items:center;border-radius:6px;color:var(--tx2)}.vtog button.on{background:#eef1f5;color:var(--tx)}
+.vtog svg,.ib2 svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.7}
+.ib2{width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;color:var(--tx2);background:#fff}.ib2:hover{color:var(--tx);border-color:#9aa6b4}
+.ib2.pri{background:#14243b;border-color:#14243b;color:#fff}
+#wsq{width:0;opacity:0;border:1px solid var(--line);border-radius:8px;height:36px;padding:0;font:inherit;font-size:13px;outline:0;transition:width .18s,opacity .18s,padding .18s}
+.wstool.srch #wsq{width:240px;opacity:1;padding:0 12px}
+#wsfilt .chip{display:inline-flex;gap:6px;align-items:center;border:1px solid #c6d6ea;background:#eef3fa;color:#1a4f8a;border-radius:14px;padding:3px 10px;font-size:12px}
+.kboard{display:grid;grid-template-columns:repeat(3,minmax(260px,1fr)) 240px;gap:20px;align-items:start}
+.kcol,.kside{background:#f7f8fa;border:1px solid #e6e9ee;border-radius:12px;min-height:120px;transition:background .12s,box-shadow .12s}
+.kcol.over,.kside.over{background:#eef3fa;box-shadow:inset 0 0 0 2px #9db6d4}
+.kcol header,.kside header{display:flex;align-items:center;gap:8px;padding:14px 16px;font-size:14px;font-weight:600}
+.kc{display:inline-grid;place-items:center;min-width:28px;height:20px;border:1.5px solid;border-radius:11px;font-size:11px;font-weight:600;padding:0 6px;background:#fff}
+.kbody{padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;min-height:60px}
+.kempty{color:var(--tx3);font-size:12px;text-align:center;padding:24px 0}
+.ksides{display:flex;flex-direction:column;gap:14px}.kside{min-height:0}.kside header{cursor:pointer}.kside .chev{color:var(--tx3);font-weight:400}
+.kside .sp,.kcol .sp{flex:1}
+.kcard{background:#fff;border:1px solid #e3e7ec;border-radius:10px;padding:14px 16px 12px;cursor:pointer;transition:box-shadow .12s,border-color .12s}
+.kcard:hover{border-color:#b9c3cf;box-shadow:0 4px 14px rgba(20,36,59,.08)}
+.kcard.drag{opacity:.4}.kcard.late{border-left:3px solid #d93838}
+.kh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.kmore{color:var(--tx3);font-size:16px;letter-spacing:1px;padding:0 4px;border-radius:5px;line-height:20px}.kmore:hover{background:#eef1f5;color:var(--tx)}
+.kcard h4{font-size:14px;font-weight:600;line-height:1.45;margin-bottom:10px}
+.kcard dl{display:grid;grid-template-columns:62px 1fr;gap:5px 10px;font-size:12.5px}
+.kcard dt{color:var(--tx3);white-space:nowrap}.kcard dd{color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.kcard dd b{font-weight:600}
+.kcard footer{display:flex;align-items:center;gap:6px;margin-top:14px}
+.pbtn{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;border:1px solid var(--line);border-radius:6px;padding:0 3px;background:#fff;color:var(--tx3)}
+.pbtn:hover,.sbtn:hover{border-color:#9aa6b4}
+.kcard footer .sp{flex:1}.cmt{display:flex;align-items:center;gap:3px;font-size:12px;color:var(--tx3)}
+.lt{font-size:11px;color:#d93838;font-weight:500}
+.wslist{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.wslist .tt th{padding:10px 12px;font-size:12px}.wslist .tt td{padding:11px 12px;font-size:13px;cursor:pointer}
+.wslist .tt tr:hover td{background:#f7f9fc}.wslist .tl{font-weight:500}
+/* 작업 상세 */
+.wbox.task{width:min(1460px,96vw);height:min(880px,92vh);padding:0;display:flex;flex-direction:column;overflow:hidden}
+.th{padding:22px 28px 0;border-bottom:1px solid var(--line2);position:relative}
+.th h2{font-size:20px;font-weight:700;margin:10px 0 14px;outline:0;border-radius:4px;padding:2px 4px;margin-left:-4px}.th h2:focus{background:#f4f6f9}
+.tmenu{position:absolute;right:58px;top:16px;width:36px;height:36px;border:1.5px solid #14243b;border-radius:50%;font-size:15px;letter-spacing:1px}
+.task .wx{top:22px;right:24px}
+.tprops{display:grid;grid-template-columns:repeat(5,1fr);margin:0 -28px;border-top:1px solid var(--line2)}
+.tprop{display:flex;align-items:center;gap:8px;padding:12px 28px;font-size:13px;color:var(--tx);border-right:1px solid var(--line2);position:relative;text-align:left;cursor:pointer}
+.tprop:last-child{border-right:0}.tprop:hover{background:#f7f9fc}.tprop svg{width:15px;height:15px;color:var(--tx3);flex:none}
+.tprop input[type=date]{border:0;font:inherit;font-size:13px;background:transparent;outline:0;color:var(--tx);width:100%;cursor:pointer}
+.tprop .dl{flex:none}
+.tbody{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:0}
+.tl{overflow:auto;padding:24px 48px 24px 48px;border-right:1px solid var(--line2)}
+.mi{display:grid;grid-template-columns:96px 1fr;gap:12px 16px;font-size:13.5px;padding-bottom:16px}
+.mi.sub{border-top:1px dashed var(--line2);padding-top:14px}.mi dt{color:var(--tx3)}.mi dd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.mi b{font-weight:600}
+.ext{color:var(--tx3);display:inline-grid}.ext svg{width:14px;height:14px}.ext:hover{color:var(--ac)}
+.maps{display:inline-flex;gap:4px;margin-left:auto}.maps a i{display:grid;place-items:center;width:20px;height:20px;border-radius:5px;color:#fff;font:700 10px/1 sans-serif}
+.golist{display:inline-block;font-size:12.5px;color:var(--ac);text-decoration:none;margin-bottom:6px}.golist:hover{text-decoration:underline}
+.tsec{border-top:1px solid var(--line2);padding:16px 0}
+.tsec h5{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;margin-bottom:12px}.tsec h5 .sp{flex:1}
+.tsec .fold{color:var(--tx3);font-size:14px;transition:transform .15s}.tsec.closed .fold{transform:rotate(180deg)}.tsec.closed>div{display:none}.tsec.closed h5{margin-bottom:0}
+.att{display:flex;align-items:center;justify-content:space-between;background:#f6f8fa;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:6px}
+.att a{border:1px solid var(--line);border-radius:6px;background:#fff;padding:5px 14px;font-size:12px;color:var(--tx);text-decoration:none}
+.tr{display:flex;flex-direction:column;min-height:0;background:#fff}
+.trh{display:flex;align-items:center;gap:8px;padding:18px 24px;border-bottom:1px solid var(--line2);font-size:14px}.trh .sp{flex:1}.trh .kc{border-color:var(--line);color:var(--tx2);min-width:22px}
+.clist2{flex:1;min-height:0;overflow:auto;padding:12px 24px}
+.cempty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--tx2);font-size:13px;text-align:center}.cempty svg{width:24px;height:24px;color:var(--tx2)}
+.cm{padding:12px 0;border-bottom:1px solid var(--line2)}.cmh{display:flex;align-items:center;gap:8px;font-size:12.5px}.cmh .sp{flex:1}
+.cact{font-size:11.5px;color:var(--tx3)}.cact:hover{color:var(--tx)}
+.cmb{font-size:13px;line-height:1.6;margin:6px 0 0 28px;word-break:break-word}
+.cmb blockquote,.rbody blockquote{border-left:3px solid #c6d0dc;padding-left:10px;color:var(--tx2);margin:4px 0}
+.cmb pre,.rbody pre{background:#f4f6f9;padding:8px 10px;border-radius:6px;font-family:var(--mono);font-size:12px;white-space:pre-wrap}
+.cmb code,.rbody code{background:#f1f3f6;border-radius:4px;padding:0 4px;font-family:var(--mono);font-size:12px}
+.cmb ul,.cmb ol,.rbody ul,.rbody ol{padding-left:20px}.cmb h3,.rbody h3{font-size:15px;margin:4px 0}.cmb a,.rbody a{color:var(--ac)}
+mark{background:#fff1b8;padding:0 2px;border-radius:2px}
+.ceb{display:flex;gap:6px;justify-content:flex-end;margin-top:6px}.ceb button{border:1px solid var(--line);border-radius:6px;padding:4px 12px;font-size:12px}.ceb .pri{background:#14243b;color:#fff;border-color:#14243b}
+.cin{padding:14px 24px 20px;border-top:1px solid var(--line2);flex:none}
+.rte{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}.rte:focus-within{border-color:#9aa6b4}
+.rtb{display:flex;align-items:center;gap:1px;flex-wrap:wrap;padding:6px 8px;background:#fafbfc;border-bottom:1px solid var(--line2)}
+.rtb.bot{border-top:1px solid var(--line2);border-bottom:0;margin:0 10px 10px;border:1px solid var(--line2);border-radius:8px}
+.rtb button{min-width:26px;height:26px;border-radius:5px;font-size:12.5px;color:var(--tx2);padding:0 4px}.rtb button:hover{background:#eceff3;color:var(--tx)}
+.rtb code{font-size:11px;background:none}.rtb mark{padding:0 2px}
+.rsep{width:1px;height:16px;background:var(--line);margin:0 4px}.rtb .sp{flex:1}
+.rtb .send{background:#9aa6b4;color:#fff;width:34px;height:30px;border-radius:7px}.rtb .send:hover{background:#14243b;color:#fff}
+.rbody{min-height:150px;padding:12px 14px;font-size:13px;line-height:1.65;outline:0}
+.cin .rbody{min-height:56px;max-height:180px;overflow:auto}
+.rte.sm .rbody{min-height:60px}
+.rbody:empty:before{content:attr(data-ph);color:var(--tx3)}
+/* 레일 배지 */
+.rail a{position:relative;text-align:center;line-height:1.2}
+.rail a.dis{opacity:.45;cursor:default}
+.wsbadge{position:absolute;top:3px;right:4px;background:#d93838;color:#fff;font:600 9px/14px var(--mono);min-width:14px;height:14px;border-radius:7px;padding:0 3px;display:none}
+/* 매물 카드·리서치 행의 추가 버튼 */
+.ca button.added{color:#1f7a52;font-weight:500}
+.wsadd{width:26px;height:24px;border:1px solid var(--line);border-radius:6px;color:var(--tx2);font-size:15px;line-height:1;background:#fff}
+.wsadd:hover{border-color:#14243b;color:#14243b}.wsadd.added{background:#eaf6ef;border-color:#c5e6d3;color:#1f7a52;font-size:12px}
+
+.rtb button{display:inline-grid;place-items:center;line-height:1}
+
+.wslist .nw{white-space:nowrap}
+
+.rail a{text-decoration:none;position:relative}
+td.wa{width:64px;text-align:center}
+.card li{position:relative}.card .wsadd.mini{position:absolute;right:0;top:2px;width:22px;height:20px;font-size:13px;opacity:0}.card li:hover .wsadd.mini,.card .wsadd.mini.added{opacity:1}
+body{min-width:1200px}
+</style><meta name="ag-base" content="">
+<style>
+body.ag-locked>:not(#ag-gate):not(script){display:none!important}
+#ag-gate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#f3f5f8;font-family:'IBM Plex Sans KR','Pretendard','Apple SD Gothic Neo',sans-serif;color:#1d2733}
+#ag-gate .box{width:380px;background:#fff;border:1px solid #dfe3e9;border-top:3px solid #14243b;padding:34px 34px 26px;box-shadow:0 18px 50px rgba(20,36,59,.08)}
+#ag-gate .br{display:flex;align-items:center;gap:10px;font-weight:600;font-size:18px;letter-spacing:.2px}
+#ag-gate .br small{font-weight:400;color:#5b6675;font-size:13px}
+#ag-gate h1{font-size:19px;font-weight:600;margin:26px 0 6px;color:#1d2733;letter-spacing:0}
+#ag-gate p{font-size:13px;line-height:1.65;color:#5b6675;margin:0}
+#ag-gate .gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:44px;margin-top:22px;border:1px solid #c9d0d9;background:#fff;font:500 14px inherit;font-family:inherit;color:#1d2733;cursor:pointer}
+#ag-gate .gbtn:hover{border-color:#14243b;background:#f8fafc}
+#ag-gate form{margin-top:18px}#ag-gate label{display:block;font-size:12px;color:#5b6675;margin-top:10px}
+#ag-gate input{display:block;width:100%;box-sizing:border-box;height:40px;margin-top:4px;border:1px solid #c9d0d9;padding:0 11px;font:inherit;font-size:14px;color:#1d2733;background:#fff;color-scheme:light;-webkit-appearance:none;appearance:none;border-radius:0;outline:0}
+#ag-gate input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px #fff inset;-webkit-text-fill-color:#1d2733}
+#ag-gate input:focus{border-color:#14243b}
+#ag-gate .pbtn{width:100%;height:42px;margin-top:16px;background:#14243b;color:#fff;border:0;font:inherit;font-size:14px;font-weight:500;cursor:pointer}#ag-gate .pbtn:disabled{opacity:.6}
+#ag-gate .err{color:#b3364a;font-size:12.5px;margin-top:10px;min-height:0}
+#ag-gate .sw{font-size:12.5px;color:#5b6675;margin-top:14px}#ag-gate .sw button{background:none;border:0;color:#2463a8;font:inherit;cursor:pointer;padding:0}
+#ag-gate .lnk{background:none;border:0;color:#2463a8;font:inherit;font-size:12.5px;cursor:pointer;padding:0;margin-top:16px}
+#ag-gate .ft{margin-top:24px;padding-top:14px;border-top:1px solid #eef1f4;font-size:11.5px;color:#8b95a3;line-height:1.6}
+#ag-gate .who{display:flex;align-items:center;gap:10px;margin-top:18px;padding:10px 12px;background:#f6f8fa;font-size:13px}
+#ag-gate .who img,#ag-gate .who i{width:28px;height:28px;border-radius:50%;background:#dfe7f2;display:grid;place-items:center;font-style:normal;font-weight:600;color:#14243b}
+#ag-gate .badge{display:inline-block;font-size:11px;padding:2px 8px;margin-top:20px;font-weight:600}
+#ag-gate .badge.p{background:#fbf3e3;color:#8a5a00}#ag-gate .badge.r{background:#fcedef;color:#b3364a}#ag-gate .badge.e{background:#eef1f5;color:#5b6675}
+#ag-gate .spin{width:22px;height:22px;border:2px solid #dfe3e9;border-top-color:#14243b;border-radius:50%;animation:agspin .8s linear infinite;margin:20px auto 0}
+@keyframes agspin{to{transform:rotate(360deg)}}
+.ag-user{display:flex;align-items:center;gap:8px;margin-left:14px;font-size:12px;white-space:nowrap}
+.ag-user img,.ag-user i{width:24px;height:24px;border-radius:50%;background:#dfe7f2;color:#14243b;display:grid;place-items:center;font-style:normal;font-weight:600;font-size:11px}
+.ag-user a,.ag-user button{background:none;border:0;color:inherit;opacity:.8;font:inherit;cursor:pointer;text-decoration:none;padding:0}
+.ag-user a:hover,.ag-user button:hover{opacity:1;text-decoration:underline}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head><body class="ag-locked">
+<div id="ag-gate" role="dialog" aria-modal="true" aria-label="로그인"></div>
+<script>
+(function(){
+const U="https://rxrpwwjibvjetlgdpjod.supabase.co",K="sb_publishable_Q6gikKDsSKSJjCf5Qe5WWA_iR2FVX5p",G=document.getElementById('ag-gate');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const BRAND=`<div class="br"><svg viewBox="0 0 20 20" width="30" height="30" aria-hidden="true"><g fill="none" stroke="#8fa3bd" stroke-width="1.2"><circle cx="4" cy="4" r="2"/><circle cx="10" cy="4" r="2"/><circle cx="16" cy="4" r="2"/><circle cx="4" cy="10" r="2"/><circle cx="16" cy="10" r="2"/><circle cx="4" cy="16" r="2"/><circle cx="10" cy="16" r="2"/><circle cx="16" cy="16" r="2"/></g><circle cx="10" cy="10" r="2.6" fill="#6ea6dd"/></svg><span>Argus <small>Research</small></span></div>`;
+const FT='<div class="ft">승인된 회원만 이용할 수 있는 비공개 리서치 사이트입니다. 서비스 운영과 보안을 위해 접속·열람·다운로드 기록이 저장되며 관리자가 확인할 수 있습니다.</div>';
+const av=p=>p&&p.avatar?`<img src="${esc(p.avatar)}" alt="" referrerpolicy="no-referrer">`:`<i>${esc(((p&&(p.name||p.email))||'?').slice(0,1))}</i>`;
+let sb=null;
+function view(state,p,msg){
+  if(!G)return;
+  const who=p?`<div class="who">${av(p)}<div><div>${esc(p.name||'')}</div><div style="color:#8b95a3;font-size:12px">${esc(p.email||'')}</div></div></div>`:'';
+  const out='<button class="lnk" id="ag-out">다른 계정으로 로그인</button>';
+  G.innerHTML=`<div class="box">${BRAND}${
+    state==='loading'?'<div class="spin" aria-label="확인 중"></div>':
+    state==='login'?`<h1>로그인</h1><form id="ag-f"><label>이메일<input name="email" type="email" autocomplete="username" required></label><label>비밀번호<input name="pw" type="password" autocomplete="current-password" required minlength="8"></label><div class="err" id="ag-err"></div><button class="pbtn">로그인</button></form><div class="sw">처음이신가요? <button id="ag-to-up">회원가입</button> · <button id="ag-forgot">비밀번호를 잊으셨나요?</button></div>`:
+    state==='signup'?`<h1>회원가입</h1><p>가입 후 관리자가 승인하면 이용할 수 있습니다.</p><form id="ag-f"><label>이름<input name="name" required maxlength="40" autocomplete="name"></label><label>소속 (회사·팀)<input name="org" maxlength="60" autocomplete="organization"></label><label>이메일<input name="email" type="email" autocomplete="username" required></label><label>비밀번호 (8자 이상)<input name="pw" type="password" autocomplete="new-password" required minlength="8"></label><div class="err" id="ag-err"></div><button class="pbtn">가입 신청</button></form><div class="sw">이미 계정이 있나요? <button id="ag-to-in">로그인</button></div>`:
+    state==='forgot'?`<h1>비밀번호 재설정</h1><p>비밀번호를 잊으셨다면 관리자에게 연락해 주세요. 관리자가 임시 비밀번호를 정해 드리면, 로그인한 뒤 화면 오른쪽 위 「비밀번호 변경」에서 새 비밀번호로 바꿀 수 있습니다.</p><div class="sw"><button id="ag-to-in">로그인으로 돌아가기</button></div>`:
+    state==='pending'?`<span class="badge p">승인 대기</span><h1>가입 신청이 접수되었습니다</h1><p>관리자가 승인하면 바로 이용할 수 있습니다. 승인 후 이 페이지를 새로고침하세요.</p>${who}${out}`:
+    state==='rejected'?`<span class="badge r">이용 불가</span><h1>이용 승인이 되지 않은 계정입니다</h1><p>다른 계정으로 로그인하거나 관리자에게 문의해 주세요.</p>${who}${out}`:
+    `<span class="badge e">연결 오류</span><h1>잠시 후 다시 시도해 주세요</h1><p>${esc(msg||'데이터를 불러오지 못했습니다.')}</p><button class="lnk" id="ag-re">다시 시도</button>`
+  }${FT}</div>`;
+  const on=(id,f)=>{const e=document.getElementById(id);if(e)e.onclick=f};
+  on('ag-to-up',()=>view('signup'));on('ag-to-in',()=>view('login'));on('ag-forgot',()=>view('forgot'));
+  const f=document.getElementById('ag-f');
+  if(f)f.onsubmit=async ev=>{ev.preventDefault();const d=Object.fromEntries(new FormData(f));const btn=f.querySelector('button');const er=document.getElementById('ag-err');er.textContent='';btn.disabled=true;
+    const KO={'Invalid login credentials':'이메일 또는 비밀번호가 맞지 않습니다.','User already registered':'이미 가입된 이메일입니다. 로그인해 주세요.','Email not confirmed':'이메일 확인이 필요한 설정으로 되어 있습니다. 관리자에게 알려 주세요.','Email address not authorized':'가입 메일을 보낼 수 없는 설정입니다. 관리자에게 알려 주세요.'};
+    const msg=e=>KO[e.message]||(/rate limit/i.test(e.message)?'잠시 후 다시 시도해 주세요.':/Password should be/i.test(e.message)?'비밀번호는 8자 이상으로 정해 주세요.':e.message);
+    try{
+      if(state==='signup'){
+        const {data,error}=await sb.auth.signUp({email:d.email.trim(),password:d.pw,options:{data:{full_name:d.name.trim(),org:(d.org||'').trim()}}});
+        if(error)throw error;
+        if(!data.session){view('error',null,'가입은 접수되었지만 로그인하지 못했습니다. 관리자에게 \'가입 확인 메일 끄기\' 설정을 확인해 달라고 알려 주세요.');return}
+      }else{
+        const {error}=await sb.auth.signInWithPassword({email:d.email.trim(),password:d.pw});if(error)throw error;
+      }
+      boot();
+    }catch(e){er.textContent=msg(e);btn.disabled=false}};
+  const first=G.querySelector('input');if(first)first.focus();
+  const o=document.getElementById('ag-out');if(o)o.onclick=async()=>{await sb.auth.signOut();view('login')};
+  const r=document.getElementById('ag-re');if(r)r.onclick=()=>location.reload();
+}
+function chip(p){
+  const host=document.querySelector('[data-ag-user]')||document.querySelector('.topnav .navr')||document.querySelector('.topnav .wrap')||document.querySelector('header');
+  if(!host||document.querySelector('.ag-user'))return;
+  const base=document.querySelector('meta[name=ag-base]');const b=base?base.content:'';
+  host.insertAdjacentHTML('beforeend',`<div class="ag-user">${av(p)}<span>${esc(p.name||p.email)}</span>${p.role==='admin'?`<a href="${b}admin.html">회원 관리</a>`:''}<button id="ag-pw">비밀번호 변경</button><button id="ag-logout">로그아웃</button></div>`);
+  document.getElementById('ag-pw').onclick=async()=>{const a=prompt('새 비밀번호 (8자 이상)');if(!a)return;if(a.length<8){alert('8자 이상으로 정해 주세요.');return}if(prompt('새 비밀번호를 한 번 더 입력하세요')!==a){alert('두 번 입력한 비밀번호가 다릅니다.');return}
+    const {error}=await sb.auth.updateUser({password:a});alert(error?'변경하지 못했습니다: '+error.message:'비밀번호를 바꿨습니다.')};
+  document.getElementById('ag-logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
+}
+let ready=null;const waiters=[];
+window.ArgusAuth={ready(cb){ready?cb(ready):waiters.push(cb)},client:()=>sb,
+  async file(name){const {data,error}=await sb.storage.from('private').createSignedUrl(name,120,{download:name});if(error)throw error;window.ArgusAuth.log&&window.ArgusAuth.log('download',name);return data.signedUrl}};
+async function boot(){
+  view('loading');ready=null;
+  if(!window.supabase){view('error',null,'로그인 모듈을 불러오지 못했습니다. 네트워크를 확인해 주세요.');return}
+  sb=sb||window.supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'pkce'}});
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){view('login');return}
+  const {data:p,error}=await sb.rpc('touch_me');
+  if(error||!p){view('error',null,error?error.message:'회원 정보를 찾지 못했습니다.');return}
+  if(p.status!=='approved'){view(p.status==='rejected'?'rejected':'pending',p);return}
+  if(/[?&](code|error)=/.test(location.search))history.replaceState(null,'',location.pathname);
+  ready={sb,profile:p};
+  const log=(a,t,m)=>sb.rpc('log_event',{p_action:a,p_target:t||null,p_meta:m||null}).then(()=>{},()=>{});
+  window.ArgusAuth.log=log;
+  try{if(!sessionStorage.getItem('ag-login')){sessionStorage.setItem('ag-login','1');log('login',location.pathname)}}catch(_){}
+  log('view',location.pathname+location.hash);
+  document.addEventListener('click',e=>{const a=e.target.closest('a[href^="http"]');if(a&&a.host!==location.host)log('open',a.href,{text:(a.textContent||'').trim().slice(0,120)})},true);
+  try{for(const w of waiters)await w(ready)}catch(e){view('error',null,e.message);return}
+  G&&G.remove();document.body.classList.remove('ag-locked');chip(p);
+  sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT')location.reload()});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+<script>window.ARGUS_DATA=k=>new Promise((res,rej)=>ArgusAuth.ready(async({sb})=>{const r=await sb.from('site_data').select('payload').eq('key',k).single();if(r.error)rej(new Error('데이터를 불러오지 못했습니다: '+r.error.message));else res(r.data.payload)}));</script>
+
+<header class="top"><div class="brand"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="#8fa3bd" stroke-width="1.2"><circle cx="4" cy="4" r="2"/><circle cx="10" cy="4" r="2"/><circle cx="16" cy="4" r="2"/><circle cx="4" cy="10" r="2"/><circle cx="16" cy="10" r="2"/><circle cx="4" cy="16" r="2"/><circle cx="10" cy="16" r="2"/><circle cx="16" cy="16" r="2"/></g><circle cx="10" cy="10" r="2.6" fill="#6ea6dd"/></svg>Argus <small>Research</small></div><span class="sep"></span><span class="crumb">리서치 · <b>리서치 센터</b></span><span class="sp"></span><span class="meta" id="meta"></span><span data-ag-user style="display:flex;margin-left:12px"></span></header>
+<div class="main">
+<nav class="rail">
+    <a class="dis" title="준비 중"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>대시보드</a>
+    <a href="index.html" class=""><svg viewBox="0 0 24 24"><path d="M3 5h18M3 10h18M3 15h18M3 20h18"/></svg>딜 DB</a>
+    <a href="research.html" class="on"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg>리서치</a>
+    <a href="classic.html#rates" title="주요지표 (이전 화면)"><svg viewBox="0 0 24 24"><path d="M3 20h18"/><path d="m4 15 5-5 4 3 7-7"/></svg>시장지표</a>
+    <a href="listings.html" class=""><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg>매물·공고</a>
+    <a href="workspace.html" class=""><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><path d="M17 13.5v7M13.5 17h7"/></svg>워크<br>스페이스<b class="wsbadge" id="wsbadge"></b></a>
+  </nav>
+<section class="work">
+<div class="ph"><h1>리서치 센터</h1><div class="tabs"><a href="#" class="on" id="tab-cat">카테고리</a><a class="dis" title="준비 중">하우스별</a><a class="dis" title="준비 중">발간 피드</a><a class="dis" title="준비 중">커버리지</a></div><span class="sp"></span><label class="srch"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="리포트 제목 · 하우스 검색"></label></div>
+<div id="view"></div>
+</section></div>
+<script>// Argus 워크스페이스 — RedOps식 검토 보드. 지금은 이 브라우저(localStorage)에 저장 (팀 공유 저장은 다음 단계).
+// 모든 페이지에서 불러와 window.ARGUS_WS(추가 API)를 제공하고, #wsapp이 있는 페이지(workspace.html)에서는 보드 전체를 그린다.
+(function(){
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const KEY='argus.ws.v2';
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-3);
+const now=()=>new Date().toISOString();
+const ME='나';
+const ST=[['new','신규','#3b4552'],['doing','진행','#d08700'],['done','완료','#2e9a62'],['hold','대기','#6b5bd0'],['arch','보관','#7d8794']];
+const STN=Object.fromEntries(ST.map(s=>[s[0],s]));
+const PR=[['none','없음','#7d8794'],['p1','최우선','#d93838'],['p2','급함','#e07a1f'],['p3','나중에','#2463a8'],['p4','접어둠','#7d8794']];
+const PRN=Object.fromEntries(PR.map(p=>[p[0],p]));
+const CUSTOM=['인허가 상태','브로커','정보제공자','계약방식','점유관계','토지 확보율','관계자','첨부파일','특이사항','기타 메모'];
+const I_={
+ new:'<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.2 1.9"/></svg>',
+ doing:'<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="2.7" fill="currentColor"/></svg>',
+ done:'<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="m5.4 8.2 1.8 1.8 3.5-3.7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>',
+ hold:'<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6.7 5.8v4.4M9.3 5.8v4.4" stroke="currentColor" stroke-width="1.4"/></svg>',
+ arch:'<svg viewBox="0 0 16 16"><rect x="2.4" y="3.2" width="11.2" height="3.2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M3.4 6.4v6.4h9.2V6.4M6.4 9h3.2" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
+ none:'<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="m4 12 8-8" stroke="currentColor" stroke-width="1.3"/></svg>',
+ p1:'<svg viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="11" height="11" rx="2.2" fill="currentColor"/><path d="M8 5v4.2M8 10.8v.7" stroke="#fff" stroke-width="1.7"/></svg>',
+ p2:'<svg viewBox="0 0 16 16"><rect x="3" y="9.5" width="2.2" height="3.5" fill="currentColor"/><rect x="6.9" y="6.5" width="2.2" height="6.5" fill="currentColor"/><rect x="10.8" y="3.5" width="2.2" height="9.5" fill="currentColor"/></svg>',
+ p3:'<svg viewBox="0 0 16 16"><rect x="3" y="9.5" width="2.2" height="3.5" fill="currentColor"/><rect x="6.9" y="6.5" width="2.2" height="6.5" fill="currentColor"/><rect x="10.8" y="3.5" width="2.2" height="9.5" fill="currentColor" opacity=".22"/></svg>',
+ p4:'<svg viewBox="0 0 16 16"><rect x="3" y="9.5" width="2.2" height="3.5" fill="currentColor"/><rect x="6.9" y="6.5" width="2.2" height="6.5" fill="currentColor" opacity=".22"/><rect x="10.8" y="3.5" width="2.2" height="9.5" fill="currentColor" opacity=".22"/></svg>',
+ user:'<svg viewBox="0 0 16 16"><circle cx="6.4" cy="6" r="2.4" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M2.4 13c.4-2.2 2-3.4 4-3.4s3.6 1.2 4 3.4M10.4 3.8a2.3 2.3 0 0 1 0 4.4M12 9.9c1 .5 1.6 1.6 1.8 3" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>',
+ chat:'<svg viewBox="0 0 16 16"><path d="M3 3.5h10v7H7.2L4 13v-2.5H3z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>',
+ cal:'<svg viewBox="0 0 16 16"><rect x="2.5" y="3.5" width="11" height="10" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3" stroke="currentColor" stroke-width="1.2"/></svg>',
+ ext:'<svg viewBox="0 0 16 16"><path d="M9 3h4v4M13 3 7.5 8.5M11 9.5V13H3V5h3.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
+};
+const TAGC={'민관':'g','공매':'b','공모사업':'p','리서치':'t','직접 등록':'r'};
+
+// ── 저장소 (페이지 사이 공유)
+function seed(){const id=uid();return {v:2,spaces:[{id,name:'내 워크스페이스',desc:'매입·개발 검토 물건',owner:ME,members:[{name:ME,role:'소유자'}],created:now()}],joined:[],cur:id,items:[],log:[]}}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.spaces&&d.spaces.length)return d}catch(e){}return seed()}
+let S=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}badge()}
+addEventListener('storage',e=>{if(e.key===KEY){S=load();if(APP)render();badge()}});
+function log(text,sid){S.log.unshift({at:now(),space:sid||S.cur,by:ME,text});S.log=S.log.slice(0,500)}
+const space=()=>S.spaces.find(s=>s.id===S.cur)||S.spaces[0];
+const items=(sid)=>S.items.filter(i=>i.space===(sid||space().id));
+const won=v=>v==null||v===''?null:Math.round(+v).toLocaleString()+'원';
+const fmtAt=t=>{const d=new Date(t),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}.${p(d.getMonth()+1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`};
+const ago=t=>{const s=(Date.now()-new Date(t))/1e3;return s<60?'방금':s<3600?Math.floor(s/60)+'분 전':s<86400?Math.floor(s/3600)+'시간 전':Math.floor(s/86400)+'일 전'};
+function badge(){const b=$('#wsbadge');if(b){const n=S.items.filter(i=>i.status==='new').length;b.textContent=n||'';b.style.display=n?'':'none'}}
+function toast(html,ms){$$('.wtoast').forEach(t=>t.remove());const el=document.createElement('div');el.className='wtoast';el.innerHTML=html;setTimeout(()=>document.body.appendChild(el));setTimeout(()=>el.remove(),ms||2600)}
+const mapLinks=loc=>loc?`<span class="maps"><a href="https://map.naver.com/p/search/${encodeURIComponent(loc)}" target="_blank" rel="noopener" title="네이버 지도"><i style="background:#03c75a">N</i></a><a href="https://map.kakao.com/?q=${encodeURIComponent(loc)}" target="_blank" rel="noopener" title="카카오맵"><i style="background:#fee500;color:#3c1e1e">K</i></a><a href="https://www.google.com/maps/search/${encodeURIComponent(loc)}" target="_blank" rel="noopener" title="구글 지도"><i style="background:#4285f4">G</i></a></span>`:'';
+function sanitize(html){const t=document.createElement('template');t.innerHTML=html;const OK=new Set(['B','STRONG','I','EM','U','S','STRIKE','DEL','CODE','PRE','BLOCKQUOTE','UL','OL','LI','H3','H4','P','BR','DIV','A','SUP','SUB','MARK','SPAN']);
+  (function walk(n){[...n.childNodes].forEach(c=>{if(c.nodeType===1){if(!OK.has(c.tagName)){c.replaceWith(...c.childNodes);return walk(n)}[...c.attributes].forEach(a=>{const keep=(c.tagName==='A'&&a.name==='href'&&/^https?:/i.test(a.value))||(a.name==='style'&&/^text-align:\s*(left|center|right|justify);?$/.test(a.value));if(!keep)c.removeAttribute(a.name)});if(c.tagName==='A'){c.setAttribute('target','_blank');c.setAttribute('rel','noopener')}walk(c)}else if(c.nodeType!==3)c.remove()})})(t.content);return t.innerHTML}
+
+// ── 다른 페이지에서 쓰는 추가 API
+function blank(o){return Object.assign({id:uid(),space:space().id,kind:'manual',ref:null,board:'직접 등록',title:'',org:'',orgUrl:'',loc:'',land:null,bldg:null,amount:null,posted:'',end:'',start:'',due:'',status:'new',priority:'none',owners:[],body:'',links:[],custom:{},meta:{},comments:[],created:now(),updated:now(),by:ME},o)}
+function fromListing(x){const p=x.prices||{};const lh=x.source==='LH';
+  return {kind:'listing',ref:x.id,board:x.board||(lh?'민관':'공매'),title:x.title,org:x.org,orgUrl:x.url||'',loc:x.address||x.region||'',land:x.land_sqm??null,bldg:x.bldg_sqm??null,
+   amount:p.appraisal??p.supply_total??null,posted:lh?(x.posted||''):(x.bid_start||''),end:x.deadline||'',
+   meta:lh?{공고번호:(x.ref||{}).pan_id,공고상태:x.status,유형:`${x.category||''} · ${x.kind||''}`,입찰방법:'LH청약플러스'}:{최저입찰가:p.min_bid??null,회차:x.round,유찰:x.failed_bids,'감정가 대비':p.min_bid_to_appraisal,물건관리번호:(x.ref||{}).cltr_mng_no,입찰방법:'온비드 전자입찰',용도:`${x.category||''} · ${x.kind||''}`},
+   links:[{t:lh?'LH청약플러스 공고 원문':'온비드 물건 검색',u:lh?x.url:'https://www.onbid.co.kr'}],
+   body:lh?`<p>공고명: ${esc(x.title)}<br>공고번호: ${esc((x.ref||{}).pan_id||'')}<br>공고상태: ${esc(x.status||'')}<br>유형: ${esc(x.category||'')} · ${esc(x.kind||'')}<br>접수 마감: ${esc(x.deadline||'')}</p>`
+     :`<p>물건명: ${esc(x.title)}<br>물건관리번호: ${esc((x.ref||{}).cltr_mng_no||'')}<br>처분기관: ${esc(x.org)}<br>용도: ${esc(x.category||'')} · ${esc(x.kind||'')}<br>재산유형: ${esc(x.property_type||'')}<br>현재 회차: ${esc(x.round||'')}회차 · 유찰 ${esc(x.failed_bids??'-')}회</p>`}}
+function fromReport(r){return {kind:'report',ref:'R:'+(r.u||r.t),board:'리서치',title:r.t,org:r.h,orgUrl:'',loc:'',posted:r.d||'',end:'',amount:null,
+   meta:{하우스:r.h,발간일:r.d||'미상',카테고리:`${r.c} · ${r.sc}`,'발간 주기':r.p,언어:r.l,연결:r.lt||'링크 없음'},links:r.u?[{t:'리포트 원문',u:r.u}]:[],
+   body:`<p>${esc(r.h)} · ${esc(r.c)} / ${esc(r.sc)} · ${esc(r.d||'발간일 미상')}</p>`}}
+function add(obj,sid){
+  sid=sid||space().id;const sp=S.spaces.find(s=>s.id===sid);
+  if(S.items.some(i=>i.ref&&i.ref===obj.ref&&i.space===sid)){toast(`이미 「${esc(sp.name)}」에 있습니다 · <a href="workspace.html#space=${sid}">워크스페이스로 이동 →</a>`);return null}
+  const it=blank({...obj,space:sid});S.items.push(it);log(`「${it.title}」 ${it.kind==='report'?'리서치에서':it.kind==='listing'?'매물 목록에서':''} 추가`,sid);save();
+  toast(`「${esc(sp.name)}」에 추가했습니다 · <a href="workspace.html#space=${sid}&item=${it.id}">워크스페이스로 이동 →</a>`,3600);
+  document.dispatchEvent(new CustomEvent('ws:change'));return it}
+function pick(anchor,obj,after){
+  closeMenus();const r=anchor.getBoundingClientRect();const el=document.createElement('div');el.className='wmenu';
+  el.style.left=Math.min(innerWidth-236,Math.max(8,r.left))+'px';el.style.top=(r.bottom+4)+'px';
+  el.innerHTML=`<div class="mh5">워크스페이스에 추가</div>${S.spaces.map(s=>{const has=S.items.some(i=>i.ref===obj.ref&&i.space===s.id);return `<button data-s="${s.id}" ${has?'class="has"':''}>${esc(s.name)}<span class="note">${has?'추가됨 · 이동':items(s.id).length+'건'}</span></button>`}).join('')}<hr><button data-s="__new">＋ 새 워크스페이스 만들고 추가</button>`;
+  el.onclick=e=>{e.stopPropagation();const b=e.target.closest('button');if(!b)return;closeMenus();
+    if(b.classList.contains('has')){location.href=`workspace.html#space=${b.dataset.s}&item=${S.items.find(i=>i.ref===obj.ref&&i.space===b.dataset.s).id}`;return}
+    if(b.dataset.s==='__new'){newSpace(sid=>{add(obj,sid);after&&after()});return}
+    add(obj,b.dataset.s);after&&after()};
+  setTimeout(()=>document.body.appendChild(el));
+}
+function closeMenus(){$$('.wmenu').forEach(m=>m.remove())}
+document.addEventListener('click',e=>{if(!e.target.closest('.wmenu'))closeMenus()});
+const inWs=ref=>S.items.filter(i=>i.ref===ref);
+window.ARGUS_WS={pick,add,inWs,fromListing,fromReport,open:(sid,iid)=>location.href=`workspace.html#space=${sid}${iid?'&item='+iid:''}`};
+
+// ── 공용 대화상자
+function dlgRoot(){let d=$('#wdlg');if(!d){d=document.createElement('div');d.id='wdlg';document.body.appendChild(d);d.addEventListener('mousedown',e=>{if(e.target.id==='wdlg'&&!d.querySelector('.task'))closeDlg()})}return d}
+function dlg(html,ok,onOk,onOpen,cls){
+  const d=dlgRoot();d.innerHTML=`<div class="wbox ${cls||''}"><button class="wx" aria-label="닫기">×</button>${html}${ok?`<div class="wfoot"><button class="wcancel">취소</button><button class="wok">${ok}</button></div>`:''}</div>`;d.classList.add('open');
+  d.querySelector('.wx').onclick=closeDlg;const c=d.querySelector('.wcancel');if(c)c.onclick=closeDlg;
+  const o=d.querySelector('.wok');if(o)o.onclick=()=>{if(onOk()!==false)closeDlg()};onOpen&&onOpen();
+}
+function closeDlg(){const d=$('#wdlg');if(!d)return;d.classList.remove('open');d.innerHTML='';if(APP&&/item=/.test(location.hash))history.replaceState(null,'',`#space=${S.cur}`)}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('.wmenu'))return closeMenus();if($('#wdlg.open'))closeDlg()}});
+function newSpace(cb){
+  dlg(`<h3>워크스페이스 만들기</h3><p class="note">이름과 설명을 입력하면 바로 칸반 보드가 생성됩니다.</p><label class="fld">이름 <i>*</i><input id="d_n" placeholder="예) [2026년] 물류센터" maxlength="40"></label><label class="fld">설명<textarea id="d_d" rows="3" placeholder="워크스페이스 용도를 간단히 적어 주세요 (선택)"></textarea></label>`,'만들기',()=>{
+    const n=$('#d_n').value.trim();if(!n){$('#d_n').closest('.fld').classList.add('bad');return false}
+    const id=uid();S.spaces.push({id,name:n,desc:$('#d_d').value.trim(),owner:ME,members:[{name:ME,role:'소유자'}],created:now()});S.cur=id;log(`워크스페이스 「${n}」 생성`,id);save();if(APP)render();cb&&cb(id)},
+    ()=>{const n=$('#d_n');n.focus();const ok=$('#wdlg .wok');ok.disabled=true;n.oninput=()=>ok.disabled=!n.value.trim();n.onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&n.value.trim())ok.click()}});
+}
+badge();
+
+// ═════════ 워크스페이스 페이지 ═════════
+const APP=$('#wsapp');if(!APP)return;
+let view='board',q='',openSide=null,fPr='',fOwner='';
+(function(){const h=new URLSearchParams(location.hash.slice(1));const sp=h.get('space');if(sp&&S.spaces.some(s=>s.id===sp))S.cur=sp})();
+
+function render(){
+  const sp=space();
+  $('#wsown').innerHTML=S.spaces.map(s=>`<button class="wsi${s.id===sp.id?' on':''}" data-id="${s.id}"><span>${esc(s.name)}</span><small class="num">${items(s.id).filter(i=>i.status!=='arch').length}</small></button>`).join('');
+  $('#wsjoin').innerHTML=S.joined.length?'':'<div class="note wsno">아직 초대받은 워크스페이스가 없습니다</div>';
+  $('#wsname').textContent=sp.name;$('#wsdesc').textContent=sp.desc||'';
+  $('#wsmem').innerHTML=sp.members.slice(0,5).map(m=>`<b class="av" title="${esc(m.name)} · ${m.role}">${esc(m.name.slice(0,1))}</b>`).join('');
+  $$('#wsviews button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
+  const all=items().filter(i=>(!q||(i.title+' '+i.loc+' '+i.org+' '+i.owners.join(' ')).toLowerCase().includes(q))&&(!fPr||i.priority===fPr)&&(!fOwner||i.owners.includes(fOwner)));
+  $('#wsfilt').innerHTML=(fPr||fOwner)?`<span class="chip">${fPr?'우선순위 '+PRN[fPr][1]:''}${fPr&&fOwner?' · ':''}${fOwner?'담당 '+esc(fOwner):''}<button id="wsfx">×</button></span>`:'';
+  const fx=$('#wsfx');if(fx)fx.onclick=()=>{fPr='';fOwner='';render()};
+  const sortI=a=>a.slice().sort((x,y)=>PR.findIndex(p=>p[0]===x.priority&&p[0]!=='none')-PR.findIndex(p=>p[0]===y.priority&&p[0]!=='none')||(y.updated||'').localeCompare(x.updated||''));
+  if(view==='board'){
+    const col=st=>{const a=sortI(all.filter(i=>i.status===st[0]));
+      return `<section class="kcol" data-st="${st[0]}"><header><span class="sic" style="color:${st[2]}">${I_[st[0]]}</span>${st[1]}<span class="sp"></span><span class="kc num" style="border-color:${st[2]};color:${st[2]}">${a.length}</span></header><div class="kbody">${a.map(card).join('')||'<div class="kempty">프로젝트 없음</div>'}</div></section>`};
+    const side=st=>{const a=sortI(all.filter(i=>i.status===st[0]));const op=openSide===st[0];
+      return `<section class="kside${op?' open':''}" data-st="${st[0]}"><header data-side="${st[0]}"><span class="sic" style="color:${st[2]}">${I_[st[0]]}</span>${st[1]}<span class="kc num" style="border-color:${st[2]};color:${st[2]}">${a.length}</span><span class="sp"></span><span class="chev">${op?'⌄':'›'}</span></header>${op?`<div class="kbody">${a.map(card).join('')||'<div class="kempty">없음</div>'}</div>`:''}</section>`};
+    $('#wsbody').innerHTML=`<div class="kboard">${ST.slice(0,3).map(col).join('')}<div class="ksides">${side(ST[3])}${side(ST[4])}</div></div>`;
+  }else{
+    const rows=all.slice().sort((a,b)=>ST.findIndex(s=>s[0]===a.status)-ST.findIndex(s=>s[0]===b.status)||(a.end||'9').localeCompare(b.end||'9'));
+    $('#wsbody').innerHTML=`<div class="wslist"><table class="tt"><thead><tr><th style="width:84px">상태</th><th style="width:84px">우선순위</th><th>매물명</th><th>위치</th><th class="r">금액</th><th>기간</th><th>작업기간</th><th>담당자</th><th class="r">코멘트</th><th style="width:32px"></th></tr></thead><tbody>${rows.map(i=>`<tr data-id="${i.id}" class="wsrow"><td><span class="spill" style="color:${STN[i.status][2]}">${I_[i.status]}${STN[i.status][1]}</span></td><td><span class="pic" style="color:${PRN[i.priority][2]}">${I_[i.priority]}</span> ${PRN[i.priority][1]}</td><td class="tl"><span class="btag ${TAGC[i.board]||'r'}">${esc(i.board)}</span> ${esc(i.title)}</td><td class="mut">${esc(i.loc||'–')}</td><td class="r num nw">${won(i.amount)||'<span class="note">미정</span>'}</td><td class="num mut nw">${i.posted||'?'} ~ ${i.end||'?'}</td><td class="num">${i.start||i.due?`${i.start||'?'} ~ ${i.due||'?'}`:'<span class="note">미정</span>'}</td><td>${i.owners.map(o=>`<b class="av sm" title="${esc(o)}">${esc(o.slice(0,1))}</b>`).join('')}</td><td class="r num">${i.comments.length||''}</td><td><button class="kmore" data-menu="${i.id}">⋯</button></td></tr>`).join('')||'<tr><td colspan="10" class="kempty">프로젝트 없음</td></tr>'}</tbody></table></div>`;
+  }
+  badge();
+}
+function card(i){
+  const st=STN[i.status],pr=PRN[i.priority],rep=i.kind==='report';
+  const rows=rep?[['하 우 스',esc(i.org)],['발 간 일',i.posted||'미상'],['카테고리',esc(i.meta['카테고리']||'')],['작업기간',i.start||i.due?`${i.start||'?'} ~ ${i.due||'?'}`:'<span class="note">작업기간 미정</span>']]
+    :[['위　　치',esc(i.loc||'–')],['기　　간',`${i.posted||'?'} ~ ${i.end||'?'}`],['작업기간',i.start||i.due?`${i.start||'?'} ~ ${i.due||'?'}`:'<span class="note">작업기간 미정</span>'],['금　　액',won(i.amount)?`<b>${won(i.amount)}</b>`:'<span class="note">금액 미정</span>']];
+  const late=i.due&&i.status!=='done'&&i.due<new Date().toISOString().slice(0,10);
+  return `<article class="kcard${late?' late':''}" draggable="true" data-id="${i.id}"><div class="kh"><span class="btag ${TAGC[i.board]||'r'}">${esc(i.board)}</span><button class="kmore" data-menu="${i.id}" aria-label="메뉴">⋯</button></div>
+  <h4>${esc(i.title)}</h4><dl>${rows.map(([k,v])=>`<dt>${k}</dt><dd class="num">${v}</dd>`).join('')}</dl>
+  <footer><button class="pbtn" data-pr="${i.id}" title="우선순위: ${pr[1]}" style="color:${pr[2]};${i.priority!=='none'?'border-color:'+pr[2]:''}">${I_[i.priority]}</button><button class="spill sbtn" data-stm="${i.id}" style="color:${st[2]}">${I_[i.status]}${st[1]}</button><button class="pbtn" data-own="${i.id}" title="${esc(i.owners.join(', ')||'담당자 없음')}">${i.owners.length?i.owners.slice(0,2).map(o=>`<b class="av sm">${esc(o.slice(0,1))}</b>`).join(''):I_.user}</button><span class="sp"></span>${late?'<span class="lt">마감 지남</span>':''}${i.comments.length?`<span class="cmt">${I_.chat}<span class="num">${i.comments.length}</span></span>`:''}</footer></article>`;
+}
+
+// ── 보드 이벤트
+$('#wsbody').addEventListener('click',e=>{
+  const sd=e.target.closest('[data-side]');if(sd){openSide=openSide===sd.dataset.side?null:sd.dataset.side;render();return}
+  const m=e.target.closest('[data-menu]');if(m){e.stopPropagation();cardMenu(m,m.dataset.menu);return}
+  const p=e.target.closest('[data-pr]');if(p){e.stopPropagation();choose(p,PR.map(x=>[x[0],x[1],I_[x[0]],x[2]]),v=>upd(p.dataset.pr,{priority:v},i=>`「${i.title}」 우선순위 ${PRN[v][1]}`));return}
+  const s=e.target.closest('[data-stm]');if(s){e.stopPropagation();choose(s,ST.map(x=>[x[0],x[1],I_[x[0]],x[2]]),v=>setStatus(s.dataset.stm,v));return}
+  const o=e.target.closest('[data-own]');if(o){e.stopPropagation();ownerMenu(o,o.dataset.own);return}
+  const c=e.target.closest('.kcard,.wsrow');if(c)detail(c.dataset.id);
+});
+function upd(id,patch,msg){const i=S.items.find(x=>x.id===id);if(!i)return;Object.assign(i,patch);i.updated=now();if(msg)log(msg(i));save();render();if($('#wdlg .task')&&$('#wdlg .task').dataset.id===id)detail(id)}
+function setStatus(id,st){const i=S.items.find(x=>x.id===id);if(!i||i.status===st)return;const o=i.status;upd(id,{status:st},i=>`「${i.title}」 ${STN[o][1]} → ${STN[st][1]}`)}
+function choose(anchor,opts,cb){closeMenus();const r=anchor.getBoundingClientRect();const el=document.createElement('div');el.className='wmenu';el.style.left=Math.min(innerWidth-200,r.left)+'px';el.style.top=(r.bottom+4)+'px';
+  el.innerHTML=opts.map(o=>`<button data-v="${o[0]}"><span style="color:${o[3]||'inherit'}" class="mic">${o[2]||''}</span>${o[1]}</button>`).join('');
+  el.onclick=e=>{e.stopPropagation();const b=e.target.closest('button');if(!b)return;closeMenus();cb(b.dataset.v)};setTimeout(()=>document.body.appendChild(el))}
+function ownerMenu(anchor,id){const i=S.items.find(x=>x.id===id);const sp=space();closeMenus();const r=anchor.getBoundingClientRect();const el=document.createElement('div');el.className='wmenu';el.style.left=Math.min(innerWidth-220,r.left)+'px';el.style.top=(r.bottom+4)+'px';
+  const draw=()=>{el.innerHTML=`<div class="mh5">담당자 <span class="note">${i.owners.length}/3</span></div>${sp.members.map(m=>`<button data-m="${esc(m.name)}" class="${i.owners.includes(m.name)?'chk':''}"><b class="av sm">${esc(m.name.slice(0,1))}</b>${esc(m.name)}<span class="note">${m.role}</span></button>`).join('')}<hr><button data-m="__inv">＋ 멤버 추가</button>`};draw();
+  el.onclick=e=>{e.stopPropagation();const b=e.target.closest('button');if(!b)return;const n=b.dataset.m;if(n==='__inv'){closeMenus();settings('members');return}
+    const has=i.owners.includes(n);if(!has&&i.owners.length>=3){toast('담당자는 최대 3명까지 지정할 수 있습니다');return}
+    i.owners=has?i.owners.filter(o=>o!==n):[...i.owners,n];i.updated=now();log(`「${i.title}」 담당자 ${i.owners.join(', ')||'없음'}`);save();render();if($('#wdlg .task'))detail(id);draw()};setTimeout(()=>document.body.appendChild(el))}
+function cardMenu(anchor,id){
+  closeMenus();const i=S.items.find(x=>x.id===id);const r=anchor.getBoundingClientRect();const el=document.createElement('div');el.className='wmenu';el.style.left=Math.max(8,r.right-210)+'px';el.style.top=(r.bottom+4)+'px';
+  el.innerHTML=`<button data-a="open"><span class="mic">✎</span>작업 상세</button><button data-a="link"><span class="mic">🔗</span>워크스페이스 링크</button>${i.kind==='listing'?'<button data-a="src"><span class="mic">↗</span>매물 상세 보기</button>':''}${i.links[0]?`<button data-a="orig"><span class="mic">↗</span>${esc(i.links[0].t)}</button>`:''}<button data-a="dup"><span class="mic">⧉</span>다른 워크스페이스로 복사</button>${i.status!=='arch'?'<button data-a="arch"><span class="mic">▤</span>보관</button>':'<button data-a="unarch"><span class="mic">↺</span>보관 해제</button>'}<hr><button data-a="del" class="danger"><span class="mic">🗑</span>워크스페이스에서 제거</button>`;
+  el.onclick=e=>{e.stopPropagation();const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;closeMenus();
+    if(a==='open')detail(id);
+    if(a==='link'){const u=location.href.split('#')[0]+`#space=${i.space}&item=${id}`;try{navigator.clipboard.writeText(u)}catch(_){}toast('워크스페이스 링크를 복사했습니다')}
+    if(a==='src')location.href=i.kind==='listing'?'listings.html#'+encodeURIComponent(i.ref):'research.html';
+    if(a==='orig')open(i.links[0].u,'_blank','noopener');
+    if(a==='dup')copyTo(i,anchor);
+    if(a==='arch')setStatus(id,'arch');if(a==='unarch')setStatus(id,'new');
+    if(a==='del')remove(i)};
+  setTimeout(()=>document.body.appendChild(el));
+}
+function remove(i){dlg(`<h3>워크스페이스에서 제거</h3><p>「${esc(i.title)}」을(를) 제거할까요?<br><span class="note">코멘트 ${i.comments.length}개와 작업 정보도 함께 지워지며 되돌릴 수 없습니다.</span></p>`,'제거',()=>{S.items=S.items.filter(x=>x.id!==i.id);log(`「${i.title}」 제거`);save();render()},()=>{$('#wdlg .wok').classList.add('danger')})}
+function copyTo(i,anchor){const others=S.spaces.filter(s=>s.id!==i.space);if(!others.length){toast('다른 워크스페이스가 없습니다');return}
+  choose(anchor,others.map(s=>[s.id,s.name,'',null]),sid=>{if(S.items.some(x=>x.ref&&x.ref===i.ref&&x.space===sid)){toast('이미 그 워크스페이스에 있습니다');return}const c=JSON.parse(JSON.stringify(i));c.id=uid();c.space=sid;c.status='new';c.comments=[];c.created=c.updated=now();S.items.push(c);log(`「${i.title}」 복사해 옴`,sid);save();toast(`「${esc(S.spaces.find(s=>s.id===sid).name)}」에 복사했습니다`)})}
+// 드래그
+let dragId=null;
+$('#wsbody').addEventListener('dragstart',e=>{const c=e.target.closest('.kcard');if(!c)return;dragId=c.dataset.id;c.classList.add('drag');e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',dragId)}catch(_){}});
+$('#wsbody').addEventListener('dragend',()=>{dragId=null;$$('.kcard.drag').forEach(c=>c.classList.remove('drag'));$$('.over').forEach(c=>c.classList.remove('over'))});
+$('#wsbody').addEventListener('dragover',e=>{const col=e.target.closest('[data-st]');if(!col||!dragId)return;e.preventDefault();$$('.over').forEach(c=>c!==col&&c.classList.remove('over'));col.classList.add('over')});
+$('#wsbody').addEventListener('drop',e=>{const col=e.target.closest('[data-st]');if(!col||!dragId)return;e.preventDefault();setStatus(dragId,col.dataset.st)});
+
+// ── 상단 도구
+$('#wsviews').onclick=e=>{const b=e.target.closest('button');if(!b)return;view=b.dataset.v;render()};
+$('#wssearch').onclick=e=>{e.stopPropagation();const t=$('#wstool');t.classList.toggle('srch');if(t.classList.contains('srch'))$('#wsq').focus();else{q='';$('#wsq').value='';render()}};
+$('#wsq').oninput=e=>{q=e.target.value.trim().toLowerCase();render()};
+$('#wsfbtn').onclick=e=>{e.stopPropagation();const sp=space();choose($('#wsfbtn'),[['','전체 보기','',null],...PR.slice(1).map(p=>['pr:'+p[0],'우선순위 · '+p[1],I_[p[0]],p[2]]),...sp.members.map(m=>['ow:'+m.name,'담당 · '+m.name,'',null])],v=>{if(!v){fPr='';fOwner=''}else if(v.startsWith('pr:'))fPr=v.slice(3);else fOwner=v.slice(3);render()})};
+$('#wsown').onclick=e=>{const b=e.target.closest('.wsi');if(!b)return;S.cur=b.dataset.id;save();q='';$('#wsq').value='';fPr=fOwner='';history.replaceState(null,'',`#space=${S.cur}`);render()};
+$('#wsnew').onclick=()=>newSpace(id=>history.replaceState(null,'',`#space=${id}`));
+$$('.wsgrp').forEach(h=>h.onclick=e=>{if(e.target.closest('#wsnew'))return;h.parentElement.classList.toggle('fold')});
+$('#wslog').onclick=()=>{const a=S.log.filter(l=>l.space===space().id).slice(0,80);
+  dlg(`<h3>최근 활동</h3><p class="note">${esc(space().name)} · 최근 ${a.length}건</p><ul class="loglist">${a.map(l=>`<li><b class="av sm">${esc((l.by||ME).slice(0,1))}</b><div><div>${esc(l.text)}</div><span class="note num">${fmtAt(l.at)} · ${ago(l.at)}</span></div></li>`).join('')||'<li class="note">활동 기록이 없습니다.</li>'}</ul>`,null,null,null,'mid')};
+$('#wsexport').onclick=e=>{e.stopPropagation();choose($('#wsexport'),[['csv','CSV (엑셀에서 열기)','',null],['xls','Excel 파일 (.xls)','',null],['json','백업 (JSON)','',null]],exportAs)};
+function exportAs(fmt){
+  const sp=space();const its=items();
+  const h=['상태','우선순위','구분','매물명','기관','위치','금액(원)','게시일','종료일','작업 시작','작업 마감','담당자','커스텀 필드','본문','코멘트 수','최근 코멘트','등록일'];
+  const strip=s=>{const d=document.createElement('div');d.innerHTML=s||'';return d.textContent.replace(/\s+/g,' ').trim()};
+  const rows=its.map(i=>[STN[i.status][1],PRN[i.priority][1],i.board,i.title,i.org,i.loc,i.amount??'',i.posted,i.end,i.start,i.due,i.owners.join(', '),Object.entries(i.custom).map(([k,v])=>k+': '+v).join(' / '),strip(i.body),i.comments.length,i.comments.length?strip(i.comments[i.comments.length-1].h):'',i.created.slice(0,10)]);
+  const dl=async(blob,ext)=>{const filename=`${sp.name}_${new Date().toISOString().slice(0,10)}.${ext}`;
+    let d=null;try{d=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(_){}
+    if(d){try{await d.save({filename,data:blob});toast('내보냈습니다')}catch(e){toast('내보내기가 취소되었습니다')}return}
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();toast('내보냈습니다')};
+  if(fmt==='csv')dl(new Blob(['﻿'+[h,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n')],{type:'text/csv'}),'csv');
+  if(fmt==='xls')dl(new Blob([`<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body><table border="1"><tr>${h.map(x=>`<th style="background:#14243b;color:#fff">${esc(x)}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map((v,j)=>`<td${j===6?' style="mso-number-format:\'#,##0\'"':''}>${esc(v)}</td>`).join('')}</tr>`).join('')}</table></body></html>`],{type:'application/vnd.ms-excel'}),'xls');
+  if(fmt==='json')dl(new Blob([JSON.stringify({space:sp,items:its},null,1)],{type:'application/json'}),'json');
+}
+$('#wsset').onclick=()=>settings('general');
+function settings(tab){
+  const sp=space();
+  const body=()=>`<h3>관리설정</h3><div class="seg2"><button data-t="general" class="${tab==='general'?'on':''}">일반</button><button data-t="members" class="${tab==='members'?'on':''}">멤버 ${sp.members.length}</button><button data-t="danger" class="${tab==='danger'?'on':''}">삭제</button></div>
+   ${tab==='general'?`<label class="fld">이름 <i>*</i><input id="d_n" value="${esc(sp.name)}" maxlength="40"></label><label class="fld">설명<textarea id="d_d" rows="3">${esc(sp.desc||'')}</textarea></label><div class="note">만든 날 ${fmtAt(sp.created)} · 소유자 ${esc(sp.owner)}</div>`
+   :tab==='members'?`<div class="fld">멤버 초대<div class="inv"><input id="d_m" placeholder="이름 또는 이메일"><select id="d_r"><option>편집자</option><option>뷰어</option></select><button id="d_add">초대</button></div><div class="note" style="margin-top:4px">지금은 이름만 등록됩니다. 팀원과 함께 보는 공유 기능은 곧 연결됩니다.</div></div>
+     <ul class="mems">${sp.members.map((m,k)=>`<li><b class="av">${esc(m.name.slice(0,1))}</b><span>${esc(m.name)}</span><span class="sp"></span>${m.role==='소유자'?'<span class="note">소유자</span>':`<select data-mr="${k}"><option ${m.role==='편집자'?'selected':''}>편집자</option><option ${m.role==='뷰어'?'selected':''}>뷰어</option></select><button class="cdel" data-md="${k}" title="내보내기">×</button>`}</li>`).join('')}</ul>`
+   :`<p>「${esc(sp.name)}」 워크스페이스와 안의 매물 ${items().length}건, 코멘트를 모두 삭제합니다. 되돌릴 수 없습니다.</p><label class="fld">확인을 위해 워크스페이스 이름을 입력하세요<input id="d_c" placeholder="${esc(sp.name)}"></label><button class="linkdanger" id="d_del" ${S.spaces.length<2?'disabled title="워크스페이스가 하나뿐이라 삭제할 수 없습니다"':''}>워크스페이스 삭제</button>`}`;
+  const draw=()=>{dlg(body(),tab==='general'?'저장':null,()=>{const n=$('#d_n').value.trim();if(!n)return false;sp.name=n;sp.desc=$('#d_d').value.trim();log('워크스페이스 정보 수정');save();render()},()=>{
+    $('#wdlg .seg2').onclick=e=>{const b=e.target.closest('button');if(!b)return;tab=b.dataset.t;draw()};
+    const ad=$('#d_add');if(ad){const go=()=>{const n=$('#d_m').value.trim();if(!n)return;if(sp.members.some(m=>m.name===n)){toast('이미 멤버입니다');return}sp.members.push({name:n,role:$('#d_r').value});log(`멤버 ${n} 초대`);save();render();draw()};ad.onclick=go;$('#d_m').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)go()};$('#d_m').focus()}
+    $$('[data-mr]').forEach(s=>s.onchange=()=>{sp.members[+s.dataset.mr].role=s.value;save()});
+    $$('[data-md]').forEach(b=>b.onclick=()=>{const m=sp.members[+b.dataset.md];sp.members.splice(+b.dataset.md,1);items().forEach(i=>i.owners=i.owners.filter(o=>o!==m.name));log(`멤버 ${m.name} 내보냄`);save();render();draw()});
+    const dd=$('#d_del');if(dd)dd.onclick=()=>{if($('#d_c').value.trim()!==sp.name){$('#d_c').closest('.fld').classList.add('bad');return}S.items=S.items.filter(i=>i.space!==sp.id);S.spaces=S.spaces.filter(s=>s.id!==sp.id);S.cur=S.spaces[0].id;S.log=S.log.filter(l=>l.space!==sp.id);save();closeDlg();history.replaceState(null,'',`#space=${S.cur}`);render();toast('워크스페이스를 삭제했습니다')};
+  },'mid')};draw();
+}
+
+// ── 매물 추가 (빠른 / 상세)
+$('#wsadd').onclick=()=>addForm();
+function addForm(){
+  let mode='quick';const custom={};const sp=space();let owners=[];
+  const body=()=>`<h3>매물 추가</h3><div class="seg2"><button data-m="quick" class="${mode==='quick'?'on':''}">빠른 추가</button><button data-m="full" class="${mode==='full'?'on':''}">상세 추가</button></div>
+   <div class="wscroll"><label class="fld">매물명 <i>*</i><input id="a_t" placeholder="예: 강남구 역삼동 복합개발"></label>
+   <label class="fld">위치 <i>*</i><input id="a_l" placeholder="예: 서울시 강남구 역삼1동"></label>
+   <div class="two"><label class="fld">대지 면적<span class="unit"><input id="a_la" inputmode="decimal" placeholder="예: 330.58"><em>㎡</em></span></label><label class="fld">건물 면적<span class="unit"><input id="a_ba" inputmode="decimal" placeholder="예: 198.34"><em>㎡</em></span></label></div>
+   <label class="fld">금액 <i>*</i><span class="unit"><input id="a_a" inputmode="numeric" placeholder="예: 15,000,000,000"><em>원</em></span></label>
+   <div class="two"><label class="fld">게시일 <i>*</i><input id="a_p" type="date"></label><label class="fld">종료일 <i>*</i><input id="a_e" type="date"></label></div>
+   ${mode==='full'?`<div class="two"><label class="fld">시작일<input id="a_s" type="date"></label><label class="fld">마감일<input id="a_d" type="date"></label></div>
+   <div class="two"><label class="fld">상태<select id="a_st">${ST.map(s=>`<option value="${s[0]}">${s[1]}</option>`).join('')}</select></label><label class="fld">우선순위<select id="a_pr">${PR.map(p=>`<option value="${p[0]}">${p[1]}</option>`).join('')}</select></label></div>
+   <div class="fld">담당자 <span class="note">(${owners.length}/3)</span><div class="ownpick">${sp.members.map(m=>`<button data-o="${esc(m.name)}" class="${owners.includes(m.name)?'on':''}"><b class="av sm">${esc(m.name.slice(0,1))}</b>${esc(m.name)}</button>`).join('')}</div></div>
+   <label class="fld">본문(설명)<textarea id="a_b" rows="3" placeholder="매물에 대한 설명을 입력하세요..."></textarea></label>
+   <hr class="sep"><div class="fld"><b>커스텀 필드</b><div id="a_cf">${Object.keys(custom).map(k=>`<label class="cfrow"><span>${esc(k)}</span><input data-cf="${esc(k)}" value="${esc(custom[k])}"><button class="cdel" data-cfdel="${esc(k)}">×</button></label>`).join('')}</div>
+   <div class="cfadd"><button data-cfnew="1">＋ 필드 추가 (${Object.keys(custom).length}/10)</button></div><div class="cfchips">${CUSTOM.filter(k=>!(k in custom)).map(k=>`<button data-cfadd="${k}">+ ${k}</button>`).join('')}</div></div>`:''}</div>`;
+  const keep=()=>{const v={};$$('#wdlg input[id],#wdlg textarea[id],#wdlg select[id]').forEach(e=>v[e.id]=e.value);$$('#wdlg [data-cf]').forEach(e=>custom[e.dataset.cf]=e.value);return v};
+  const restore=v=>Object.entries(v).forEach(([k,x])=>{const e=document.getElementById(k);if(e)e.value=x});
+  const ok=()=>{const v=keep();const need=['a_t','a_l','a_a','a_p','a_e'];const miss=need.filter(k=>!String(v[k]||'').trim());
+    $$('#wdlg .fld').forEach(f=>f.classList.remove('bad'));if(miss.length){miss.forEach(k=>document.getElementById(k).closest('.fld').classList.add('bad'));return false}
+    if(v.a_e<v.a_p){$('#a_e').closest('.fld').classList.add('bad');toast('종료일이 게시일보다 빠릅니다');return false}
+    const it=blank({title:v.a_t.trim(),loc:v.a_l.trim(),land:+v.a_la||null,bldg:+v.a_ba||null,amount:+String(v.a_a).replace(/[^\d]/g,'')||null,posted:v.a_p,end:v.a_e});
+    if(mode==='full')Object.assign(it,{start:v.a_s||'',due:v.a_d||'',status:v.a_st,priority:v.a_pr,owners:[...owners],body:v.a_b?`<p>${esc(v.a_b).replace(/\n/g,'<br>')}</p>`:'',custom:Object.fromEntries(Object.entries(custom).filter(([k])=>k.trim()))});
+    S.items.push(it);log(`「${it.title}」 직접 등록`);save();render()};
+  const draw=v=>{dlg(body(),'추가',ok,null,'wide');v&&restore(v);
+    const okb=$('#wdlg .wok');const chk=()=>okb.disabled=!['a_t','a_l','a_a','a_p','a_e'].every(k=>($('#'+k).value||'').trim());chk();$$('#wdlg input,#wdlg textarea').forEach(e=>e.addEventListener('input',chk));
+    $('#wdlg .seg2').onclick=e=>{const b=e.target.closest('button');if(!b)return;const v=keep();mode=b.dataset.m;draw(v)};
+    $$('#wdlg [data-cfadd]').forEach(b=>b.onclick=()=>{const v=keep();if(Object.keys(custom).length<10)custom[b.dataset.cfadd]='';else toast('커스텀 필드는 10개까지입니다');draw(v)});
+    $$('#wdlg [data-cfdel]').forEach(b=>b.onclick=()=>{const v=keep();delete custom[b.dataset.cfdel];draw(v)});
+    const nb=$('#wdlg [data-cfnew]');if(nb)nb.onclick=()=>{const v=keep();if(Object.keys(custom).length>=10){toast('커스텀 필드는 10개까지입니다');return}const n=prompt('필드 이름');if(n&&n.trim()&&!(n.trim() in custom))custom[n.trim()]='';draw(v)};
+    $$('#wdlg [data-o]').forEach(b=>b.onclick=()=>{const v=keep();const n=b.dataset.o;owners=owners.includes(n)?owners.filter(o=>o!==n):owners.length<3?[...owners,n]:owners;draw(v)});
+    const a=$('#a_a');a.oninput=()=>{const n=a.value.replace(/[^\d]/g,'');a.value=n?(+n).toLocaleString():'';chk()};$('#a_t').focus()};
+  draw();
+}
+
+// ── 작업 상세
+let csort=1,editing=null;
+function detail(id){
+  const i=S.items.find(x=>x.id===id);if(!i)return;
+  history.replaceState(null,'',`#space=${i.space}&item=${id}`);
+  const rep=i.kind==='report',m=i.meta||{};
+  const fmtMeta=(k,v)=>v==null||v===''?null:k==='최저입찰가'?`<b class="num">${won(v)}</b>`:k==='감정가 대비'?`${(v*100).toFixed(1)}%`:k==='유찰'?`${v}회`:k==='회차'?`${+v||v}회차`:esc(v);
+  const info=rep?[]:[[ '공고기관',`${esc(i.org||'–')}${i.links[0]?` <a class="ext" href="${esc(i.links[0].u)}" target="_blank" rel="noopener" title="${esc(i.links[0].t)}">${I_.ext}</a>`:''}`],['위　　치',`${esc(i.loc||'–')}${mapLinks(i.loc)}`],['게 시 일',i.posted||'–'],['종 료 일',i.end?`${i.end} 마감`:'–'],['금　　액',won(i.amount)?`<b class="num">${won(i.amount)}</b>`:'<span class="note">금액 미정</span>'],
+    ...(i.land||i.bldg?[['면　　적',[i.land?`대지 ${(+i.land).toLocaleString()}㎡`:'',i.bldg?`건물 ${(+i.bldg).toLocaleString()}㎡`:''].filter(Boolean).join(' · ')]]:[])];
+  const metaRows=Object.entries(m).map(([k,v])=>[k,fmtMeta(k,v)]).filter(r=>r[1]!=null);
+  const cs=i.comments.slice().sort((a,b)=>(a.at>b.at?1:-1)*csort);
+  const prop=(ic,label,val,attr)=>`<button class="tprop" ${attr}>${ic}<span>${val||`<span class="note">${label}</span>`}</span></button>`;
+  dlg(`<div class="th" data-id="${i.id}"><span class="btag ${TAGC[i.board]||'r'}">${esc(i.board)}</span><button class="tmenu" id="t_menu" aria-label="더보기">⋯</button><h2 contenteditable="true" spellcheck="false" id="t_title">${esc(i.title)}</h2>
+    <div class="tprops">${prop(`<span class="sic" style="color:${STN[i.status][2]}">${I_[i.status]}</span>`,'상태',STN[i.status][1],'id="t_st"')}${prop(`<span class="sic" style="color:${PRN[i.priority][2]}">${I_[i.priority]}</span>`,'우선순위',PRN[i.priority][1],'id="t_pr"')}${prop(`<span class="sic">${I_.user}</span>`,'담당자',i.owners.join(', '),'id="t_ow"')}
+     <label class="tprop">${I_.cal}<span class="note dl">시작일</span><input type="date" id="t_s" value="${i.start}"></label><label class="tprop">${I_.cal}<span class="note dl">마감일</span><input type="date" id="t_d" value="${i.due}"></label></div></div>
+   <div class="tbody"><div class="tl">
+    ${info.length?`<dl class="mi">${info.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>`:''}
+    ${metaRows.length?`<dl class="mi ${info.length?'sub':''}">${metaRows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${v}</dd>`).join('')}</dl>`:''}
+    ${i.kind==='listing'?`<a class="golist" href="listings.html#${encodeURIComponent(i.ref)}">매물·공고에서 최신 정보 보기 ↗</a>`:''}
+    <section class="tsec"><h5>본문 내용 <span class="note" title="공고 원문 요약과 검토 메모를 자유롭게 고칠 수 있습니다">ⓘ</span><span class="sp"></span><button class="fold">⌃</button></h5><div class="rte"><div class="rtb">${TB}</div><div class="rbody" id="t_b" contenteditable="true" data-ph="검토 메모, 공고 요약 등을 적어 두세요.">${sanitize(i.body)}</div></div></section>
+    ${i.links.length?`<section class="tsec"><h5>첨부 문서 <span class="note">ⓘ</span><span class="sp"></span><button class="fold">⌃</button></h5><div>${i.links.map(l=>`<div class="att"><span>📎 ${esc(l.t)}</span><a href="${esc(l.u)}" target="_blank" rel="noopener">바로 가기</a></div>`).join('')}</div></section>`:''}
+    <section class="tsec"><h5>커스텀 필드 <span class="note">${Object.keys(i.custom).length}/10</span><span class="sp"></span><button class="fold">⌃</button></h5><div>${Object.entries(i.custom).map(([k,v])=>`<label class="cfrow"><span>${esc(k)}</span><input data-tcf="${esc(k)}" value="${esc(v)}"><button class="cdel" data-tcfd="${esc(k)}">×</button></label>`).join('')}<div class="cfchips">${CUSTOM.filter(k=>!(k in i.custom)).map(k=>`<button data-tcfa="${k}">+ ${k}</button>`).join('')}</div></div></section>
+    <div class="note" style="margin:14px 0 4px">등록 ${fmtAt(i.created)} · ${esc(i.by)} · 최근 수정 ${ago(i.updated)}</div></div>
+   <div class="tr"><div class="trh"><b>코멘트</b><span class="kc num">${i.comments.length}</span><span class="sp"></span><button id="t_sort" class="note">${csort>0?'과거순 ↑':'최신순 ↓'}</button></div>
+    <div class="clist2" id="t_cl">${cs.map(c=>`<div class="cm" data-c="${c.at}"><div class="cmh"><b class="av sm">${esc(c.by.slice(0,1))}</b><b>${esc(c.by)}</b><span class="note num">${fmtAt(c.at)}${c.ed?' · 수정됨':''}</span><span class="sp"></span>${c.by===ME?`<button class="cact" data-ce="${c.at}">수정</button><button class="cact" data-cd="${c.at}">삭제</button>`:''}</div><div class="cmb">${editing===c.at?`<div class="rte sm"><div class="rtb">${TB}</div><div class="rbody" id="t_ce" contenteditable="true">${sanitize(c.h)}</div></div><div class="ceb"><button data-cx="1">취소</button><button data-cs="${c.at}" class="pri">저장</button></div>`:sanitize(c.h)}</div></div>`).join('')||`<div class="cempty">${I_.chat}<div>아직 코멘트가 없습니다</div><small class="note">왜 보류했는지, 무엇을 더 봐야 하는지 남겨 두세요.<br>멤버를 @이름 으로 부를 수 있습니다.</small></div>`}</div>
+    <div class="cin"><div class="rte"><div class="rbody" id="t_c" contenteditable="true" data-ph="코멘트를 입력하세요..."></div><div class="rtb bot">${TB}<span class="sp"></span><button id="t_send" class="send" title="등록 (Ctrl+Enter)">➤</button></div></div></div></div></div>`,null,null,()=>{
+    const box=$('#wdlg .wbox');box.classList.add('task');box.dataset.id=id;
+    const sv=(p,msg)=>{Object.assign(i,p);i.updated=now();if(msg)log(msg);save();render()};
+    $('#t_st').onclick=e=>{e.stopPropagation();choose(e.currentTarget,ST.map(x=>[x[0],x[1],I_[x[0]],x[2]]),v=>setStatus(id,v))};
+    $('#t_pr').onclick=e=>{e.stopPropagation();choose(e.currentTarget,PR.map(x=>[x[0],x[1],I_[x[0]],x[2]]),v=>upd(id,{priority:v},i=>`「${i.title}」 우선순위 ${PRN[v][1]}`))};
+    $('#t_ow').onclick=e=>{e.stopPropagation();ownerMenu(e.currentTarget,id)};
+    $('#t_s').onchange=e=>{if(i.due&&e.target.value>i.due){toast('시작일이 마감일보다 늦습니다');e.target.value=i.start;return}sv({start:e.target.value},`「${i.title}」 시작일 ${e.target.value||'삭제'}`);detail(id)};
+    $('#t_d').onchange=e=>{if(i.start&&e.target.value&&e.target.value<i.start){toast('마감일이 시작일보다 빠릅니다');e.target.value=i.due;return}sv({due:e.target.value},`「${i.title}」 마감일 ${e.target.value||'삭제'}`);detail(id)};
+    $('#t_title').onblur=e=>{const t=e.target.textContent.trim();if(t&&t!==i.title)sv({title:t},`제목 변경 → 「${t}」`);else e.target.textContent=i.title};
+    $('#t_title').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur()}};
+    $('#t_b').onblur=e=>{const h=sanitize(e.target.innerHTML);if(h!==i.body)sv({body:h})};
+    $('#t_menu').onclick=e=>{e.stopPropagation();cardMenu(e.currentTarget,id)};
+    $$('#wdlg .fold').forEach(b=>b.onclick=()=>b.closest('.tsec').classList.toggle('closed'));
+    $$('[data-tcf]').forEach(el=>el.onchange=()=>sv({custom:{...i.custom,[el.dataset.tcf]:el.value}}));
+    $$('[data-tcfd]').forEach(b=>b.onclick=()=>{const c={...i.custom};delete c[b.dataset.tcfd];sv({custom:c});detail(id)});
+    $$('[data-tcfa]').forEach(b=>b.onclick=()=>{if(Object.keys(i.custom).length>=10){toast('커스텀 필드는 10개까지입니다');return}sv({custom:{...i.custom,[b.dataset.tcfa]:''}});detail(id);const el=$(`[data-tcf="${b.dataset.tcfa}"]`);el&&el.focus()});
+    $('#t_sort').onclick=()=>{csort=-csort;detail(id)};
+    wireRte($('#wdlg'));
+    const send=()=>{const el=$('#t_c');const h=sanitize(el.innerHTML).replace(/@([가-힣A-Za-z0-9_.-]+)/g,'<mark>@$1</mark>');if(!el.textContent.trim())return;i.comments.push({at:now(),by:ME,h});sv({},`「${i.title}」 코멘트`);editing=null;detail(id);const l=$('#t_cl');l.scrollTop=csort>0?1e6:0};
+    $('#t_send').onclick=send;$('#t_c').onkeydown=e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();send()}};
+    $$('[data-cd]').forEach(b=>b.onclick=()=>{if(!confirm('코멘트를 삭제할까요?'))return;i.comments=i.comments.filter(c=>c.at!==b.dataset.cd);sv({},'코멘트 삭제');detail(id)});
+    $$('[data-ce]').forEach(b=>b.onclick=()=>{editing=b.dataset.ce;detail(id);const el=$('#t_ce');el&&el.focus()});
+    const cx=$('[data-cx]');if(cx)cx.onclick=()=>{editing=null;detail(id)};
+    const cs2=$('[data-cs]');if(cs2)cs2.onclick=()=>{const c=i.comments.find(c=>c.at===cs2.dataset.cs);c.h=sanitize($('#t_ce').innerHTML);c.ed=1;editing=null;sv({});detail(id)};
+  },'task');
+}
+// 서식 도구 (RedOps 코멘트 편집기와 같은 구성)
+const TB=[['formatBlock:H3','H','제목'],['insertUnorderedList','•≡','글머리 목록'],['insertOrderedList','1.','번호 목록'],['formatBlock:BLOCKQUOTE','❝','인용'],['formatBlock:PRE','&lt;/&gt;','코드 블록'],['|'],['bold','<b>B</b>','굵게'],['italic','<i>I</i>','기울임'],['strikeThrough','<s>S</s>','취소선'],['code','<code>‹›</code>','인라인 코드'],['underline','<u>U</u>','밑줄'],['hilite','<mark>H</mark>','강조'],['createLink','🔗','링크'],['superscript','x²','위 첨자'],['subscript','x₂','아래 첨자'],['|'],['justifyLeft','⫷','왼쪽 정렬'],['justifyCenter','≡','가운데 정렬'],['justifyRight','⫸','오른쪽 정렬'],['justifyFull','☰','양쪽 정렬']].map(b=>b[0]==='|'?'<i class="rsep"></i>':`<button type="button" data-cmd="${b[0]}" title="${b[2]}">${b[1]}</button>`).join('');
+function wireRte(root){root.querySelectorAll('.rtb').forEach(bar=>{bar.addEventListener('mousedown',e=>{const b=e.target.closest('[data-cmd]');if(!b)return;e.preventDefault();
+  const ed=bar.parentElement.querySelector('.rbody');ed.focus();const [c,arg]=b.dataset.cmd.split(':');
+  if(c==='createLink'){const u=prompt('링크 주소 (https://...)');if(u&&/^https?:\/\//.test(u))document.execCommand('createLink',false,u);return}
+  if(c==='code'||c==='hilite'){const sel=getSelection();if(!sel.rangeCount||sel.isCollapsed)return;const r=sel.getRangeAt(0);const el=document.createElement(c==='code'?'code':'mark');try{r.surroundContents(el)}catch(_){}return}
+  if(c==='formatBlock'){const cur=document.queryCommandValue('formatBlock').toUpperCase();document.execCommand('formatBlock',false,cur===arg?'P':arg);return}
+  document.execCommand(c,false,null)})})}
+
+// 시작
+render();
+(function(){const h=new URLSearchParams(location.hash.slice(1));const it=h.get('item');if(it&&S.items.some(i=>i.id===it))detail(it)})();
+addEventListener('hashchange',()=>{const h=new URLSearchParams(location.hash.slice(1));const sp=h.get('space');if(sp&&sp!==S.cur&&S.spaces.some(s=>s.id===sp)){S.cur=sp;render()}const it=h.get('item');if(it&&(!$('#wdlg .task')||$('#wdlg .task').dataset.id!==it)&&S.items.some(i=>i.id===it))detail(it)});
+})();
+</script>
+<script>
+const CATS=[['office','오피스'],['residential','주거'],['retail','리테일'],['logistics','물류·산업'],['hotel','호텔'],['datacenter','데이터센터'],['capital','투자·금융'],['outlook','시장전망'],['etc','기타']];
+const SUBORDER={'오피스':['분기 마켓리포트','권역 분석','투자·거래','임차·수요','공급·개발'],'물류·산업':['마켓리포트','산업·지산','투자·거래','콜드체인'],'리테일':['마켓리포트','상권 분석','트렌드'],'호텔':['호텔 시장','숙박 동향','호텔 투자','관광·인바운드'],'데이터센터':['마켓리포트','투자·개발','전력·인프라'],'주거':['지표·시장','임대·리빙','정책·공급','기타'],'투자·금융':['투자자 동향','거래 리뷰','리츠·자본시장','투자 리포트'],'시장전망':['연간 전망','분기 지표','시장 리포트'],'기타':['정책·도시계획','기타']};
+const TODAY=new Date('2026-11-19T23:59:59+09:00');
+let D=[];
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const isWk=x=>x.dk==='d'&&(TODAY-new Date(x.d+'T12:00:00+09:00'))/864e5<7;
+const fd=x=>x.dk==='d'?x.d.replace(/-/g,'.'):x.dk==='m'?x.d.replace('-','.'):x.dk==='q'?x.d.replace('-','.'):x.dk==='y'?x.d:'—';
+const yr=x=>x.d?x.d.slice(0,4):'미상';
+const LT=x=>x.lt==='원문'?'<span class="src o">원문</span>':x.lt==='블로그'?'<span class="src b">블로그</span>':'<span class="src n">링크 없음</span>';
+const LTN=x=>x.lt||'링크 없음';
+const tlink=(x,cls)=>x.u?`<a class="${cls||''}" href="${esc(x.u)}" target="_blank" rel="noopener" title="${esc(x.t)}">${esc(x.t)}</a>`:`<span class="${cls||''}" title="${esc(x.t)}">${esc(x.t)}</span>`;
+const V=document.getElementById('view');
+const LEG=`<div class="legend"><span><span class="src o">원문</span> 발행처 원문</span><span><span class="src b">블로그</span> 블로그 경유</span><span><span class="src n">링크 없음</span> 개인 보관 파일</span><span><span class="wk">This Week</span> 최근 7일</span></div>`;
+
+
+const RW=()=>window.ARGUS_WS;
+function wsBtn(x,mini){const w=RW()?RW().inWs('R:'+(x.u||x.t)):[];return w.length?`<button class="wsadd added ${mini?'mini':''}" data-ri="${D.indexOf(x)}" title="워크스페이스에서 열기">${mini?'✓':'✓ 추가됨'}</button>`:`<button class="wsadd ${mini?'mini':''}" data-ri="${D.indexOf(x)}" title="워크스페이스에 추가">＋</button>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ri]');if(!b)return;e.preventDefault();e.stopPropagation();const x=D[+b.dataset.ri];const ref='R:'+(x.u||x.t);const w=RW().inWs(ref);
+  if(w.length){RW().open(w[0].space,w[0].id);return}RW().pick(b,RW().fromReport(x),()=>route())},true);
+document.addEventListener('ws:change',()=>route());
+function home(){
+  V.innerHTML=`<div class="home"><div class="hd"><h2>카테고리별 최신 자료</h2>${LEG}</div><div class="grid">${CATS.map(([slug,c])=>{const a=D.filter(x=>x.c===c);return `<div class="card"><div class="ch"><b>${c}</b><a href="#c-${slug}">전체 ${a.length.toLocaleString()}건 ›</a></div><ul>${a.slice(0,4).map(x=>`<li>${tlink(x,'tt')}${wsBtn(x,1)}<div class="meta2">${LT(x)}<span>${esc(x.h)}</span><i></i><span class="num">${fd(x)}</span>${isWk(x)?'<span class="wk">This Week</span>':''}</div></li>`).join('')}</ul></div>`}).join('')}</div></div>`;
+}
+
+const S={cat:null,sub:'',sel:{},q:'',sort:{k:'k',d:-1},page:1,per:20,more:{},closed:{}};
+let FOLD=false;try{FOLD=localStorage.getItem('ar_fold')==='1'}catch(e){}
+let PER=20;try{const v=+localStorage.getItem('ar_per');if(v)PER=v}catch(e){}
+const FAC=[{k:'sc',t:'세부 카테고리'},{k:'c',t:'카테고리',onlyAll:1},{k:'h',t:'하우스',limit:8},{k:'p',t:'발간 주기',order:['월간','분기','반기','연간','수시']},{k:'y',t:'발행 연도',limit:6,desc:1},{k:'l',t:'언어'},{k:'lt',t:'연결',order:['원문','블로그','링크 없음']}];
+const val=(x,k)=>k==='y'?yr(x):k==='lt'?LTN(x):x[k];
+function base(){return D.filter(x=>S.cat==='all'||x.c===S.cat)}
+function pass(x,skip){
+  if(S.sub&&skip!=='sc'&&x.sc!==S.sub)return false;
+  if(S.q){const h=(x.t+' '+x.h).toLowerCase();if(!h.includes(S.q))return false}
+  for(const f of FAC){if(f.k===skip)continue;const s=S.sel[f.k];if(s&&s.size&&!s.has(val(x,f.k)))return false}
+  return true;
+}
+function detail(slug){
+  const cc=slug==='all'?'all':(CATS.find(c=>c[0]===slug)||[])[1];if(!cc){location.hash='';return}
+  if(S.cat!==cc){S.cat=cc;S.sub='';S.sel={};S.page=1;S.more={};}
+  S.per=PER;
+  const name=cc==='all'?'전체 리포트':cc;
+  const B=base();
+  const houses=new Set(B.map(x=>x.h)).size;
+  const latest=B.find(x=>x.dk==='d');
+  const subs=cc==='all'?[]:(SUBORDER[cc]||[]).filter(s=>B.some(x=>x.sc===s));
+  V.innerHTML=`<div class="dd"><aside class="lf" id="lf"></aside><div class="rt">
+   <div class="bc"><a href="#">리서치 센터</a> › <a href="#">카테고리</a> › <b>${name}</b></div>
+   <div class="dh2"><h2>${name}</h2><span class="s">리포트 ${B.length.toLocaleString()}건 · 하우스 ${houses}곳${latest?` · 최근 발간 ${fd(latest)}`:''}</span><span style="flex:1"></span>${LEG}</div>
+   <div class="subs" id="subs" ${subs.length?'':'style="display:none"'}></div>
+   <div class="hl" id="hl"></div>
+   <div class="scroll"><table><thead><tr id="hdr"></tr></thead><tbody id="tb"></tbody></table></div>
+   <div class="foot"><span class="note">제목을 누르면 발행처 원문(또는 경유 페이지)이 새 창으로 열립니다.</span><span class="sp"></span><div class="pg" id="pg"></div><div class="psel" id="psel"><button type="button"><span id="pslab"></span> ▾</button><ul></ul></div></div>
+  </div></div>`;
+  const psel=document.getElementById('psel');psel.querySelector('button').onclick=e=>{e.stopPropagation();psel.classList.toggle('open')};
+  drawDetail();
+}
+function drawDetail(){
+  const B=base();const cc=S.cat;
+  // subs
+  const subs=cc==='all'?[]:(SUBORDER[cc]||[]).filter(s=>B.some(x=>x.sc===s));
+  const pre=B.filter(x=>pass(x,'sc'));
+  document.getElementById('subs').innerHTML=[['',pre.length],...subs.map(s=>[s,pre.filter(x=>x.sc===s).length])].map(([s,n])=>`<button data-s="${esc(s)}" class="${S.sub===s?'on':''}">${s||'전체'}<span class="n">${n}</span></button>`).join('');
+  document.querySelectorAll('#subs button').forEach(b=>b.onclick=()=>{S.sub=b.dataset.s;S.page=1;drawDetail()});
+  // facets
+  const lf=document.getElementById('lf');
+  const anySel=Object.values(S.sel).some(s=>s.size)||S.sub;
+  let h=`<div class="reset"><div class="l"><button class="sbt ${FOLD?'':'on'}" id="fold" title="필터 패널 접기/펼치기" aria-label="필터 패널 접기/펼치기" aria-expanded="${!FOLD}"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="1.5"/><rect class="fill" x="4.2" y="5.7" width="4.8" height="12.6" stroke="none" fill="none"/><path d="M9.5 4.5v15"/></svg></button><span>필터</span></div><button id="rst" ${anySel?'':'style="visibility:hidden"'}>초기화</button></div>`;
+  for(const f of FAC){
+    if(f.onlyAll&&cc!=='all')continue;
+    if(f.k==='sc'&&cc==='all')continue;
+    const all=new Map();B.forEach(x=>all.set(val(x,f.k),0));
+    B.forEach(x=>{if(pass(x,f.k)){const v=val(x,f.k);all.set(v,all.get(v)+1)}});
+    let vals=[...all.keys()];
+    if(f.k==='sc')vals.sort((a,b)=>(SUBORDER[cc]||[]).indexOf(a)-(SUBORDER[cc]||[]).indexOf(b));
+    else if(f.order)vals.sort((a,b)=>f.order.indexOf(a)-f.order.indexOf(b));
+    else if(f.desc)vals.sort((a,b)=>a==='미상'?1:b==='미상'?-1:b.localeCompare(a));
+    else vals.sort((a,b)=>all.get(b)-all.get(a)||a.localeCompare(b,'ko'));
+    const lim=f.limit&&!S.more[f.k]?f.limit:999;
+    const sel=S.sel[f.k]||new Set();const isSub=f.k==='sc';
+    h+=`<div class="fg ${S.closed[f.k]?'closed':''}"><h4 data-t="${f.k}">${f.t}<span>${S.closed[f.k]?'+':'−'}</span></h4><ul>${vals.slice(0,lim).map(v=>{const n=all.get(v),on=isSub?S.sub===v:sel.has(v);return `<li data-k="${f.k}" data-v="${esc(v)}" class="${on?'on':''} ${n?'':'zero'}"><span class="cb"></span><span class="nm">${esc(v)}</span><span class="ct">${n}</span></li>`}).join('')}${vals.length>lim?`<li class="more" data-m="${f.k}">+ ${vals.length-lim}개 더보기</li>`:''}</ul></div>`;
+  }
+  lf.innerHTML=h;
+  lf.querySelectorAll('h4').forEach(x=>x.onclick=()=>{S.closed[x.dataset.t]=!S.closed[x.dataset.t];drawDetail()});
+  lf.querySelectorAll('li[data-k]').forEach(li=>li.onclick=()=>{const k=li.dataset.k,v=li.dataset.v;if(k==='sc'){S.sub=S.sub===v?'':v}else{(S.sel[k]=S.sel[k]||new Set());S.sel[k].has(v)?S.sel[k].delete(v):S.sel[k].add(v)}S.page=1;drawDetail()});
+  lf.querySelectorAll('[data-m]').forEach(li=>li.onclick=()=>{S.more[li.dataset.m]=1;drawDetail()});
+  document.querySelector('.dd').classList.toggle('nof',FOLD);
+  document.getElementById('fold').onclick=()=>{FOLD=!FOLD;try{localStorage.setItem('ar_fold',FOLD?'1':'0')}catch(e){}drawDetail()};
+  const r=document.getElementById('rst');if(r)r.onclick=()=>{S.sel={};S.sub='';S.page=1;drawDetail()};
+  // rows
+  const rows=B.filter(x=>pass(x));
+  // highlights
+  const yAgo=new Date(TODAY);yAgo.setFullYear(yAgo.getFullYear()-1);
+  const recent=rows.filter(x=>x.dk==='d'&&new Date(x.d)>=yAgo);
+  const hc={};recent.forEach(x=>hc[x.h]=(hc[x.h]||0)+1);const topH=Object.entries(hc).sort((a,b)=>b[1]-a[1])[0];
+  const mon=rows.filter(x=>x.dk==='d'&&x.d.startsWith('2026-11')).length;
+  const dated=rows.filter(x=>x.d);const oldest=dated.length?dated[dated.length-1]:null,newest=rows.find(x=>x.dk==='d');
+  document.getElementById('hl').innerHTML=`<div><div class="l">최근 발간</div><div class="t">${newest?esc(newest.h)+' · '+fd(newest):'—'}</div></div><div><div class="l">이번 달 발간 (2026.11)</div><div class="t">${mon}건</div></div><div><div class="l">최근 1년 최다 발간 하우스</div><div class="t">${topH?esc(topH[0])+' · '+topH[1]+'건':'—'}</div></div><div><div class="l">수록 기간</div><div class="t">${oldest?fd(oldest)+' ~ '+(newest?fd(newest):''):'—'}</div></div>`;
+  // sort
+  const {k,d}=S.sort;
+  rows.sort((a,b)=>{const A=k==='k'?a.k:(a[k]||''),B2=k==='k'?b.k:(b[k]||'');return (A>B2?1:A<B2?-1:0)*d||b.k.localeCompare(a.k)});
+  const COLS=[['k','발행일',96],['t','제목'],...(cc==='all'?[['c','카테고리',90]]:[]),['sc','세부 카테고리',130],['h','하우스',150],['p','주기',56],['l','언어',56],['lt','연결',84],['ws','워크스페이스',88]];
+  document.getElementById('hdr').innerHTML=COLS.map(([kk,t,w])=>`<th data-k="${kk}" ${w?`style="width:${w}px"`:''}>${t}${S.sort.k===kk?`<span class="ar">${S.sort.d>0?'↑':'↓'}</span>`:''}</th>`).join('');
+  document.querySelectorAll('#hdr th').forEach(th=>th.onclick=()=>{const kk=th.dataset.k;if(kk==='ws')return;S.sort=S.sort.k===kk?{k:kk,d:-S.sort.d}:{k:kk,d:kk==='k'?-1:1};drawDetail()});
+  const pages=Math.max(1,Math.ceil(rows.length/S.per));if(S.page>pages)S.page=pages;
+  const view=rows.slice((S.page-1)*S.per,S.page*S.per);
+  document.getElementById('tb').innerHTML=view.map(x=>`<tr><td class="num m">${fd(x)}</td><td class="t">${tlink(x)} ${isWk(x)?'<span class="wk">This Week</span>':''}</td>${cc==='all'?`<td class="m">${esc(x.c)}</td>`:''}<td><span class="sc">${esc(x.sc)}</span></td><td class="m">${esc(x.h)}</td><td class="m">${x.p}</td><td class="m">${x.l}</td><td>${LT(x)}</td><td class="wa">${wsBtn(x)}</td></tr>`).join('')||`<tr><td colspan="${COLS.length}" class="empty">조건에 맞는 리포트가 없습니다</td></tr>`;
+  // pager
+  let p=`<button ${S.page<=1?'disabled':''} data-p="${S.page-1}">‹</button>`,gap=false;
+  for(let i=1;i<=pages;i++){if(pages>7&&Math.abs(i-S.page)>1&&i!==1&&i!==pages){if(!gap){p+='<span class="gap">…</span>';gap=true}continue}gap=false;p+=`<button data-p="${i}" class="${i===S.page?'on':''}">${i}</button>`}
+  p+=`<button ${S.page>=pages?'disabled':''} data-p="${S.page+1}">›</button>`;
+  const pg=document.getElementById('pg');pg.innerHTML=p;pg.querySelectorAll('button[data-p]').forEach(b=>b.onclick=()=>{S.page=+b.dataset.p;drawDetail();document.querySelector('.scroll').scrollTop=0});
+  const psel=document.getElementById('psel');document.getElementById('pslab').textContent=S.per+'개씩';
+  psel.querySelector('ul').innerHTML=[10,20,30,50,100].map(n=>`<li data-n="${n}" class="${n===S.per?'on':''}">${n}개씩</li>`).join('');
+  psel.querySelectorAll('li').forEach(li=>li.onclick=()=>{PER=S.per=+li.dataset.n;try{localStorage.setItem('ar_per',PER)}catch(e){}S.page=1;psel.classList.remove('open');drawDetail()});
+}
+document.addEventListener('click',e=>{const p=document.getElementById('psel');if(p&&!p.contains(e.target))p.classList.remove('open')});
+const qi=document.getElementById('q');
+qi.oninput=()=>{S.q=qi.value.trim().toLowerCase();S.page=1;if(!location.hash.startsWith('#c-')){if(S.q){location.hash='c-all'}}else drawDetail()};
+function route(){const h=location.hash.slice(1);if(h.startsWith('c-'))detail(h.slice(2));else{S.cat=null;home()}}
+addEventListener('hashchange',route);
+(window.ARGUS_DATA?window.ARGUS_DATA('research'):fetch('reports.json').then(r=>r.json())).then(d=>{D=d;document.getElementById('meta').textContent=`리포트 ${d.length.toLocaleString()}건 · 하우스 ${new Set(d.map(x=>x.h)).size}곳`;route()}).catch(()=>{V.innerHTML='<div class="empty">데이터를 불러오지 못했습니다</div>'});
+</script></body></html>
