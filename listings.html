@@ -577,7 +577,17 @@ body.ag-locked>:not(#ag-gate):not(script){display:none!important}
 .ag-user a:hover,.ag-user button:hover{opacity:1;text-decoration:underline}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-</head>
+<script>// 마우스를 올리면 바로 뜨는 작은 설명 상자: data-tip="HTML" 을 가진 요소(SVG 포함) 공용
+(function(){if(window.__agtip)return;window.__agtip=1;
+const st=document.createElement('style');st.textContent='.agtip{position:fixed;z-index:9999;pointer-events:none;background:#fff;border:1px solid #c3cbd6;box-shadow:0 6px 18px rgba(20,36,59,.14);padding:7px 10px;font:12px/1.55 "IBM Plex Sans KR",system-ui,sans-serif;color:#1d2733;max-width:320px;display:none}.agtip b{font-weight:600}.agtip .g{color:#8b95a3;font-size:11px}.agtip .n{font-family:"IBM Plex Mono",monospace}.agtip .row{display:flex;gap:10px;justify-content:space-between}.agtip i{display:inline-block;width:8px;height:8px;margin-right:5px;vertical-align:middle}';
+document.head.appendChild(st);const t=document.createElement('div');t.className='agtip';
+const add=()=>document.body.appendChild(t);document.body?add():document.addEventListener('DOMContentLoaded',add);
+let cur=null;
+document.addEventListener('mouseover',e=>{const el=e.target.closest&&e.target.closest('[data-tip]');if(el===cur)return;cur=el;if(!el){t.style.display='none';return}t.innerHTML=el.getAttribute('data-tip');t.style.display='block'});
+document.addEventListener('mousemove',e=>{if(!cur)return;const w=t.offsetWidth,h=t.offsetHeight;let x=e.clientX+14,y=e.clientY+14;if(x+w>innerWidth-6)x=e.clientX-w-14;if(y+h>innerHeight-6)y=e.clientY-h-14;t.style.left=x+'px';t.style.top=y+'px'});
+document.addEventListener('scroll',()=>{t.style.display='none';cur=null},true);
+})();
+</script></head>
 <body class="ag-locked">
 <div id="ag-gate" role="dialog" aria-modal="true" aria-label="로그인"></div>
 <script>
@@ -746,7 +756,7 @@ const I_={
  cal:'<svg viewBox="0 0 16 16"><rect x="2.5" y="3.5" width="11" height="10" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3" stroke="currentColor" stroke-width="1.2"/></svg>',
  ext:'<svg viewBox="0 0 16 16"><path d="M9 3h4v4M13 3 7.5 8.5M11 9.5V13H3V5h3.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
 };
-const TAGC={'민관':'g','공매':'b','공모사업':'p','리서치':'t','직접 등록':'r'};
+const TAGC={'민관':'g','공매':'b','공모사업':'p','리서치':'t','직접 등록':'r','딜':'b'};
 
 // ── 저장소 (페이지 사이 공유)
 function seed(){const id=uid();return {v:2,spaces:[{id,name:'내 워크스페이스',desc:'매입·개발 검토 물건',owner:ME,members:[{name:ME,role:'소유자'}],created:now()}],joined:[],cur:id,items:[],log:[]}}
@@ -778,10 +788,16 @@ function fromListing(x){const p=x.prices||{};const lh=x.source==='LH';
 function fromReport(r){return {kind:'report',ref:'R:'+(r.u||r.t),board:'리서치',title:r.t,org:r.h,orgUrl:'',loc:'',posted:r.d||'',end:'',amount:null,
    meta:{하우스:r.h,발간일:r.d||'미상',카테고리:`${r.c} · ${r.sc}`,'발간 주기':r.p,언어:r.l,연결:r.lt||'링크 없음'},links:r.u?[{t:'리포트 원문',u:r.u}]:[],
    body:`<p>${esc(r.h)} · ${esc(r.c)} / ${esc(r.sc)} · ${esc(r.d||'발간일 미상')}</p>`}}
+function fromDeal(x){const parts=(x.p||[]).join(' · ');
+  return {kind:'deal',ref:'D:'+(x.url||x.name+'|'+x.date),board:'딜',title:x.name,org:parts||x.src||'',orgUrl:x.url||'',loc:x.region||'',posted:x.date||'',end:'',
+   amount:x.eok?x.eok*1e8:null,
+   meta:{구분:`${x.cat||''} · ${x.grp||''}`,진행단계:x.kind||'',자산유형:x.asset||'',금액:x.amt||'미공개',참여자:parts||'–',출처:`${x.src||''}${x.date?' · '+x.date:''}`},
+   links:x.url?[{t:'원문 기사',u:x.url}]:[],
+   body:`<p>${esc(x.cat||'')} · ${esc(x.grp||'')} · ${esc(x.kind||'')}${x.amt?' · '+esc(x.amt):''}</p>${(x.detail||[]).length?'<ul>'+x.detail.map(d=>'<li>'+esc(d)+'</li>').join('')+'</ul>':''}`}}
 function add(obj,sid){
   sid=sid||space().id;const sp=S.spaces.find(s=>s.id===sid);
   if(S.items.some(i=>i.ref&&i.ref===obj.ref&&i.space===sid)){toast(`이미 「${esc(sp.name)}」에 있습니다 · <a href="workspace.html#space=${sid}">워크스페이스로 이동 →</a>`);return null}
-  const it=blank({...obj,space:sid});S.items.push(it);log(`「${it.title}」 ${it.kind==='report'?'리서치에서':it.kind==='listing'?'매물 목록에서':''} 추가`,sid);save();
+  const it=blank({...obj,space:sid});S.items.push(it);log(`「${it.title}」 ${it.kind==='report'?'리서치에서':it.kind==='listing'?'매물 목록에서':it.kind==='deal'?'딜 DB에서':''} 추가`,sid);save();
   toast(`「${esc(sp.name)}」에 추가했습니다 · <a href="workspace.html#space=${sid}&item=${it.id}">워크스페이스로 이동 →</a>`,3600);
   document.dispatchEvent(new CustomEvent('ws:change'));return it}
 function pick(anchor,obj,after){
@@ -797,7 +813,7 @@ function pick(anchor,obj,after){
 function closeMenus(){$$('.wmenu').forEach(m=>m.remove())}
 document.addEventListener('click',e=>{if(!e.target.closest('.wmenu'))closeMenus()});
 const inWs=ref=>S.items.filter(i=>i.ref===ref);
-window.ARGUS_WS={pick,add,inWs,fromListing,fromReport,open:(sid,iid)=>location.href=`workspace.html#space=${sid}${iid?'&item='+iid:''}`};
+window.ARGUS_WS={pick,add,inWs,fromListing,fromReport,fromDeal,open:(sid,iid)=>location.href=`workspace.html#space=${sid}${iid?'&item='+iid:''}`};
 
 // ── 공용 대화상자
 function dlgRoot(){let d=$('#wdlg');if(!d){d=document.createElement('div');d.id='wdlg';document.body.appendChild(d);d.addEventListener('mousedown',e=>{if(e.target.id==='wdlg'&&!d.querySelector('.task'))closeDlg()})}return d}
@@ -879,7 +895,7 @@ function cardMenu(anchor,id){
   el.onclick=e=>{e.stopPropagation();const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;closeMenus();
     if(a==='open')detail(id);
     if(a==='link'){const u=location.href.split('#')[0]+`#space=${i.space}&item=${id}`;try{navigator.clipboard.writeText(u)}catch(_){}toast('워크스페이스 링크를 복사했습니다')}
-    if(a==='src')location.href=i.kind==='listing'?'listings.html#'+encodeURIComponent(i.ref):'research.html';
+    if(a==='src')location.href=i.kind==='listing'?'listings.html#'+encodeURIComponent(i.ref):i.kind==='deal'?'index.html':'research.html';
     if(a==='orig')open(i.links[0].u,'_blank','noopener');
     if(a==='dup')copyTo(i,anchor);
     if(a==='arch')setStatus(id,'arch');if(a==='unarch')setStatus(id,'new');
@@ -1116,9 +1132,10 @@ $('#f_apply').onclick=()=>{['sido','org','cat','fail','d0','d1'].forEach(k=>draf
   draft.fav=$('#f_fav').checked;draft.hid=$('#f_hid').checked;F=draft;closePops();shown=24;render()};
 $('#more').onclick=()=>{shown+=24;render(true)};
 function spark(x,w,h){const rs=(x.rounds||[]).filter(r=>r.min_bid);if(rs.length<2)return `<span class="note nos">예정 회차 ${(x.rounds||[]).length}개</span>`;
+  const stip=esc(`<b>회차별 최저입찰가</b>`+rs.slice(-6).map(r=>`<div class="row"><span class="g">${+r.round||r.round}회차 · ${(r.deadline||'').slice(2).replace(/-/g,'.')}</span><span class="n">${eok(r.min_bid)}${r.to_appraisal!=null?' · '+(r.to_appraisal*100).toFixed(0)+'%':''}</span></div>`).join('')+(rs.length>6?`<div class="g">최근 6개 회차 · 전체 ${rs.length}개</div>`:''));
   const mx=Math.max(...rs.map(r=>r.min_bid),x.apsl||0);let p='';rs.forEach((r,i)=>{const X=i*(w-4)/(rs.length-1)+2,Y=h-2-(r.min_bid/mx)*(h-4);p+=(i?`H${X}V${Y}`:`M${X},${Y}`)});
   const ay=x.apsl?h-2-(x.apsl/mx)*(h-4):null;
-  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${ay!=null?`<line x1="0" x2="${w}" y1="${ay}" y2="${ay}" stroke="#a86a14" stroke-dasharray="2 2" stroke-width=".8"/>`:''}<path d="${p}" fill="none" stroke="#2463a8" stroke-width="1.4"/></svg>`}
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" data-tip="${stip}" style="cursor:help"><rect width="${w}" height="${h}" fill="transparent"/>${ay!=null?`<line x1="0" x2="${w}" y1="${ay}" y2="${ay}" stroke="#a86a14" stroke-dasharray="2 2" stroke-width=".8"/>`:''}<path d="${p}" fill="none" stroke="#2463a8" stroke-width="1.4"/></svg>`}
 const rbar=r=>r==null?'<div class="rbar"></div>':`<div class="rbar"><i style="width:${Math.min(r,1.3)/1.3*100}%;background:${rc(r)}"></i><b style="left:${100/1.3}%"></b></div>`;
 
 function card(x){
@@ -1159,7 +1176,10 @@ function chart(x){
   [0,.5,1].forEach(f=>{s+=`<line x1="${P.l}" x2="${W-P.r}" y1="${Y(mx*f)}" y2="${Y(mx*f)}" stroke="#e9edf2"/><text x="${P.l-6}" y="${Y(mx*f)+3}" text-anchor="end" font-size="9" fill="#8b95a3" font-family="IBM Plex Mono">${eok(mx*f)}</text>`});
   if(x.apsl)s+=`<line x1="${P.l}" x2="${W-P.r}" y1="${Y(x.apsl)}" y2="${Y(x.apsl)}" stroke="#a86a14" stroke-dasharray="3 3"/><text x="${W-P.r}" y="${Y(x.apsl)-4}" text-anchor="end" font-size="9" fill="#a86a14">감정가 ${eok(x.apsl)}</text>`;
   s+=`<path d="${p}" fill="none" stroke="#2463a8" stroke-width="1.6"/>`;
-  rs.forEach((r,i)=>{const on=i===ci;s+=`<circle cx="${X(i)}" cy="${Y(r.min_bid)}" r="${on?4:2.2}" fill="${on?'#fff':'#2463a8'}" stroke="#2463a8" stroke-width="${on?2:0}"><title>${r.round}회차 ${r.deadline} · ${eok(r.min_bid)}</title></circle>`;if(rs.length<=12||i===0||on||i===rs.length-1)s+=`<text x="${X(i)}" y="${H-6}" text-anchor="middle" font-size="9" fill="${on?'#1d2733':'#8b95a3'}" font-family="IBM Plex Mono">${+r.round||r.round}</text>`});
+  const tipR=(r,i)=>{const prev=rs[i-1];const cut=prev&&prev.min_bid?(r.min_bid/prev.min_bid-1):null;return esc(`<b>${+r.round||r.round}회차</b>${String(r.round)===String(x.round)?' <span class="g">· 다음 입찰</span>':''}<div class="row"><span class="g">입찰 기간</span><span class="n">${(r.bid_start||'').slice(5)} ~ ${(r.deadline||'').slice(5)}${r.deadline_time?' '+r.deadline_time:''}</span></div><div class="row"><span class="g">최저입찰가</span><b class="n">${won(r.min_bid)}</b></div><div class="row"><span class="g">감정가 대비</span><span class="n">${pct(r.to_appraisal)??'–'}</span></div>${cut!=null?`<div class="row"><span class="g">직전 회차 대비</span><span class="n">${(cut*100).toFixed(1)}%</span></div>`:''}${r.stat?`<div class="g">${r.stat}</div>`:''}`)};
+  const hw=(W-P.l-P.r)/Math.max(1,rs.length-1);
+  rs.forEach((r,i)=>{s+=`<rect x="${X(i)-hw/2}" y="${P.t}" width="${hw}" height="${H-P.t-P.b}" fill="transparent" data-tip="${tipR(r,i)}" class="hit"/>`});
+  rs.forEach((r,i)=>{const on=i===ci;s+=`<circle cx="${X(i)}" cy="${Y(r.min_bid)}" r="${on?4:2.2}" fill="${on?'#fff':'#2463a8'}" stroke="#2463a8" stroke-width="${on?2:0}" pointer-events="none"></circle>`;if(rs.length<=12||i===0||on||i===rs.length-1)s+=`<text x="${X(i)}" y="${H-6}" text-anchor="middle" font-size="9" fill="${on?'#1d2733':'#8b95a3'}" font-family="IBM Plex Mono">${+r.round||r.round}</text>`});
   return s+'</svg>';
 }
 const sec=(t,body,extra='')=>`<section class="ms"><button class="msh" aria-expanded="true"><span>${t}${extra}</span><svg viewBox="0 0 12 12"><path d="m3 7.5 3-3 3 3"/></svg></button><div class="msb">${body}</div></section>`;

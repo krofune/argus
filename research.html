@@ -432,7 +432,7 @@ const I_={
  cal:'<svg viewBox="0 0 16 16"><rect x="2.5" y="3.5" width="11" height="10" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3" stroke="currentColor" stroke-width="1.2"/></svg>',
  ext:'<svg viewBox="0 0 16 16"><path d="M9 3h4v4M13 3 7.5 8.5M11 9.5V13H3V5h3.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
 };
-const TAGC={'민관':'g','공매':'b','공모사업':'p','리서치':'t','직접 등록':'r'};
+const TAGC={'민관':'g','공매':'b','공모사업':'p','리서치':'t','직접 등록':'r','딜':'b'};
 
 // ── 저장소 (페이지 사이 공유)
 function seed(){const id=uid();return {v:2,spaces:[{id,name:'내 워크스페이스',desc:'매입·개발 검토 물건',owner:ME,members:[{name:ME,role:'소유자'}],created:now()}],joined:[],cur:id,items:[],log:[]}}
@@ -464,10 +464,16 @@ function fromListing(x){const p=x.prices||{};const lh=x.source==='LH';
 function fromReport(r){return {kind:'report',ref:'R:'+(r.u||r.t),board:'리서치',title:r.t,org:r.h,orgUrl:'',loc:'',posted:r.d||'',end:'',amount:null,
    meta:{하우스:r.h,발간일:r.d||'미상',카테고리:`${r.c} · ${r.sc}`,'발간 주기':r.p,언어:r.l,연결:r.lt||'링크 없음'},links:r.u?[{t:'리포트 원문',u:r.u}]:[],
    body:`<p>${esc(r.h)} · ${esc(r.c)} / ${esc(r.sc)} · ${esc(r.d||'발간일 미상')}</p>`}}
+function fromDeal(x){const parts=(x.p||[]).join(' · ');
+  return {kind:'deal',ref:'D:'+(x.url||x.name+'|'+x.date),board:'딜',title:x.name,org:parts||x.src||'',orgUrl:x.url||'',loc:x.region||'',posted:x.date||'',end:'',
+   amount:x.eok?x.eok*1e8:null,
+   meta:{구분:`${x.cat||''} · ${x.grp||''}`,진행단계:x.kind||'',자산유형:x.asset||'',금액:x.amt||'미공개',참여자:parts||'–',출처:`${x.src||''}${x.date?' · '+x.date:''}`},
+   links:x.url?[{t:'원문 기사',u:x.url}]:[],
+   body:`<p>${esc(x.cat||'')} · ${esc(x.grp||'')} · ${esc(x.kind||'')}${x.amt?' · '+esc(x.amt):''}</p>${(x.detail||[]).length?'<ul>'+x.detail.map(d=>'<li>'+esc(d)+'</li>').join('')+'</ul>':''}`}}
 function add(obj,sid){
   sid=sid||space().id;const sp=S.spaces.find(s=>s.id===sid);
   if(S.items.some(i=>i.ref&&i.ref===obj.ref&&i.space===sid)){toast(`이미 「${esc(sp.name)}」에 있습니다 · <a href="workspace.html#space=${sid}">워크스페이스로 이동 →</a>`);return null}
-  const it=blank({...obj,space:sid});S.items.push(it);log(`「${it.title}」 ${it.kind==='report'?'리서치에서':it.kind==='listing'?'매물 목록에서':''} 추가`,sid);save();
+  const it=blank({...obj,space:sid});S.items.push(it);log(`「${it.title}」 ${it.kind==='report'?'리서치에서':it.kind==='listing'?'매물 목록에서':it.kind==='deal'?'딜 DB에서':''} 추가`,sid);save();
   toast(`「${esc(sp.name)}」에 추가했습니다 · <a href="workspace.html#space=${sid}&item=${it.id}">워크스페이스로 이동 →</a>`,3600);
   document.dispatchEvent(new CustomEvent('ws:change'));return it}
 function pick(anchor,obj,after){
@@ -483,7 +489,7 @@ function pick(anchor,obj,after){
 function closeMenus(){$$('.wmenu').forEach(m=>m.remove())}
 document.addEventListener('click',e=>{if(!e.target.closest('.wmenu'))closeMenus()});
 const inWs=ref=>S.items.filter(i=>i.ref===ref);
-window.ARGUS_WS={pick,add,inWs,fromListing,fromReport,open:(sid,iid)=>location.href=`workspace.html#space=${sid}${iid?'&item='+iid:''}`};
+window.ARGUS_WS={pick,add,inWs,fromListing,fromReport,fromDeal,open:(sid,iid)=>location.href=`workspace.html#space=${sid}${iid?'&item='+iid:''}`};
 
 // ── 공용 대화상자
 function dlgRoot(){let d=$('#wdlg');if(!d){d=document.createElement('div');d.id='wdlg';document.body.appendChild(d);d.addEventListener('mousedown',e=>{if(e.target.id==='wdlg'&&!d.querySelector('.task'))closeDlg()})}return d}
@@ -565,7 +571,7 @@ function cardMenu(anchor,id){
   el.onclick=e=>{e.stopPropagation();const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;closeMenus();
     if(a==='open')detail(id);
     if(a==='link'){const u=location.href.split('#')[0]+`#space=${i.space}&item=${id}`;try{navigator.clipboard.writeText(u)}catch(_){}toast('워크스페이스 링크를 복사했습니다')}
-    if(a==='src')location.href=i.kind==='listing'?'listings.html#'+encodeURIComponent(i.ref):'research.html';
+    if(a==='src')location.href=i.kind==='listing'?'listings.html#'+encodeURIComponent(i.ref):i.kind==='deal'?'index.html':'research.html';
     if(a==='orig')open(i.links[0].u,'_blank','noopener');
     if(a==='dup')copyTo(i,anchor);
     if(a==='arch')setStatus(id,'arch');if(a==='unarch')setStatus(id,'new');

@@ -379,7 +379,17 @@ body.ag-locked>:not(#ag-gate):not(script){display:none!important}
 .ag-user a:hover,.ag-user button:hover{opacity:1;text-decoration:underline}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-</head>
+<script>// 마우스를 올리면 바로 뜨는 작은 설명 상자: data-tip="HTML" 을 가진 요소(SVG 포함) 공용
+(function(){if(window.__agtip)return;window.__agtip=1;
+const st=document.createElement('style');st.textContent='.agtip{position:fixed;z-index:9999;pointer-events:none;background:#fff;border:1px solid #c3cbd6;box-shadow:0 6px 18px rgba(20,36,59,.14);padding:7px 10px;font:12px/1.55 "IBM Plex Sans KR",system-ui,sans-serif;color:#1d2733;max-width:320px;display:none}.agtip b{font-weight:600}.agtip .g{color:#8b95a3;font-size:11px}.agtip .n{font-family:"IBM Plex Mono",monospace}.agtip .row{display:flex;gap:10px;justify-content:space-between}.agtip i{display:inline-block;width:8px;height:8px;margin-right:5px;vertical-align:middle}';
+document.head.appendChild(st);const t=document.createElement('div');t.className='agtip';
+const add=()=>document.body.appendChild(t);document.body?add():document.addEventListener('DOMContentLoaded',add);
+let cur=null;
+document.addEventListener('mouseover',e=>{const el=e.target.closest&&e.target.closest('[data-tip]');if(el===cur)return;cur=el;if(!el){t.style.display='none';return}t.innerHTML=el.getAttribute('data-tip');t.style.display='block'});
+document.addEventListener('mousemove',e=>{if(!cur)return;const w=t.offsetWidth,h=t.offsetHeight;let x=e.clientX+14,y=e.clientY+14;if(x+w>innerWidth-6)x=e.clientX-w-14;if(y+h>innerHeight-6)y=e.clientY-h-14;t.style.left=x+'px';t.style.top=y+'px'});
+document.addEventListener('scroll',()=>{t.style.display='none';cur=null},true);
+})();
+</script></head>
 <body class="ag-locked">
 <div id="ag-gate" role="dialog" aria-modal="true" aria-label="로그인"></div>
 <script>
@@ -613,7 +623,7 @@ function monitor(){
   $('#ct').innerHTML=`<div class="mon"><div class="ph2"><b>오피스 공실률 모니터</b><span class="s">분기 · % · 진할수록 공실률 높음 · 최근 7년</span><span class="sp"></span><span class="s">발행사</span><div class="seg" id="msrc">${srcs.map(s=>`<button data-v="${s}" class="${st.monSrc===s?'on':''}">${s}</button>`).join('')}</div></div>
    <div class="panel hw"><table class="heat"><thead><tr><th class="l">권역</th><th class="l">10년 추이</th>${yrs.map(y=>`<th colspan="${qs.filter(k=>k.p.startsWith(y)).length}" class="yr">${y}</th>`).join('')}<th>현재</th><th>전년비</th></tr>
      <tr><th></th><th></th>${qs.map(k=>`<th class="q">${k.p.slice(5,6)}Q</th>`).join('')}<th></th><th></th></tr></thead>
-     <tbody>${cur.map(({r,s,L,P})=>`<tr><td class="l"><b>${esc(r)}</b><div class="g">${esc([s.m,s.g!=='규모'?s.g:''].filter(Boolean).join(' · '))}</div></td><td class="sp2">${spark(s)}</td>${qs.map(k=>{const p=s.pts.find(x=>x.p===k.p);return p?`<td style="${col(p.v)}" title="${esc(r)} ${k.p} · ${f1(p.v)}% · ${esc(fname(p.f))}${p.pg?' p.'+p.pg:''}">${p.v.toFixed(1)}</td>`:'<td class="na">·</td>'}).join('')}
+     <tbody>${cur.map(({r,s,L,P})=>`<tr><td class="l"><b>${esc(r)}</b><div class="g">${esc([s.m,s.g!=='규모'?s.g:''].filter(Boolean).join(' · '))}</div></td><td class="sp2">${spark(s)}</td>${qs.map(k=>{const p=s.pts.find(x=>x.p===k.p);const pv=s.pts[s.pts.indexOf(p)-1];return p?`<td style="${col(p.v)}" data-tip="${esc(`<b>${esc(r)} · ${k.p}</b><div class="row"><span class="g">공실률</span><b class="n">${f1(p.v)}%</b></div>${pv?`<div class="row"><span class="g">전기 대비</span><span class="n">${(p.v-pv.v>0?'+':'')+(p.v-pv.v).toFixed(2)}%p</span></div>`:''}<div class="g">${esc(s.h)} · ${esc(fname(p.f))}${p.pg?' · p.'+p.pg:''}</div>`)}">${p.v.toFixed(1)}</td>`:'<td class="na">·</td>'}).join('')}
        <td class="num cu">${f1(L.v)}<div class="g">${esc(L.p)}</div></td><td class="num ${P?(L.v-P.v>0?'up':'dn'):''}">${P?(L.v-P.v>0?'+':'')+(L.v-P.v).toFixed(2)+'%p':'—'}</td></tr>`).join('')||'<tr><td class="empty" colspan="40">이 발행사의 권역 공실률 시계열이 없습니다.</td></tr>'}</tbody></table></div>
    ${core.length>1?`<div class="kpis3"><div class="panel mk"><div class="l">가장 높은 권역</div><div class="v"><b>${esc(hi.r)}</b> <span class="num">${f1(hi.L.v)}%</span></div><div class="g">${esc(hi.L.p)}</div></div>
      <div class="panel mk"><div class="l">가장 낮은 권역</div><div class="v"><b>${esc(lo.r)}</b> <span class="num">${f1(lo.L.v)}%</span></div><div class="g">${esc(lo.L.p)}</div></div>
