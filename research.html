@@ -67,7 +67,7 @@ a{color:inherit;text-decoration:none}
 .srch:focus-within{border-color:#9db6d4}.srch input{border:0;outline:0;font:inherit;width:100%;color:var(--tx);background:#fff}
 #view{min-height:0;overflow:hidden}
 .src{display:inline-block;font-size:10px;padding:0 4px;line-height:15px;border:1px solid;white-space:nowrap}
-.src.o{color:var(--ac);border-color:#bcd0e8;background:#f2f7fd}.src.b{color:#6b7684;border-color:#d4d9e0;background:#f6f7f9}.src.n{color:#a3abb6;border-color:#e2e6eb;background:#fff}
+.src.p{color:#7b5bc4;border-color:#c9b8ef;background:#f6f2fe}.src.o{color:var(--ac);border-color:#bcd0e8;background:#f2f7fd}.src.b{color:#6b7684;border-color:#d4d9e0;background:#f6f7f9}.src.n{color:#a3abb6;border-color:#e2e6eb;background:#fff}
 .wk{font-size:10px;color:var(--ac2);border:1px solid #9db6d4;padding:0 4px;line-height:15px;font-weight:500;white-space:nowrap}
 .legend{display:flex;gap:14px;font-size:11px;color:var(--tx3);align-items:center;flex-wrap:wrap}
 .meta2{font-size:11px;color:var(--tx3);display:flex;gap:6px;align-items:center;margin-top:2px;white-space:nowrap;overflow:hidden}
@@ -795,11 +795,11 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const isWk=x=>x.dk==='d'&&(TODAY-new Date(x.d+'T12:00:00+09:00'))/864e5<7;
 const fd=x=>x.dk==='d'?x.d.replace(/-/g,'.'):x.dk==='m'?x.d.replace('-','.'):x.dk==='q'?x.d.replace('-','.'):x.dk==='y'?x.d:'—';
 const yr=x=>x.d?x.d.slice(0,4):'미상';
-const LT=x=>x.lt==='원문'?'<span class="src o">원문</span>':x.lt==='블로그'?'<span class="src b">블로그</span>':'<span class="src n">링크 없음</span>';
+const LT=x=>x.lt==='원문'?'<span class="src o">원문</span>':x.lt==='블로그'?'<span class="src b">블로그</span>':x.lt==='발행처'?'<span class="src p" title="원문 PDF 대신 발행처의 같은 시리즈 보고서 페이지로 연결됩니다">발행처</span>':'<span class="src n">링크 없음</span>';
 const LTN=x=>x.lt||'링크 없음';
 const tlink=(x,cls)=>x.u?`<a class="${cls||''}" href="${esc(x.u)}" target="_blank" rel="noopener" title="${esc(x.t)}">${esc(x.t)}</a>`:`<span class="${cls||''}" title="${esc(x.t)}">${esc(x.t)}</span>`;
 const V=document.getElementById('view');
-const LEG=`<div class="legend"><span><span class="src o">원문</span> 발행처 원문</span><span><span class="src b">블로그</span> 블로그 경유</span><span><span class="src n">링크 없음</span> 개인 보관 파일</span><span><span class="wk">This Week</span> 최근 7일</span></div>`;
+const LEG=`<div class="legend"><span><span class="src o">원문</span> 발행처 원문</span><span><span class="src b">블로그</span> 블로그 경유</span><span><span class="src p">발행처</span> 발행처 보고서 페이지</span><span><span class="src n">링크 없음</span> 개인 보관 파일</span><span><span class="wk">This Week</span> 최근 7일</span></div>`;
 
 
 const RW=()=>window.ARGUS_WS;
@@ -814,7 +814,7 @@ function home(){
 const S={cat:null,sub:'',sel:{},q:'',sort:{k:'k',d:-1},page:1,per:20,more:{},closed:{}};
 let FOLD=false;try{FOLD=localStorage.getItem('ar_fold')==='1'}catch(e){}
 let PER=20;try{const v=+localStorage.getItem('ar_per');if(v)PER=v}catch(e){}
-const FAC=[{k:'sc',t:'세부 카테고리'},{k:'c',t:'카테고리',onlyAll:1},{k:'h',t:'하우스',limit:8},{k:'p',t:'발간 주기',order:['월간','분기','반기','연간','수시']},{k:'y',t:'발행 연도',limit:6,desc:1},{k:'l',t:'언어'},{k:'lt',t:'연결',order:['원문','블로그','링크 없음']}];
+const FAC=[{k:'sc',t:'세부 카테고리'},{k:'c',t:'카테고리',onlyAll:1},{k:'h',t:'하우스',limit:8},{k:'p',t:'발간 주기',order:['월간','분기','반기','연간','수시']},{k:'y',t:'발행 연도',limit:6,desc:1},{k:'l',t:'언어'},{k:'lt',t:'연결',order:['원문','블로그','발행처','링크 없음']}];
 const val=(x,k)=>k==='y'?yr(x):k==='lt'?LTN(x):x[k];
 function base(){return D.filter(x=>S.cat==='all'||x.c===S.cat)}
 function pass(x,skip){
