@@ -453,6 +453,8 @@ mark{background:#fff1b8;padding:0 2px;border-radius:2px}
 .rtb button{display:inline-grid;place-items:center;line-height:1}
 
 .wslist .nw{white-space:nowrap}
+
+.cconf{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:#b23b3b}.cact.danger{color:#fff;background:#b23b3b;padding:1px 8px}.cact.danger:hover{color:#fff;background:#962f2f}
 .main{grid-template-columns:52px 1fr}
 
 body{min-width:1200px}
@@ -900,7 +902,11 @@ function detail(id){
     wireRte($('#wdlg'));
     const send=()=>{const el=$('#t_c');const h=sanitize(el.innerHTML).replace(/@([가-힣A-Za-z0-9_.-]+)/g,'<mark>@$1</mark>');if(!el.textContent.trim())return;i.comments.push({at:now(),by:ME,h});sv({},`「${i.title}」 코멘트`);editing=null;detail(id);const l=$('#t_cl');l.scrollTop=csort>0?1e6:0};
     $('#t_send').onclick=send;$('#t_c').onkeydown=e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();send()}};
-    $$('[data-cd]').forEach(b=>b.onclick=()=>{if(!confirm('코멘트를 삭제할까요?'))return;i.comments=i.comments.filter(c=>c.at!==b.dataset.cd);sv({},'코멘트 삭제');detail(id)});
+    $$('[data-cd]').forEach(b=>b.onclick=e=>{e.stopPropagation();const at=b.dataset.cd;const box=document.createElement('span');box.className='cconf';
+      box.innerHTML='<span>삭제할까요?</span><button class="cact danger" data-y>삭제</button><button class="cact" data-n>취소</button>';
+      const prev=b.previousElementSibling;if(prev&&prev.matches('[data-ce]'))prev.style.display='none';b.replaceWith(box);
+      box.querySelector('[data-n]').onclick=ev=>{ev.stopPropagation();detail(id)};
+      box.querySelector('[data-y]').onclick=ev=>{ev.stopPropagation();i.comments=i.comments.filter(c=>c.at!==at);sv({},'코멘트 삭제');detail(id);toast('코멘트를 삭제했습니다')}});
     $$('[data-ce]').forEach(b=>b.onclick=()=>{editing=b.dataset.ce;detail(id);const el=$('#t_ce');el&&el.focus()});
     const cx=$('[data-cx]');if(cx)cx.onclick=()=>{editing=null;detail(id)};
     const cs2=$('[data-cs]');if(cs2)cs2.onclick=()=>{const c=i.comments.find(c=>c.at===cs2.dataset.cs);c.h=sanitize($('#t_ce').innerHTML);c.ed=1;editing=null;sv({});detail(id)};
