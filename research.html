@@ -22,6 +22,46 @@ a{color:inherit;text-decoration:none}
 .ph{background:#fff;border-bottom:1px solid var(--line);padding:0 18px;display:flex;align-items:flex-end;gap:22px;height:44px}
 .ph h1{font-size:15px;font-weight:600;align-self:center}
 .tabs{display:flex;gap:20px;align-self:stretch}.tabs a{border-bottom:2px solid transparent;color:var(--tx2);display:flex;align-items:center}.tabs a.on{color:var(--tx);border-bottom-color:var(--ac);font-weight:500}.tabs a.dis{color:#b4bcc7;cursor:default}
+/* 하우스별 */
+.rxh{display:grid;grid-template-columns:260px 1fr;height:100%;min-height:0}
+.rxl{background:#fff;border-right:1px solid var(--line);overflow:auto}.rxlh{padding:12px 14px 8px;font-size:11.5px;color:var(--tx3);border-bottom:1px solid var(--line)}.rxlh span{margin-left:4px}
+.rxl a{display:grid;grid-template-columns:1fr auto;gap:0 8px;padding:8px 14px;border-bottom:1px solid #f0f2f5;color:var(--tx);text-decoration:none;font-size:12.5px}.rxl a:hover{background:#f6f8fa}
+.rxl a.on{background:#eef3fa;box-shadow:inset 2px 0 0 var(--ac)}.rxl a .n{color:var(--tx2);font-size:11.5px}.rxl a .d{grid-column:1/-1;color:var(--tx3);font-size:10.5px}
+.rxm{overflow:auto;padding:16px 22px;background:#fff}.rxmh h2{font-size:18px;margin:0 0 2px}.rxchips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 6px}.rxchips span{border:1px solid var(--line);font-size:11.5px;padding:2px 8px;color:var(--tx2)}.rxchips b{color:var(--tx);font-weight:500}
+.rxy h4{font-size:12.5px;margin:18px 0 4px;padding-bottom:6px;border-bottom:1px solid var(--line)}.rxy h4 span{color:var(--tx3);font-weight:400;margin-left:4px}
+.rxy ul,.rxday ul{list-style:none;margin:0;padding:0}
+.rxr{display:flex;align-items:flex-start;gap:12px;padding:8px 0;border-bottom:1px solid #f0f2f5;position:relative}.rxr .tt{font-size:13px;color:var(--tx);text-decoration:none}.rxr a.tt:hover{color:var(--ac);text-decoration:underline}
+.rxr .rxb{flex:1;min-width:0}.rxd{width:78px;flex:none;color:var(--tx3);font-size:11.5px;padding-top:2px}.rxc{color:var(--tx2)}
+.rxr .wsadd.mini{position:static;flex:none;width:24px;height:22px;font-size:13px;opacity:.35}.rxr:hover .wsadd.mini,.rxr .wsadd.mini.added{opacity:1}
+/* 발간 피드 */
+.rxf,.rxcov{height:100%;overflow:auto;background:#fff}
+.rxfh{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}
+.rxseg{display:inline-flex;border:1px solid var(--line)}.rxseg button{border:0;border-right:1px solid var(--line);background:#fff;padding:0 10px;height:26px;font:inherit;font-size:12px;color:var(--tx2);cursor:pointer}.rxseg button:last-child{border-right:0}.rxseg button.on{background:#e9f0f8;color:var(--ac);font-weight:600}
+.rxcat{display:flex;flex-wrap:wrap;gap:4px}.rxcat button{border:1px solid var(--line);background:#fff;font:inherit;font-size:11.5px;padding:2px 8px;cursor:pointer;color:var(--tx2)}.rxcat button.on{border-color:#14243b;color:#14243b;font-weight:600}.rxcat .num{color:var(--tx3);font-size:10.5px}
+.rxtl{padding:6px 22px 30px}.rxday{display:grid;grid-template-columns:110px 1fr;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.rxdl{display:flex;flex-direction:column;gap:2px;font-size:11.5px;color:var(--tx2);position:sticky;top:60px;align-self:start}.rxdl b{font-size:18px;color:var(--tx)}
+.rxhs{width:140px;flex:none;font-size:12px;color:var(--tx2);padding-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* 커버리지 */
+.rxcw{padding:14px 22px 30px;overflow:auto}.rxct{border-collapse:separate;border-spacing:3px;font-size:12px}
+.rxct th{font-weight:500;color:var(--tx3);padding:4px 6px;font-size:11.5px;white-space:nowrap}.rxct th.l,.rxct td.l{text-align:left;min-width:150px}
+.rxct td{text-align:center;min-width:78px;height:42px;cursor:pointer;position:relative;line-height:1.25}.rxct td b{display:block;font-size:13px}.rxct td span{font-size:10px;opacity:.8}
+.rxct td.z{cursor:default;color:#c0c7d1;background:#f7f8fa}.rxct td.l{cursor:default}.rxct td.l a{color:var(--tx);text-decoration:none}.rxct td.l a:hover{color:var(--ac)}
+.rxct td i,.dot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:#2e9a62}.dot{position:static;display:inline-block;vertical-align:middle}
+.rxct td.t{cursor:default;font-weight:600;background:#f6f8fa}.rxct tr.sum td{cursor:default;background:#f6f8fa;color:var(--tx2);font-weight:600;height:30px}
+.rxct td[data-h]:hover{outline:2px solid #14243b;outline-offset:-1px}
+/* 마켓 사운딩 */
+.rxms{position:relative;height:100%;overflow:hidden}.dprev{padding:16px;display:grid;gap:14px;filter:blur(3px);opacity:.75}
+.dg3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.dg2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+.dcard,.dpanel{background:#fff;border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:10px}.dpanel{min-height:300px}
+.sk{background:linear-gradient(90deg,#e6eaf0,#f1f3f6,#e6eaf0);background-size:200% 100%;animation:skm 2.4s ease-in-out infinite}@keyframes skm{0%{background-position:100% 0}100%{background-position:-100% 0}}
+.dbars{flex:1;display:flex;align-items:flex-end;gap:8px;padding-top:12px}.dbars i{flex:1;background:#d5dde8}.drow{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid #eef1f5}
+.dveil{position:absolute;inset:0;background:rgba(238,241,245,.55);display:flex;align-items:center;justify-content:center}
+.dmsg{background:#fff;border:1px solid var(--line);border-top:3px solid #14243b;box-shadow:0 18px 50px rgba(20,35,58,.12);padding:30px 36px;text-align:center;max-width:470px}
+.dmsg h2{font-size:18px;font-weight:600;margin:14px 0 8px;color:#14243b}.dmsg p{font-size:13px;line-height:1.75;color:var(--tx2);margin:0}
+.dic{display:flex;gap:6px;justify-content:center}.dic span{width:8px;height:8px;border-radius:50%;background:#2463a8;animation:dot 1.2s ease-in-out infinite}.dic span:nth-child(2){animation-delay:.15s}.dic span:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+.dlinks{display:flex;gap:8px;justify-content:center;margin-top:18px}.dlinks a{border:1px solid var(--line);padding:6px 12px;font-size:12.5px;color:var(--tx);text-decoration:none}.dlinks a:hover{border-color:#14243b}
+@media (prefers-reduced-motion:reduce){.sk,.dic span{animation:none}}
 .ph .sp{flex:1}
 .srch{align-self:center;display:flex;align-items:center;gap:6px;border:1px solid var(--line);height:26px;padding:0 8px;width:280px;color:var(--tx3);background:#fff}
 .srch:focus-within{border-color:#9db6d4}.srch input{border:0;outline:0;font:inherit;width:100%;color:var(--tx);background:#fff}
@@ -308,7 +348,17 @@ body.ag-locked>:not(#ag-gate):not(script){display:none!important}
 .ag-user a:hover,.ag-user button:hover{opacity:1;text-decoration:underline}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-</head><body class="ag-locked">
+<script>// 마우스를 올리면 바로 뜨는 작은 설명 상자: data-tip="HTML" 을 가진 요소(SVG 포함) 공용
+(function(){if(window.__agtip)return;window.__agtip=1;
+const st=document.createElement('style');st.textContent='.agtip{position:fixed;z-index:9999;pointer-events:none;background:#fff;border:1px solid #c3cbd6;box-shadow:0 6px 18px rgba(20,36,59,.14);padding:7px 10px;font:12px/1.55 "IBM Plex Sans KR",system-ui,sans-serif;color:#1d2733;max-width:320px;display:none}.agtip b{font-weight:600}.agtip .g{color:#8b95a3;font-size:11px}.agtip .n{font-family:"IBM Plex Mono",monospace}.agtip .row{display:flex;gap:10px;justify-content:space-between}.agtip i{display:inline-block;width:8px;height:8px;margin-right:5px;vertical-align:middle}';
+document.head.appendChild(st);const t=document.createElement('div');t.className='agtip';
+const add=()=>document.body.appendChild(t);document.body?add():document.addEventListener('DOMContentLoaded',add);
+let cur=null;
+document.addEventListener('mouseover',e=>{const el=e.target.closest&&e.target.closest('[data-tip]');if(el===cur)return;cur=el;if(!el){t.style.display='none';return}t.innerHTML=el.getAttribute('data-tip');t.style.display='block'});
+document.addEventListener('mousemove',e=>{if(!cur)return;const w=t.offsetWidth,h=t.offsetHeight;let x=e.clientX+14,y=e.clientY+14;if(x+w>innerWidth-6)x=e.clientX-w-14;if(y+h>innerHeight-6)y=e.clientY-h-14;t.style.left=x+'px';t.style.top=y+'px'});
+document.addEventListener('scroll',()=>{t.style.display='none';cur=null},true);
+})();
+</script></head><body class="ag-locked">
 <div id="ag-gate" role="dialog" aria-modal="true" aria-label="로그인"></div>
 <script>
 (function(){
@@ -399,7 +449,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     <a href="workspace.html" class=""><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><path d="M17 13.5v7M13.5 17h7"/></svg><span style="display:block;text-align:center;line-height:1.2;white-space:nowrap;letter-spacing:-.3px">워크<br>스페이스</span><b class="wsbadge" id="wsbadge"></b></a>
   </nav>
 <section class="work">
-<div class="ph"><h1>리서치 센터</h1><div class="tabs"><a href="#" class="on" id="tab-cat">카테고리</a><a class="dis" title="준비 중">하우스별</a><a class="dis" title="준비 중">발간 피드</a><a class="dis" title="준비 중">커버리지</a></div><span class="sp"></span><label class="srch"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="리포트 제목 · 하우스 검색"></label></div>
+<div class="ph"><h1>리서치 센터</h1><div class="tabs"><a href="#" data-v="cat">카테고리</a><a href="#h" data-v="h">하우스별</a><a href="#f" data-v="f">발간 피드</a><a href="#cov" data-v="cov">커버리지</a><a href="#ms" data-v="ms">마켓 사운딩</a></div><span class="sp"></span><label class="srch"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="리포트 제목 · 하우스 검색"></label></div>
 <div id="view"></div>
 </section></div>
 <script>// Argus 워크스페이스 — RedOps식 검토 보드. 지금은 이 브라우저(localStorage)에 저장 (팀 공유 저장은 다음 단계).
@@ -739,7 +789,7 @@ addEventListener('hashchange',()=>{const h=new URLSearchParams(location.hash.sli
 <script>
 const CATS=[['office','오피스'],['residential','주거'],['retail','리테일'],['logistics','물류·산업'],['hotel','호텔'],['datacenter','데이터센터'],['capital','투자·금융'],['outlook','시장전망'],['etc','기타']];
 const SUBORDER={'오피스':['분기 마켓리포트','권역 분석','투자·거래','임차·수요','공급·개발'],'물류·산업':['마켓리포트','산업·지산','투자·거래','콜드체인'],'리테일':['마켓리포트','상권 분석','트렌드'],'호텔':['호텔 시장','숙박 동향','호텔 투자','관광·인바운드'],'데이터센터':['마켓리포트','투자·개발','전력·인프라'],'주거':['지표·시장','임대·리빙','정책·공급','기타'],'투자·금융':['투자자 동향','거래 리뷰','리츠·자본시장','투자 리포트'],'시장전망':['연간 전망','분기 지표','시장 리포트'],'기타':['정책·도시계획','기타']};
-const TODAY=new Date('2026-11-19T23:59:59+09:00');
+const TODAY=new Date();
 let D=[];
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const isWk=x=>x.dk==='d'&&(TODAY-new Date(x.d+'T12:00:00+09:00'))/864e5<7;
@@ -854,8 +904,60 @@ function drawDetail(){
 }
 document.addEventListener('click',e=>{const p=document.getElementById('psel');if(p&&!p.contains(e.target))p.classList.remove('open')});
 const qi=document.getElementById('q');
-qi.oninput=()=>{S.q=qi.value.trim().toLowerCase();S.page=1;if(!location.hash.startsWith('#c-')){if(S.q){location.hash='c-all'}}else drawDetail()};
-function route(){const h=location.hash.slice(1);if(h.startsWith('c-'))detail(h.slice(2));else{S.cat=null;home()}}
+qi.oninput=()=>{S.q=qi.value.trim().toLowerCase();S.page=1;const h=location.hash;if(h==='#f'){feed();return}if(h==='#h'||h.startsWith('#h-')){houses(decodeURIComponent(h.slice(3)));return}if(!h.startsWith('#c-')){if(S.q){location.hash='c-all'}}else drawDetail()};
+function route(){const h=location.hash.slice(1);const v=h==='h'||h.startsWith('h-')?'h':h==='f'?'f':h==='cov'?'cov':h==='ms'?'ms':'cat';
+  document.querySelectorAll('.ph .tabs a').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
+  if(v==='h')houses(decodeURIComponent(h.slice(2)));else if(v==='f')feed();else if(v==='cov')coverage();else if(v==='ms')sounding();
+  else if(h.startsWith('c-'))detail(h.slice(2));else{S.cat=null;home()}}
+const SLUG=Object.fromEntries(CATS.map(([a,b])=>[b,a]));
+const ago=x=>x.dk==='d'?(TODAY-new Date(x.d+'T12:00:00+09:00'))/864e5:1e9;
+const rrow=x=>`<li class="rxr">${tlink(x,'tt')}<div class="meta2">${LT(x)}<span class="rxc">${esc(x.c)}${x.sc?' · '+esc(x.sc):''}</span><i></i><span>${esc(x.p||'')}</span><i></i><span>${esc(x.l||'')}</span>${isWk(x)?'<span class="wk">This Week</span>':''}</div>${typeof wsBtn==='function'?wsBtn(x,1):''}</li>`;
+// ── 하우스별
+function houses(sel){
+  const by={};D.forEach(x=>(by[x.h]=by[x.h]||[]).push(x));
+  const hs=Object.entries(by).map(([h,a])=>({h,a,last:a.reduce((m,x)=>x.k>m?x.k:m,'')})).sort((a,b)=>b.a.length-a.a.length);
+  const cur=hs.find(o=>o.h===sel)||hs[0];if(!cur){V.innerHTML='<div class="empty">리포트가 없습니다</div>';return}
+  const q=S.q;const list=cur.a.filter(x=>!q||(x.t+' '+x.h).toLowerCase().includes(q));
+  const years={};list.forEach(x=>(years[yr(x)]=years[yr(x)]||[]).push(x));const ys=Object.keys(years).sort().reverse();
+  const cats={};cur.a.forEach(x=>cats[x.c]=(cats[x.c]||0)+1);
+  V.innerHTML=`<div class="rxh"><aside class="rxl"><div class="rxlh">하우스 <span>${hs.length}곳</span></div>${hs.map(o=>`<a href="#h-${encodeURIComponent(o.h)}" class="${o===cur?'on':''}"><b>${esc(o.h)}</b><span class="n num">${o.a.length}</span><span class="d num">최근 ${esc(o.last.slice(0,7).replace('-','.'))}</span></a>`).join('')}</aside>
+  <section class="rxm"><div class="rxmh"><h2>${esc(cur.h)}</h2><span class="note">리포트 ${cur.a.length.toLocaleString()}건 · 최근 발간 ${esc(cur.last.slice(0,10).replace(/-/g,'.'))}</span><div class="rxchips">${Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`<span>${esc(c)} <b class="num">${n}</b></span>`).join('')}</div></div>
+  ${ys.map(y=>`<div class="rxy"><h4>${esc(y)} <span>${years[y].length}건</span></h4><ul>${years[y].sort((a,b)=>b.k.localeCompare(a.k)).map(x=>`<li class="rxr"><span class="rxd num">${fd(x)}</span><div class="rxb">${tlink(x,'tt')}<div class="meta2">${LT(x)}<span class="rxc">${esc(x.c)}${x.sc?' · '+esc(x.sc):''}</span><i></i><span>${esc(x.p||'')}</span><i></i><span>${esc(x.l||'')}</span>${isWk(x)?'<span class="wk">This Week</span>':''}</div></div>${typeof wsBtn==='function'?wsBtn(x,1):''}</li>`).join('')}</ul></div>`).join('')||'<div class="empty">검색 결과가 없습니다</div>'}</section></div>`;
+}
+// ── 발간 피드
+const FS={span:30,cat:''};
+function feed(){
+  const q=S.q;const pool=D.filter(x=>(!FS.cat||x.c===FS.cat)&&(!q||(x.t+' '+x.h).toLowerCase().includes(q)));
+  const dated=pool.filter(x=>x.dk==='d'&&(!FS.span||ago(x)<FS.span)).sort((a,b)=>b.d.localeCompare(a.d));
+  const undated=FS.span?pool.filter(x=>x.dk!=='d'&&x.k>=new Date(TODAY-FS.span*864e5).toISOString().slice(0,10)).sort((a,b)=>b.k.localeCompare(a.k)):[];
+  const by={};dated.forEach(x=>(by[x.d]=by[x.d]||[]).push(x));const WD='일월화수목금토';
+  const cc={};D.filter(x=>x.dk==='d'&&(!FS.span||ago(x)<FS.span)).forEach(x=>cc[x.c]=(cc[x.c]||0)+1);
+  V.innerHTML=`<div class="rxf"><div class="rxfh"><div class="rxseg">${[[7,'이번 주'],[30,'최근 30일'],[90,'3개월'],[365,'1년'],[0,'전체']].map(([v,t])=>`<button data-s="${v}" class="${FS.span===v?'on':''}">${t}</button>`).join('')}</div>
+    <div class="rxcat"><button data-c="" class="${!FS.cat?'on':''}">전체</button>${CATS.map(([,c])=>`<button data-c="${c}" class="${FS.cat===c?'on':''}">${c}${cc[c]?` <span class="num">${cc[c]}</span>`:''}</button>`).join('')}</div><span class="note">${dated.length.toLocaleString()}건</span></div>
+    <div class="rxtl">${Object.keys(by).map(d=>`<div class="rxday"><div class="rxdl"><b class="num">${d.slice(5).replace('-','.')}</b><span>${WD[new Date(d+'T12:00:00').getDay()]}요일</span><span class="note num">${d.slice(0,4)}</span></div><ul>${by[d].map(x=>`<li class="rxr"><span class="rxhs">${esc(x.h)}</span><div class="rxb">${tlink(x,'tt')}<div class="meta2">${LT(x)}<span class="rxc">${esc(x.c)}${x.sc?' · '+esc(x.sc):''}</span><i></i><span>${esc(x.l||'')}</span></div></div>${typeof wsBtn==='function'?wsBtn(x,1):''}</li>`).join('')}</ul></div>`).join('')||'<div class="empty">이 기간에 발간된 리포트가 없습니다</div>'}
+    ${undated.length?`<div class="rxday"><div class="rxdl"><b>날짜 미상</b><span class="note">월·분기만 표기</span></div><ul>${undated.map(x=>`<li class="rxr"><span class="rxhs">${esc(x.h)}</span><div class="rxb">${tlink(x,'tt')}<div class="meta2">${LT(x)}<span class="rxc">${esc(x.c)}</span><i></i><span class="num">${fd(x)}</span></div></div>${typeof wsBtn==='function'?wsBtn(x,1):''}</li>`).join('')}</ul></div>`:''}</div></div>`;
+  V.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{FS.span=+b.dataset.s;feed()});V.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{FS.cat=b.dataset.c;feed()});
+}
+// ── 커버리지 (하우스 × 카테고리)
+function coverage(){
+  const hs=[...new Set(D.map(x=>x.h))].map(h=>({h,a:D.filter(x=>x.h===h)})).sort((a,b)=>b.a.length-a.a.length);
+  const cs=CATS.map(c=>c[1]);const mx=Math.max(...hs.flatMap(o=>cs.map(c=>o.a.filter(x=>x.c===c).length)),1);
+  const cell=(o,c)=>{const a=o.a.filter(x=>x.c===c);if(!a.length)return '<td class="z">·</td>';const last=a.reduce((m,x)=>x.k>m?x.k:m,'');const fresh=(TODAY-new Date(last+'T12:00:00'))/864e5<120;
+    const al=Math.min(1,a.length/mx*1.6);return `<td data-h="${esc(o.h)}" data-c="${esc(c)}" style="background:rgba(36,99,168,${(.06+al*.6).toFixed(2)});color:${al>.55?'#fff':'#1d2733'}" data-tip="${esc(`<b>${esc(o.h)} · ${esc(c)}</b><div class="row"><span class="g">리포트</span><b class="n">${a.length}건</b></div><div class="row"><span class="g">최근 발간</span><span class="n">${last.slice(0,10)}</span></div>`+a.sort((p,q)=>q.k.localeCompare(p.k)).slice(0,3).map(x=>`<div class="g">· ${esc(x.t.slice(0,40))}</div>`).join(''))}"><b class="num">${a.length}</b><span class="num">${last.startsWith('0000')?'날짜 미상':last.slice(2,7).replace('-','.')}</span>${fresh?'<i></i>':''}</td>`};
+  V.innerHTML=`<div class="rxcov"><div class="rxfh"><b>하우스 × 카테고리 커버리지</b><span class="note">숫자 = 리포트 수 · 아래 = 최근 발간(연.월) · <i class="dot"></i> 최근 4개월 안에 발간 · 칸을 누르면 목록으로 이동</span></div>
+   <div class="rxcw"><table class="rxct"><thead><tr><th class="l">하우스</th>${cs.map(c=>`<th>${c}</th>`).join('')}<th>합계</th></tr></thead><tbody>${hs.map(o=>`<tr><td class="l"><a href="#h-${encodeURIComponent(o.h)}">${esc(o.h)}</a></td>${cs.map(c=>cell(o,c)).join('')}<td class="t num">${o.a.length}</td></tr>`).join('')}
+   <tr class="sum"><td class="l">합계</td>${cs.map(c=>`<td class="num">${D.filter(x=>x.c===c).length}</td>`).join('')}<td class="num">${D.length}</td></tr></tbody></table></div></div>`;
+  V.querySelectorAll('td[data-h]').forEach(td=>td.onclick=()=>{const c=td.dataset.c;S.cat=c;S.sub='';S.sel={h:new Set([td.dataset.h])};S.page=1;S.more={};location.hash='c-'+SLUG[c]});
+}
+// ── 마켓 사운딩 (준비 중)
+function sounding(){
+  const sk=(w,h)=>`<div class="sk" style="width:${w};height:${h}px"></div>`;
+  V.innerHTML=`<div class="rxms"><div class="dprev" aria-hidden="true"><div class="dg3">${[0,1,2].map(()=>`<div class="dcard">${sk('35%',10)}${sk('55%',22)}${sk('85%',8)}</div>`).join('')}</div>
+    <div class="dg2"><div class="dpanel">${sk('30%',10)}<div class="dbars">${[44,62,51,70,58,76,49,83,67,72].map(h=>`<i style="height:${h}%"></i>`).join('')}</div></div><div class="dpanel">${sk('40%',10)}${[0,1,2,3,4,5].map(()=>`<div class="drow">${sk('22%',9)}${sk('46%',9)}${sk('16%',9)}</div>`).join('')}</div></div></div>
+    <div class="dveil"><div class="dmsg"><div class="dic"><span></span><span></span><span></span></div><h2>마켓 사운딩을 준비하고 있습니다</h2>
+    <p>하우스별 투자자 설문과 연간·분기 시장 전망을 모아<br>한눈에 비교할 수 있도록 자료를 정리하는 중입니다.</p>
+    <div class="dlinks"><a href="#f">발간 피드 보기</a><a href="#c-outlook">시장전망 리포트</a><a href="#c-capital">투자·금융 리포트</a></div></div></div></div>`;
+}
 addEventListener('hashchange',route);
 (window.ARGUS_DATA?window.ARGUS_DATA('research'):fetch('reports.json').then(r=>r.json())).then(d=>{D=d;document.getElementById('meta').textContent=`리포트 ${d.length.toLocaleString()}건 · 하우스 ${new Set(d.map(x=>x.h)).size}곳`;route()}).catch(()=>{V.innerHTML='<div class="empty">데이터를 불러오지 못했습니다</div>'});
 </script></body></html>
