@@ -172,7 +172,7 @@ td.mut{color:var(--tx3)}
 .note{font-size:11px;color:var(--tx3)}
 
 /* drawer */
-.r3{padding:8px 0 0}.wsb{border:1px solid var(--line);background:#fff;font:inherit;font-size:12px;padding:5px 10px;cursor:pointer;color:var(--tx)}.wsb:hover{border-color:#14243b}.wsb.added{color:#2e7d5b;border-color:#9fd3b6;background:#f1faf5}
+.wsx{font:inherit;font-size:11.5px;height:22px;padding:0 9px;display:inline-flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap;background:#14243b;color:#fff;border:1px solid #14243b}.wsx:hover{background:#1f3657}.wsx.added{background:#e8eef6;color:#14243b;border-color:#b9c7da}.wsx.added:hover{border-color:#14243b}
 .sec.memo textarea{width:100%;min-height:84px;border:1px solid var(--line);padding:8px 10px;font:inherit;font-size:12.5px;line-height:1.6;resize:vertical;outline:none;background:#fffdf5}.sec.memo textarea:focus{border-color:#14243b;background:#fff}.sec.memo .ms{font-weight:400;color:var(--tx3);font-size:11px;margin-left:6px}
 .mico{display:inline-block;margin-left:5px;font-size:10px;color:#a86a14;border:1px solid #e3c79b;padding:0 4px;vertical-align:1px}
 .drawer{position:absolute;top:0;right:0;bottom:0;width:min(640px,62%);background:var(--panel);border-left:1px solid #c3cbd6;box-shadow:-8px 0 24px rgba(20,36,59,.08);transform:translateX(102%);opacity:0;transition:transform .34s cubic-bezier(.4,0,.2,1),opacity .26s cubic-bezier(.4,0,.2,1);display:grid;grid-template-rows:auto auto 1fr;z-index:10}
@@ -588,8 +588,7 @@ const WS=()=>window.ARGUS_WS;
 function drawDrawer(){
   const x=D[S.open];if(!x)return;const inw=WS()?WS().inWs('D:'+dkey(x)):[];
   document.getElementById('dh').innerHTML=`<div class="r1"><h2>${esc(x.name)}</h2><button class="x" id="dx" aria-label="닫기">×</button></div>
-   <div class="r2">${badge(x.kind)}<span class="pill">${esc(x.cat)} · ${esc(x.grp)}</span><span class="pill">${esc(x.asset)}${x.region?' · '+esc(x.region):''}</span><span class="num">${x.date}</span><a href="${esc(x.url)}" target="_blank" rel="noopener">원문 기사 · ${esc(x.src)} ↗</a></div>
-   <div class="r3">${inw.length?`<button class="wsb added" id="dws">✓ 워크스페이스에 있음 · 열기</button>`:`<button class="wsb" id="dws">＋ 워크스페이스에 추가</button>`}</div>`;
+   <div class="r2">${badge(x.kind)}<span class="pill">${esc(x.cat)} · ${esc(x.grp)}</span><span class="pill">${esc(x.asset)}${x.region?' · '+esc(x.region):''}</span><span class="num">${x.date}</span>${inw.length?`<button class="wsx added" id="dws" title="워크스페이스에서 열기"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3.5 8.5 3 3 6-6.5"/></svg>워크스페이스 · 열기</button>`:`<button class="wsx" id="dws" title="워크스페이스에 추가"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3v10M3 8h10"/></svg>워크스페이스</button>`}<a href="${esc(x.url)}" target="_blank" rel="noopener">원문 기사 · ${esc(x.src)} ↗</a></div>`;
   document.getElementById('dx').onclick=closeDrawer;
   document.getElementById('dws').onclick=e=>{const w=WS();if(!w)return;const has=w.inWs('D:'+dkey(x));if(has.length){w.open(has[0].space,has[0].id);return}w.pick(e.currentTarget,w.fromDeal(x),()=>{drawDrawer();render()})};
   document.querySelectorAll('#dtabs button').forEach(b=>{b.classList.toggle('on',b.dataset.t===S.tab);b.onclick=()=>{S.tab=b.dataset.t;drawDrawer()}});
