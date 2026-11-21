@@ -779,6 +779,8 @@ function sanitize(html){const t=document.createElement('template');t.innerHTML=h
 // ── 다른 페이지에서 쓰는 추가 API
 function blank(o){return Object.assign({id:uid(),space:space().id,kind:'manual',ref:null,board:'직접 등록',title:'',org:'',orgUrl:'',loc:'',land:null,bldg:null,amount:null,posted:'',end:'',start:'',due:'',status:'new',priority:'none',owners:[],body:'',links:[],custom:{},meta:{},comments:[],created:now(),updated:now(),by:ME},o)}
 function fromListing(x){const p=x.prices||{};const lh=x.source==='LH';
+  if(x.source==='나라장터')return {kind:'listing',ref:x.id,board:'공모사업',title:x.title,org:x.org,orgUrl:x.url||'',loc:x.demand_org||'',land:null,bldg:null,amount:p.estimate??null,posted:x.posted||'',end:x.deadline||'',
+    meta:{공고번호:`${(x.ref||{}).bid_no||''}-${(x.ref||{}).bid_ord||''}`,구분:x.category||'',계약방법:x.contract||'',개찰일:x.opening||'',입찰방법:'나라장터'},links:[{t:'나라장터 공고 원문',u:x.url}],body:`<p>${esc(x.org)} · ${esc(x.category||'')} · 마감 ${esc(x.deadline||'')}</p>`};
   return {kind:'listing',ref:x.id,board:x.board||(lh?'민관':'공매'),title:x.title,org:x.org,orgUrl:x.url||'',loc:x.address||x.region||'',land:x.land_sqm??null,bldg:x.bldg_sqm??null,
    amount:p.appraisal??p.supply_total??null,posted:lh?(x.posted||''):(x.bid_start||''),end:x.deadline||'',
    meta:lh?{공고번호:(x.ref||{}).pan_id,공고상태:x.status,유형:`${x.category||''} · ${x.kind||''}`,입찰방법:'LH청약플러스'}:{최저입찰가:p.min_bid??null,회차:x.round,유찰:x.failed_bids,'감정가 대비':p.min_bid_to_appraisal,물건관리번호:(x.ref||{}).cltr_mng_no,입찰방법:'온비드 전자입찰',용도:`${x.category||''} · ${x.kind||''}`},
@@ -1070,11 +1072,11 @@ const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e)
 const WS=()=>window.ARGUS_WS;const inWs=id=>WS()?WS().inWs(id):[];const hid=new Set(store.get('argus.hid',[]));
 const I=D.items.map(x=>{const p=x.prices||{};const dl=x.deadline?new Date(x.deadline+'T00:00:00'):null;
   return {...x,cat:CAT[x.category]||x.category,sido:SIDO(x.region),dday:dl?Math.round((dl-TODAY)/864e5):null,
-   apsl:p.appraisal??null,minb:p.min_bid??null,ratio:p.min_bid_to_appraisal??null,supply:p.supply_total??null,lh:x.source==='LH',
-   price:p.appraisal??p.supply_total??null,pvct:x.status==='수의계약 가능',
+   apsl:p.appraisal??null,minb:p.min_bid??null,ratio:p.min_bid_to_appraisal??null,supply:p.supply_total??null,lh:x.source==='LH',g2b:x.source==='나라장터',est:(x.prices||{}).estimate??null,
+   price:p.appraisal??p.supply_total??p.estimate??null,pvct:x.status==='수의계약 가능',
    board:x.board||board(x),
    _q:(x.title+' '+(x.address||'')+' '+x.org+' '+((x.ref||{}).cltr_mng_no||'')).toLowerCase()}}).filter(x=>x.dday==null||x.dday>=0);
-$('#updated').textContent='수집 '+D.updated.replace('T',' ').slice(0,16)+' KST · 온비드·LH 공공데이터 API';
+$('#updated').textContent='수집 '+D.updated.replace('T',' ').slice(0,16)+' KST · 온비드·LH·나라장터 공공데이터 API';
 const eok=v=>v==null?null:v===0?'0':v>=1e12?(v/1e12).toFixed(2)+'조':(v/1e8>=100?Math.round(v/1e8).toLocaleString():(v/1e8).toFixed(1))+'억';
 const won=v=>v==null?null:Math.round(v).toLocaleString()+'원';
 const pct=v=>v==null?null:(v*100).toFixed(1)+'%';
@@ -1139,6 +1141,12 @@ function spark(x,w,h){const rs=(x.rounds||[]).filter(r=>r.min_bid);if(rs.length<
 const rbar=r=>r==null?'<div class="rbar"></div>':`<div class="rbar"><i style="width:${Math.min(r,1.3)/1.3*100}%;background:${rc(r)}"></i><b style="left:${100/1.3}%"></b></div>`;
 
 function card(x){
+  if(x.g2b){const hot=x.dday!=null&&x.dday<=3;return `<article class="card g2" data-id="${esc(x.id)}" tabindex="0">
+  <div class="ch"><span class="tag">${esc(x.category||'공모')}</span><span class="org">${esc(x.org)}</span><span class="dd num ${hot?'hot':''}">${dd(x.dday)}</span></div>
+  <h3 class="ttl">${esc(x.title)}</h3><div class="addr">${esc(x.demand_org&&x.demand_org!==x.org?'수요기관 '+x.demand_org:'')}</div>
+  <div class="pr"><div><div class="l">추정가격·배정예산</div><div class="v num">${x.est!=null?eok(x.est):'<span class="note">공고문 참조</span>'}</div></div><div><div class="l">공고일</div><div class="v num">${(x.posted||'').slice(2).replace(/-/g,'.')||'–'}</div></div><div><div class="l">마감</div><div class="v num">${(x.deadline||'').slice(2).replace(/-/g,'.')||'–'}</div></div></div><div class="rbar"></div>
+  <div class="cf"><span class="note">나라장터 · ${esc(x.status||'공고')}${x.contract?' · '+esc(x.contract):''}</span></div>
+  <div class="ca">${inWs(x.id).length?`<button data-act="go" class="added" title="워크스페이스에서 열기">✓ 추가됨 · 보드 열기</button>`:`<button data-act="add">＋ 추가</button>`}<button data-act="hid">${hid.has(x.id)?'숨김 해제':'숨김'}</button></div></article>`}
   const hot=x.dday!=null&&x.dday<=3;
   const P=x.lh?`<div><div class="l">공급 예정가 합계</div>${x.supply!=null?`<div class="v num">${eok(x.supply)}</div>`:'<div class="v na" style="font-size:12px;color:var(--tx3);padding-top:3px">수집 대기</div>'}</div><div><div class="l">공급 필지</div><div class="v num">${x.parcel_count??'–'}</div></div><div><div class="l">공고일</div><div class="v num">${(x.posted||'').slice(2).replace(/-/g,'.')||'–'}</div></div>`
    :`<div><div class="l">감정가</div><div class="v num">${eok(x.apsl)}</div></div><div><div class="l">최저입찰가 · ${+x.round||esc(x.round)}회차</div><div class="v num">${x.minb!=null?eok(x.minb):'<span class="note">비공개</span>'}</div></div><div><div class="l">감정가 대비</div><div class="v num" style="color:${rc(x.ratio)}">${pct(x.ratio)??'–'}</div></div>`;
@@ -1150,7 +1158,7 @@ function card(x){
   <div class="ca">${inWs(x.id).length?`<button data-act="go" class="added" title="워크스페이스에서 열기">✓ 추가됨 · 보드 열기</button>`:`<button data-act="add">＋ 추가</button>`}<button data-act="hid">${hid.has(x.id)?'숨김 해제':'숨김'}</button></div></article>`;
 }
 function render(keep){
-  $$('#ttabs button').forEach(b=>{const n=b.dataset.t==='all'?I.filter(x=>!hid.has(x.id)).length:I.filter(x=>!hid.has(x.id)&&x.board===b.dataset.t).length;b.querySelector('small').textContent=n;b.disabled=!n;b.title=n?'':'수집기 연결 예정 (2·3단계)'});
+  $$('#ttabs button').forEach(b=>{const n=b.dataset.t==='all'?I.filter(x=>!hid.has(x.id)).length:I.filter(x=>!hid.has(x.id)&&x.board===b.dataset.t).length;b.querySelector('small').textContent=n;b.disabled=!n;b.title=n?'':(b.dataset.t==='공모사업'?'나라장터 공고 수집을 준비 중입니다':'해당 물건 없음')});
   const r=sorted(rows());const fc=fcount();$('#fcnt').textContent=fc;$('#fcnt').classList.toggle('on',!!fc);
   $('#cnt').textContent=r.length;
   $('#cards').innerHTML=r.slice(0,shown).map(card).join('')||'<div class="empty">조건에 맞는 물건이 없습니다.</div>';
@@ -1185,13 +1193,21 @@ function chart(x){
 const sec=(t,body,extra='')=>`<section class="ms"><button class="msh" aria-expanded="true"><span>${t}${extra}</span><svg viewBox="0 0 12 12"><path d="m3 7.5 3-3 3 3"/></svg></button><div class="msb">${body}</div></section>`;
 function open(id,noPush){
   const x=I.find(i=>i.id===id);if(!x)return;const p=x.prices||{};
+  let h;
+  if(x.g2b){
+    h=`<div class="mh"><div class="mt"><span class="tag onb">공모사업 · 나라장터</span><span class="tag">${esc(x.category||'')}</span><h2 id="mtitle">${esc(x.title)}</h2></div><button class="mx" aria-label="닫기">×</button></div>
+  <div class="mbody"><dl class="mi">${[['공고 기관',esc(x.org)],['수요 기관',esc(x.demand_org||'–')],['공고일',x.posted||'–'],['입찰 마감',`${x.deadline||'–'} ${x.deadline_time||''} <b class="${x.dday!=null&&x.dday<=3?'hot':''}">${dd(x.dday)}</b>`],['개찰일',x.opening||'–'],['추정가격',x.est!=null?`<b class="num">${won(x.est)}</b>`:'<span class="note">공고문 참조</span>'],['계약 방법',esc(x.contract||'–')],['공고 번호',`<span class="num">${esc((x.ref||{}).bid_no||'')}-${esc((x.ref||{}).bid_ord||'')}</span>`]].map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
+  <div class="mact">${inWs(x.id).length?`<button data-act="go" class="ib wide added">✓ 워크스페이스 · 열기</button>`:`<button data-act="add" class="ib wide">＋ 워크스페이스에 추가</button>`}<button data-act="hid" class="ib" title="숨김">${hid.has(x.id)?'↺':'⊘'}</button><button data-act="share" class="ib" title="링크 복사">⎘</button><span class="sp"></span><a class="go" href="${esc(x.url)}" target="_blank" rel="noopener">↗ 나라장터 공고 원문</a></div>`
+    +sec('안내','<div class="empty">사업 개요·참가 자격·제출 서류는 공고문(나라장터 원문 첨부)에서 확인하세요. 목록은 공고명에 민간사업자·사업자 모집·민간참여·공모사업 등이 들어간 나라장터 공고만 모은 것입니다.</div>')
+    +`<div class="note src">출처: 조달청 나라장터 입찰공고정보 API · 수집 ${D.updated.slice(0,10)}${x.first_seen?' · 최초 확인 '+x.first_seen:''}</div></div>`;
+  }else{
   const link=x.lh?x.url:(x.url||'https://www.onbid.co.kr');
   const info=[['처분 기관',`${esc(x.org)} <span class="note">${esc(x.org_type)}</span>`],['소재지',esc(x.address||x.region)],
     x.lh?['공고일',x.posted||'–']:(x.dday==null&&x.pvct_since?['입찰 기간','입찰 종료 · <b>수의계약으로 매수 가능</b> <span class="note">(기관에 문의)</span>']:['입찰 기간',`${x.bid_start||''} ${x.bid_start_time||''} ~ ${x.deadline||''} ${x.deadline_time||''}`]),
     x.dday==null&&x.pvct_since?['마지막 유찰',`${x.pvct_since}${x.modified?` <span class="note">· 온비드 최종 수정 ${x.modified}</span>`:''}`]:[x.lh?'접수 마감':'입찰 마감',`${x.deadline||'–'} <b class="${x.dday!=null&&x.dday<=3?'hot':''}">${dd(x.dday)}</b>`],
     x.lh?['공급 예정가',(x.supply!=null?`<b class="num">${won(x.supply)}</b>`:'<span class="note">공급정보 수집 대기</span>')]:['감정가',`<b class="num">${won(x.apsl)}</b>`],
     ...(x.lh?[]:[['최저입찰가',`<b class="num">${x.minb!=null?won(x.minb):'비공개'}</b> <span class="note">${+x.round||''}회차 · 감정가 대비 <span style="color:${rc(x.ratio)}">${pct(x.ratio)??'–'}</span></span>`]])];
-  let h=`<div class="mh"><div class="mt"><span class="tag ${x.lh?'lhb':'onb'}">${x.board} · ${x.lh?'LH':'온비드'}</span><span class="tag">${esc(x.cat)}</span>${x.pvct?'<span class="tag pv">수의계약 가능</span>':''}<h2 id="mtitle">${esc(x.title)}</h2></div><button class="mx" aria-label="닫기">×</button></div>
+  h=`<div class="mh"><div class="mt"><span class="tag ${x.lh?'lhb':'onb'}">${x.board} · ${x.lh?'LH':'온비드'}</span><span class="tag">${esc(x.cat)}</span>${x.pvct?'<span class="tag pv">수의계약 가능</span>':''}<h2 id="mtitle">${esc(x.title)}</h2></div><button class="mx" aria-label="닫기">×</button></div>
   <div class="mbody"><dl class="mi">${info.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
   <div class="mact">${inWs(x.id).length?`<button data-act="go" class="ib wide added" title="워크스페이스에서 열기">✓ 워크스페이스 · 열기</button>`:`<button data-act="add" class="ib wide" title="워크스페이스에 추가">＋ 워크스페이스에 추가</button>`}<button data-act="hid" class="ib" title="숨김">${hid.has(x.id)?'↺':'⊘'}</button><button data-act="share" class="ib" title="링크 복사">⎘</button><span class="sp"></span><a class="go" href="${esc(link)}" target="_blank" rel="noopener">↗ ${x.lh?'LH청약플러스 원문':'온비드에서 보기'}</a></div>`;
   if(!x.lh){
@@ -1205,6 +1221,7 @@ function open(id,noPush){
   }
   h+=sec('첨부 문서','<div class="empty">공고문·감정평가서 등 첨부 문서는 기관 원문 페이지에서 확인하세요. (API로 제공되지 않음)</div>');
   h+=`<div class="note src">출처: ${x.lh?'LH 분양임대공고 · 공급정보 API':'한국자산관리공사 온비드 부동산 물건목록 API'} · 수집 ${D.updated.slice(0,10)}${x.first_seen?' · 최초 확인 '+x.first_seen:''}</div></div>`;
+  }
   const was=$('#split').classList.contains('open')&&$('#modal').dataset.id!==id;
   $('#modal').innerHTML=h;$('#split').classList.add('open');
   if(was&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&$('#modal').animate)$('#modal').animate([{opacity:.35,transform:'translateX(16px)'},{opacity:1,transform:'none'}],{duration:240,easing:'cubic-bezier(.4,0,.2,1)'});$('#modal').scrollTop=0;$('#modal').dataset.id=id;markSel(true);
