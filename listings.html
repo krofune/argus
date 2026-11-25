@@ -1077,7 +1077,7 @@ const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e)
 const WS=()=>window.ARGUS_WS;const inWs=id=>WS()?WS().inWs(id):[];const hid=new Set(store.get('argus.hid',[]));
 const I=D.items.map(x=>{const p=x.prices||{};const dl=x.deadline?new Date(x.deadline+'T00:00:00'):null;
   return {...x,cat:CAT[x.category]||x.category,sido:SIDO(x.region),dday:dl?Math.round((dl-TODAY)/864e5):null,
-   apsl:p.appraisal??null,minb:p.min_bid??null,ratio:p.min_bid_to_appraisal??null,supply:p.supply_total??null,lh:x.source==='LH',g2b:x.source==='나라장터'||x.channel==='공모',gm:x.channel==='공모'&&x.source!=='나라장터',agy:({'LH공모':'LH','SH공모':'SH','GH공모':'GH','iH공모':'iH','BMC공모':'부산도시공사','DCCO공모':'대전도시공사','DUDC공모':'대구도시개발공사','UMCA공모':'울산도시공사','JNDC공모':'전남개발공사','GNDC공모':'경남개발공사','GBDC공모':'경북개발공사','CBDC공모':'충북개발공사','KAMCO공모':'캠코'})[x.source]||(x.org||'').replace(/\(.*\)/,''),est:(x.prices||{}).estimate??null,
+   apsl:p.appraisal??null,minb:p.min_bid??null,ratio:p.min_bid_to_appraisal??null,supply:p.supply_total??null,lh:x.source==='LH',g2b:x.source==='나라장터'||x.channel==='공모',gm:x.channel==='공모'&&x.source!=='나라장터',agy:({'LH공모':'LH','SH공모':'SH','GH공모':'GH','iH공모':'iH','BMC공모':'부산도시공사','DCCO공모':'대전도시공사','DUDC공모':'대구도시개발공사','UMCA공모':'울산도시공사','JNDC공모':'전남개발공사','GNDC공모':'경남개발공사','GBDC공모':'경북개발공사','CBDC공모':'충북개발공사','CNDC공모':'충남개발공사','JBDC공모':'전북개발공사','KAMCO공모':'캠코'})[x.source]||(x.org||'').replace(/\(.*\)/,''),est:(x.prices||{}).estimate??null,
    price:p.appraisal??p.supply_total??p.estimate??null,pvct:x.status==='수의계약 가능',
    board:x.board||board(x),
    _q:(x.title+' '+(x.address||'')+' '+x.org+' '+((x.ref||{}).cltr_mng_no||'')).toLowerCase()}}).filter(x=>x.dday==null||x.dday>=0);
