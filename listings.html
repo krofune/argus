@@ -701,7 +701,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
     <div id="view">
   <div class="bar2 tbar2">
-    <nav class="ttabs" id="ttabs"><button data-t="민관">민관<small></small></button><i>|</i><button data-t="공매" class="on">공매<small></small></button><i>|</i><button data-t="공모사업">공모사업<small></small></button><i>|</i><button data-t="all">전체보기<small></small></button></nav>
+    <nav class="ttabs" id="ttabs"><button data-t="민관">민관<small></small></button><i>|</i><button data-t="공매" class="on">공매<small></small></button><i>|</i><button data-t="공모사업">공모사업<small></small></button><i>|</i><button data-t="PF사업장">PF사업장<small></small></button><i>|</i><button data-t="all">전체보기<small></small></button></nav>
     <span class="cnt"><b class="num" id="cnt">0</b>건</span>
     <span class="sp"></span>
     <div class="tool" id="tsearch"><button class="tb" data-p="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>검색</span></button><input id="q" placeholder="물건명 · 주소 · 기관 · 물건관리번호"></div>
@@ -759,7 +759,7 @@ const I_={
  cal:'<svg viewBox="0 0 16 16"><rect x="2.5" y="3.5" width="11" height="10" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3" stroke="currentColor" stroke-width="1.2"/></svg>',
  ext:'<svg viewBox="0 0 16 16"><path d="M9 3h4v4M13 3 7.5 8.5M11 9.5V13H3V5h3.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
 };
-const TAGC={'민관':'g','공매':'b','공모사업':'p','리서치':'t','직접 등록':'r','딜':'b'};
+const TAGC={'민관':'g','공매':'b','공모사업':'p','PF사업장':'r','리서치':'t','직접 등록':'r','딜':'b'};
 
 // ── 저장소 (페이지 사이 공유)
 function seed(){const id=uid();return {v:2,spaces:[{id,name:'내 워크스페이스',desc:'매입·개발 검토 물건',owner:ME,members:[{name:ME,role:'소유자'}],created:now()}],joined:[],cur:id,items:[],log:[]}}
@@ -782,6 +782,8 @@ function sanitize(html){const t=document.createElement('template');t.innerHTML=h
 // ── 다른 페이지에서 쓰는 추가 API
 function blank(o){return Object.assign({id:uid(),space:space().id,kind:'manual',ref:null,board:'직접 등록',title:'',org:'',orgUrl:'',loc:'',land:null,bldg:null,amount:null,posted:'',end:'',start:'',due:'',status:'new',priority:'none',owners:[],body:'',links:[],custom:{},meta:{},comments:[],created:now(),updated:now(),by:ME},o)}
 function fromListing(x){const p=x.prices||{};const lh=x.source==='LH';
+  if(x.source==='KOFIA')return {kind:'listing',ref:x.id,board:'PF사업장',title:x.title,org:x.org,orgUrl:x.url||'',loc:x.region||'',land:x.land_sqm??null,bldg:x.bldg_sqm??null,amount:p.appraisal??null,posted:x.posted||'',end:'',
+    meta:{사업형태:x.category||'',용도지역:x.address||'',최저입찰가:p.min_bid?Math.round(p.min_bid/1e8)+'억':'',경공매장소:(x.pf||{}).place||'',수의계약:(x.pf||{}).pvct||'',신탁사:x.org||'',대리금융기관:(x.pf||{}).agent||''},links:x.url?[{t:'공매공고·감정평가서',u:x.url}]:[],body:`<p>${esc(x.org)} · ${esc(x.category||'')} · ${esc((x.pf||{}).detail||'')}</p>`};
   if(x.channel==='공모'&&x.source!=='나라장터')return {kind:'listing',ref:x.id,board:'공모사업',title:x.title,org:x.org,orgUrl:x.url||'',loc:x.demand_org||'',land:null,bldg:null,amount:null,posted:x.posted||'',end:x.deadline||'',
     meta:{진행:x.status||'',최초공고:x.first_posted||'',공고횟수:(x.notices||1)+'건',담당:x.demand_org||''},links:[{t:'공고 원문',u:x.url}],body:`<p>${esc(x.org)} · ${esc(x.status||'공고')} · 마감 ${esc(x.deadline||'공고문 참조')}</p>`};
   if(x.source==='나라장터')return {kind:'listing',ref:x.id,board:'공모사업',title:x.title,org:x.org,orgUrl:x.url||'',loc:x.demand_org||'',land:null,bldg:null,amount:p.estimate??null,posted:x.posted||'',end:x.deadline||'',
@@ -1072,16 +1074,16 @@ const TODAY=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}))
 const CAT={'상가용및업무용건물':'상업·업무','산업용및기타특수용건물':'산업·특수','용도복합용건물':'복합','주거용건물':'주거','토지':'토지','상가':'상가'};
 const SIDO=s=>(s||'').replace(/특별자치도|특별자치시|특별시|광역시|도$/,'').replace('전남광주통합','전남·광주').replace(/^(경상|전라|충청)(남|북)$/,(m,a,b)=>({경상:'경',전라:'전',충청:'충'}[a])+b)||'-';
 // 민관: LH 분양 + 공공기관·지자체가 처분하는 물건 (캠코 압류·국유재산 공매는 공매로) / 공매: 그 외 온비드 / 공모사업: 제목에 공모·사업자 모집
-function board(x){const t=x.title||'';if(x.channel==='공모'||/공모|사업자\s*모집|사업참여자|투자제안|복합용지\s*입주자\s*모집|입주기업\s*모집/.test(t))return '공모사업';if(x.source==='LH')return '민관';if((x.org_type==='공공기관'||x.org_type==='지자체')&&!/자산관리공사/.test(x.org))return '민관';return '공매'}
+function board(x){const t=x.title||'';if(x.source==='KOFIA')return 'PF사업장';if(x.channel==='공모'||/공모|사업자\s*모집|사업참여자|투자제안|복합용지\s*입주자\s*모집|입주기업\s*모집/.test(t))return '공모사업';if(x.source==='LH')return '민관';if((x.org_type==='공공기관'||x.org_type==='지자체')&&!/자산관리공사/.test(x.org))return '민관';return '공매'}
 const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const WS=()=>window.ARGUS_WS;const inWs=id=>WS()?WS().inWs(id):[];const hid=new Set(store.get('argus.hid',[]));
 const I=D.items.map(x=>{const p=x.prices||{};const dl=x.deadline?new Date(x.deadline+'T00:00:00'):null;
   return {...x,cat:CAT[x.category]||x.category,sido:SIDO(x.region),dday:dl?Math.round((dl-TODAY)/864e5):null,
-   apsl:p.appraisal??null,minb:p.min_bid??null,ratio:p.min_bid_to_appraisal??null,supply:p.supply_total??null,lh:x.source==='LH',g2b:x.source==='나라장터'||x.channel==='공모',gm:x.channel==='공모'&&x.source!=='나라장터',agy:({'LH공모':'LH','SH공모':'SH','GH공모':'GH','iH공모':'iH','BMC공모':'부산도시공사','DCCO공모':'대전도시공사','DUDC공모':'대구도시개발공사','UMCA공모':'울산도시공사','JNDC공모':'전남개발공사','GNDC공모':'경남개발공사','GBDC공모':'경북개발공사','CBDC공모':'충북개발공사','CNDC공모':'충남개발공사','JBDC공모':'전북개발공사','KAMCO공모':'캠코'})[x.source]||(x.org||'').replace(/\(.*\)/,''),est:(x.prices||{}).estimate??null,
+   apsl:p.appraisal??null,minb:p.min_bid??null,ratio:p.min_bid_to_appraisal??null,supply:p.supply_total??null,lh:x.source==='LH',g2b:x.source==='나라장터'||x.channel==='공모',gm:x.channel==='공모'&&x.source!=='나라장터',agy:({'LH공모':'LH','SH공모':'SH','GH공모':'GH','iH공모':'iH','BMC공모':'부산도시공사','DCCO공모':'대전도시공사','DUDC공모':'대구도시개발공사','UMCA공모':'울산도시공사','JNDC공모':'전남개발공사','GNDC공모':'경남개발공사','GBDC공모':'경북개발공사','CBDC공모':'충북개발공사','CNDC공모':'충남개발공사','JBDC공모':'전북개발공사','KAMCO공모':'캠코'})[x.source]||(x.org||'').replace(/\(.*\)/,''),est:(x.prices||{}).estimate??null,pfx:x.pf||null,
    price:p.appraisal??p.supply_total??p.estimate??null,pvct:x.status==='수의계약 가능',
    board:x.board||board(x),
    _q:(x.title+' '+(x.address||'')+' '+x.org+' '+((x.ref||{}).cltr_mng_no||'')).toLowerCase()}}).filter(x=>x.dday==null||x.dday>=0);
-$('#updated').textContent='수집 '+D.updated.replace('T',' ').slice(0,16)+' KST · 온비드·LH·나라장터 공공데이터 API + LH·SH·GH 및 지방 개발공사·캠코 공모 게시판';
+$('#updated').textContent='수집 '+D.updated.replace('T',' ').slice(0,16)+' KST · 온비드·LH·나라장터 공공데이터 API + 공사 공모 게시판 · 금투협 PF사업장';
 const eok=v=>v==null?null:v===0?'0':v>=1e12?(v/1e12).toFixed(2)+'조':(v/1e8>=100?Math.round(v/1e8).toLocaleString():(v/1e8).toFixed(1))+'억';
 const won=v=>v==null?null:Math.round(v).toLocaleString()+'원';
 const pct=v=>v==null?null:(v*100).toFixed(1)+'%';
@@ -1145,6 +1147,7 @@ function spark(x,w,h){const rs=(x.rounds||[]).filter(r=>r.min_bid);if(rs.length<
   return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" data-tip="${stip}" style="cursor:help"><rect width="${w}" height="${h}" fill="transparent"/>${ay!=null?`<line x1="0" x2="${w}" y1="${ay}" y2="${ay}" stroke="#a86a14" stroke-dasharray="2 2" stroke-width=".8"/>`:''}<path d="${p}" fill="none" stroke="#2463a8" stroke-width="1.4"/></svg>`}
 const rbar=r=>r==null?'<div class="rbar"></div>':`<div class="rbar"><i style="width:${Math.min(r,1.3)/1.3*100}%;background:${rc(r)}"></i><b style="left:${100/1.3}%"></b></div>`;
 
+const pvctS=v=>(v||'-').replace(/각\s?차수\s?유찰시\s?가능/,'각 차수 유찰 시').replace(/마지막\s?차수\s?최종\s?유찰시\s?가능/,'최종 유찰 시').replace(/기타\(가능하나 조건 상이\)/,'조건부');
 function card(x){
   if(x.g2b){const hot=x.dday!=null&&x.dday<=3;return `<article class="card gm" data-id="${esc(x.id)}" tabindex="0">
   <div class="ch"><span class="tag">${esc(x.category||'공모')}</span><span class="org">${esc(x.org)}</span>${x.gm&&x.status&&x.status!=='공고'?`<span class="tag pv">${esc(x.status)}</span>`:''}<span class="dd num ${hot?'hot':''}">${dd(x.dday)}</span></div>
@@ -1154,12 +1157,12 @@ function card(x){
   <div class="ca">${inWs(x.id).length?`<button data-act="go" class="added" title="워크스페이스에서 열기">✓ 추가됨 · 보드 열기</button>`:`<button data-act="add">＋ 추가</button>`}<button data-act="hid">${hid.has(x.id)?'숨김 해제':'숨김'}</button></div></article>`}
   const hot=x.dday!=null&&x.dday<=3;
   const P=x.lh?`<div><div class="l">공급 예정가 합계</div>${x.supply!=null?`<div class="v num">${eok(x.supply)}</div>`:'<div class="v na" style="font-size:12px;color:var(--tx3);padding-top:3px">수집 대기</div>'}</div><div><div class="l">공급 필지</div><div class="v num">${x.parcel_count??'–'}</div></div><div><div class="l">공고일</div><div class="v num">${(x.posted||'').slice(2).replace(/-/g,'.')||'–'}</div></div>`
-   :`<div><div class="l">감정가</div><div class="v num">${eok(x.apsl)}</div></div><div><div class="l">최저입찰가 · ${+x.round||esc(x.round)}회차</div><div class="v num">${x.minb!=null?eok(x.minb):'<span class="note">비공개</span>'}</div></div><div><div class="l">감정가 대비</div><div class="v num" style="color:${rc(x.ratio)}">${pct(x.ratio)??'–'}</div></div>`;
+   :`<div><div class="l">${x.pfx?'감정평가액':'감정가'}</div><div class="v num">${eok(x.apsl)}</div></div><div><div class="l">${x.pfx?'최저입찰가 · 마지막 차수':'최저입찰가 · '+(+x.round||esc(x.round))+'회차'}</div><div class="v num">${x.minb!=null?eok(x.minb):'<span class="note">'+(x.pfx?'미기재':'비공개')+'</span>'}</div></div><div><div class="l">감정가 대비</div><div class="v num" style="color:${rc(x.ratio)}">${pct(x.ratio)??'–'}</div></div>`;
   return `<article class="card${x.lh?' lh':''}" data-id="${esc(x.id)}" tabindex="0">
-  <div class="ch"><span class="tag">${esc(x.cat)}</span><span class="org">${esc(x.org)}</span>${x.pvct?'<span class="tag pv">수의계약</span>':''}<span class="dd num ${hot?'hot':''}">${x.dday==null&&x.pvct_since?'유찰 '+x.pvct_since.slice(2).replace(/-/g,'.'):dd(x.dday)}</span></div>
+  <div class="ch"><span class="tag">${esc(x.cat)}</span><span class="org">${esc(x.org)}</span>${x.pvct?'<span class="tag pv">수의계약</span>':''}${x.pfx&&x.pfx.is_new?'<span class="tag pv">신규</span>':''}<span class="dd num ${hot?'hot':''}">${x.pfx?`<span class="note">${esc(x.area||'')}</span>`:x.dday==null&&x.pvct_since?'유찰 '+x.pvct_since.slice(2).replace(/-/g,'.'):dd(x.dday)}</span></div>
   <h3 class="ttl">${esc(x.title)}</h3><div class="addr">${esc(x.address||x.region)}${x.land_sqm?` · 토지 ${pyeong(x.land_sqm)}`:''}${x.bldg_sqm?` · 건물 ${pyeong(x.bldg_sqm)}`:''}</div>
   <div class="pr">${P}</div>${x.lh?'<div class="rbar"></div>':rbar(x.ratio)}
-  <div class="cf">${x.lh?`<span class="note">${esc(x.status)} · 마감 ${(x.deadline||'').slice(5).replace('-','.')}</span>`:`<span class="note">회차별 최저가</span>${spark(x,140,24)}<span class="note num">유찰 ${x.failed_bids??0}회</span>`}</div>
+  <div class="cf">${x.pfx?`<span class="note">${esc(x.pfx.place||'장소 미기재')} · 수의계약 ${esc(pvctS(x.pfx.pvct))} · ${esc(x.pfx.cons||'')}</span>`:x.lh?`<span class="note">${esc(x.status)} · 마감 ${(x.deadline||'').slice(5).replace('-','.')}</span>`:`<span class="note">회차별 최저가</span>${spark(x,140,24)}<span class="note num">유찰 ${x.failed_bids??0}회</span>`}</div>
   <div class="ca">${inWs(x.id).length?`<button data-act="go" class="added" title="워크스페이스에서 열기">✓ 추가됨 · 보드 열기</button>`:`<button data-act="add">＋ 추가</button>`}<button data-act="hid">${hid.has(x.id)?'숨김 해제':'숨김'}</button></div></article>`;
 }
 function render(keep){
@@ -1213,15 +1216,19 @@ function open(id,noPush){
     +`<div class="note src">출처: 조달청 나라장터 입찰공고정보 API · 수집 ${D.updated.slice(0,10)}${x.first_seen?' · 최초 확인 '+x.first_seen:''}</div></div>`;
   }else{
   const link=x.lh?x.url:(x.url||'https://www.onbid.co.kr');
-  const info=[['처분 기관',`${esc(x.org)} <span class="note">${esc(x.org_type)}</span>`],['소재지',esc(x.address||x.region)],
+  const info=x.pfx?[['신탁사',`${esc(x.org)} <span class="note">${esc(x.pfx.trust_tel||'')}</span>`],['대리금융기관',`${esc(x.pfx.agent||'-')} <span class="note">${esc(x.pfx.agent_tel||'')}</span>`],['소재지',`${esc(x.title)} <span class="note">${esc(x.area||'')}</span>`],['용도',`${esc(x.kind)} · ${esc(x.category)} <span class="note">${esc(x.address)}</span>`],['감정평가액',`<b class="num">${x.apsl?won(x.apsl):'–'}</b>`],['최저입찰가',`<b class="num">${x.minb?won(x.minb):'미기재'}</b> <span class="note">마지막 차수${x.pfx.last?' '+esc(x.pfx.last):''}${x.ratio?' · 감정가 대비 <span style="color:'+rc(x.ratio)+'">'+pct(x.ratio)+'</span>':''}${x.pfx.min_bid_prev&&x.minb&&x.pfx.min_bid_prev!==x.minb?' · 전월 '+eok(x.pfx.min_bid_prev):''}</span>`],['경공매 장소',esc(x.pfx.place||'-')],['수의계약',esc(x.pfx.pvct||'-')]]:[['처분 기관',`${esc(x.org)} <span class="note">${esc(x.org_type)}</span>`],['소재지',esc(x.address||x.region)],
     x.lh?['공고일',x.posted||'–']:(x.dday==null&&x.pvct_since?['입찰 기간','입찰 종료 · <b>수의계약으로 매수 가능</b> <span class="note">(기관에 문의)</span>']:['입찰 기간',`${x.bid_start||''} ${x.bid_start_time||''} ~ ${x.deadline||''} ${x.deadline_time||''}`]),
     x.dday==null&&x.pvct_since?['마지막 유찰',`${x.pvct_since}${x.modified?` <span class="note">· 온비드 최종 수정 ${x.modified}</span>`:''}`]:[x.lh?'접수 마감':'입찰 마감',`${x.deadline||'–'} <b class="${x.dday!=null&&x.dday<=3?'hot':''}">${dd(x.dday)}</b>`],
     x.lh?['공급 예정가',(x.supply!=null?`<b class="num">${won(x.supply)}</b>`:'<span class="note">공급정보 수집 대기</span>')]:['감정가',`<b class="num">${won(x.apsl)}</b>`],
     ...(x.lh?[]:[['최저입찰가',`<b class="num">${x.minb!=null?won(x.minb):'비공개'}</b> <span class="note">${+x.round||''}회차 · 감정가 대비 <span style="color:${rc(x.ratio)}">${pct(x.ratio)??'–'}</span></span>`]])];
-  h=`<div class="mh"><div class="mt"><span class="tag ${x.lh?'lhb':'onb'}">${x.board} · ${x.lh?'LH':'온비드'}</span><span class="tag">${esc(x.cat)}</span>${x.pvct?'<span class="tag pv">수의계약 가능</span>':''}<h2 id="mtitle">${esc(x.title)}</h2></div><button class="mx" aria-label="닫기">×</button></div>
+  h=`<div class="mh"><div class="mt"><span class="tag ${x.lh?'lhb':'onb'}">${x.board} · ${x.lh?'LH':x.pfx?'금투협':'온비드'}</span>${x.pfx&&x.pfx.is_new?'<span class="tag pv">신규</span>':''}<span class="tag">${esc(x.cat)}</span>${x.pvct?'<span class="tag pv">수의계약 가능</span>':''}<h2 id="mtitle">${esc(x.title)}</h2></div><button class="mx" aria-label="닫기">×</button></div>
   <div class="mbody"><dl class="mi">${info.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
-  <div class="mact">${inWs(x.id).length?`<button data-act="go" class="ib wide added" title="워크스페이스에서 열기">✓ 워크스페이스 · 열기</button>`:`<button data-act="add" class="ib wide" title="워크스페이스에 추가">＋ 워크스페이스에 추가</button>`}<button data-act="hid" class="ib" title="숨김">${hid.has(x.id)?'↺':'⊘'}</button><button data-act="share" class="ib" title="링크 복사">⎘</button><span class="sp"></span><a class="go" href="${esc(link)}" target="_blank" rel="noopener">↗ ${x.lh?'LH청약플러스 원문':'온비드에서 보기'}</a></div>`;
-  if(!x.lh){
+  <div class="mact">${inWs(x.id).length?`<button data-act="go" class="ib wide added" title="워크스페이스에서 열기">✓ 워크스페이스 · 열기</button>`:`<button data-act="add" class="ib wide" title="워크스페이스에 추가">＋ 워크스페이스에 추가</button>`}<button data-act="hid" class="ib" title="숨김">${hid.has(x.id)?'↺':'⊘'}</button><button data-act="share" class="ib" title="링크 복사">⎘</button><span class="sp"></span><a class="go" href="${esc(link)}" target="_blank" rel="noopener">↗ ${x.lh?'LH청약플러스 원문':x.pfx?'공매공고·감정평가서':'온비드에서 보기'}</a></div>`;
+  if(x.pfx){
+    const hs=(x.pfx.history||[]).filter(e=>e.min_bid);
+    h+=sec('사업 진행 상황',`<dl class="kv"><dt>인허가</dt><dd>${esc(x.pfx.permit==='Y'?'완료':x.pfx.permit==='N'?'미완료':x.pfx.permit||'-')}${x.pfx.permit_no?' <span class="note">'+esc(x.pfx.permit_no)+'</span>':''}</dd><dt>착공·완공</dt><dd>${esc(x.pfx.cons||'-')}</dd><dt>세부 상황</dt><dd>${esc(x.pfx.detail||'-')}</dd></dl>`);
+    if(hs.length>1)h+=sec('월별 최저입찰가',`<table class="tt"><thead><tr><th>기준일</th><th class="r">최저입찰가</th><th class="r">감정가 대비</th></tr></thead><tbody>${hs.map(e=>`<tr><td class="num">${e.asof}</td><td class="r num">${won(e.min_bid)}</td><td class="r num">${e.appraisal?pct(e.min_bid/e.appraisal):'–'}</td></tr>`).join('')}</tbody></table>`);
+  }else if(!x.lh){
     const rs=x.rounds||[];
     if(chart(x))h+=sec('회차별 최저입찰가',chart(x)+`<div class="calc">유찰되면 다음 회차로 넘어가며 최저입찰가가 낮아집니다. 크게 표시된 점이 다음 입찰 회차입니다.</div>`);
     h+=sec('입찰 일정',`<table class="tt"><thead><tr><th>회차</th><th>입찰 시작</th><th>입찰 마감</th><th class="r">최저입찰가</th><th class="r">감정가 대비</th><th>상태</th></tr></thead><tbody>${rs.map(r=>{const on=String(r.round)===String(x.round);return `<tr class="${on?'cur':''}"><td class="num">${+r.round||esc(r.round)}</td><td class="num">${r.bid_start||''} ${r.bid_start_time||''}</td><td class="num">${r.deadline||''} ${r.deadline_time||''}</td><td class="r num">${r.min_bid!=null?won(r.min_bid):esc(r.min_bid_text||'–')}</td><td class="r num" style="color:${rc(r.to_appraisal)}">${pct(r.to_appraisal)??'–'}</td><td>${r.url?`<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.stat||'보기')} ↗</a>`:esc(r.stat||'')}</td></tr>`}).join('')}</tbody></table>`,` <span class="note">${rs.length}개 회차</span>`);
@@ -1230,8 +1237,8 @@ function open(id,noPush){
     h+=sec('상세 대상',x.parcels&&x.parcels.length?`<table class="tt"><thead><tr><th>순번</th><th>용도</th><th>소재지</th><th class="r">금액</th><th class="r">면적</th></tr></thead><tbody>${x.parcels.map((r,i)=>`<tr><td class="num">${i+1}</td><td>${esc(r.use)}</td><td>${esc(r.address)} ${esc(r.lot)}</td><td class="r num">${won(r.price)??'–'}</td><td class="r num">${r.area_sqm?r.area_sqm.toLocaleString()+' ㎡':'–'}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">필지·예정가격은 LH 공급정보 API에서 다음 수집 때부터 채워집니다.</div>');
     h+=sec('공고 정보',`<dl class="kv"><dt>공고 상태</dt><dd>${esc(x.status)}</dd><dt>유형</dt><dd>${esc(x.category)} · ${esc(x.kind)}</dd><dt>공고 번호</dt><dd class="num">${esc(x.ref.pan_id)}</dd></dl>`);
   }
-  h+=sec('첨부 문서','<div class="empty">공고문·감정평가서 등 첨부 문서는 기관 원문 페이지에서 확인하세요. (API로 제공되지 않음)</div>');
-  h+=`<div class="note src">출처: ${x.lh?'LH 분양임대공고 · 공급정보 API':'한국자산관리공사 온비드 부동산 물건목록 API'} · 수집 ${D.updated.slice(0,10)}${x.first_seen?' · 최초 확인 '+x.first_seen:''}</div></div>`;
+  h+=sec('첨부 문서',x.pfx?`<div class="empty">공매공고문·감정평가서는 위 '공매공고·감정평가서' 링크${x.url?'':'(미기재 — 신탁사에 문의)'}에서, 전체 사업장 엑셀은 <a href="https://www.kofia.or.kr/brd/m_213/list.do" target="_blank" rel="noopener">금융투자협회 게시판</a>에서 확인하세요.</div>`:'<div class="empty">공고문·감정평가서 등 첨부 문서는 기관 원문 페이지에서 확인하세요. (API로 제공되지 않음)</div>');
+  h+=`<div class="note src">출처: ${x.lh?'LH 분양임대공고 · 공급정보 API':x.pfx?'금융투자협회 경공매 PF사업장 정보 ('+esc(x.pfx.asof||'')+' 기준)':'한국자산관리공사 온비드 부동산 물건목록 API'} · 수집 ${D.updated.slice(0,10)}${x.first_seen?' · 최초 확인 '+x.first_seen:''}</div></div>`;
   }
   const was=$('#split').classList.contains('open')&&$('#modal').dataset.id!==id;
   $('#modal').innerHTML=h;$('#split').classList.add('open');

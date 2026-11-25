@@ -717,7 +717,7 @@ const I_={
  cal:'<svg viewBox="0 0 16 16"><rect x="2.5" y="3.5" width="11" height="10" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3" stroke="currentColor" stroke-width="1.2"/></svg>',
  ext:'<svg viewBox="0 0 16 16"><path d="M9 3h4v4M13 3 7.5 8.5M11 9.5V13H3V5h3.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
 };
-const TAGC={'민관':'g','공매':'b','공모사업':'p','리서치':'t','직접 등록':'r','딜':'b'};
+const TAGC={'민관':'g','공매':'b','공모사업':'p','PF사업장':'r','리서치':'t','직접 등록':'r','딜':'b'};
 
 // ── 저장소 (페이지 사이 공유)
 function seed(){const id=uid();return {v:2,spaces:[{id,name:'내 워크스페이스',desc:'매입·개발 검토 물건',owner:ME,members:[{name:ME,role:'소유자'}],created:now()}],joined:[],cur:id,items:[],log:[]}}
@@ -740,6 +740,8 @@ function sanitize(html){const t=document.createElement('template');t.innerHTML=h
 // ── 다른 페이지에서 쓰는 추가 API
 function blank(o){return Object.assign({id:uid(),space:space().id,kind:'manual',ref:null,board:'직접 등록',title:'',org:'',orgUrl:'',loc:'',land:null,bldg:null,amount:null,posted:'',end:'',start:'',due:'',status:'new',priority:'none',owners:[],body:'',links:[],custom:{},meta:{},comments:[],created:now(),updated:now(),by:ME},o)}
 function fromListing(x){const p=x.prices||{};const lh=x.source==='LH';
+  if(x.source==='KOFIA')return {kind:'listing',ref:x.id,board:'PF사업장',title:x.title,org:x.org,orgUrl:x.url||'',loc:x.region||'',land:x.land_sqm??null,bldg:x.bldg_sqm??null,amount:p.appraisal??null,posted:x.posted||'',end:'',
+    meta:{사업형태:x.category||'',용도지역:x.address||'',최저입찰가:p.min_bid?Math.round(p.min_bid/1e8)+'억':'',경공매장소:(x.pf||{}).place||'',수의계약:(x.pf||{}).pvct||'',신탁사:x.org||'',대리금융기관:(x.pf||{}).agent||''},links:x.url?[{t:'공매공고·감정평가서',u:x.url}]:[],body:`<p>${esc(x.org)} · ${esc(x.category||'')} · ${esc((x.pf||{}).detail||'')}</p>`};
   if(x.channel==='공모'&&x.source!=='나라장터')return {kind:'listing',ref:x.id,board:'공모사업',title:x.title,org:x.org,orgUrl:x.url||'',loc:x.demand_org||'',land:null,bldg:null,amount:null,posted:x.posted||'',end:x.deadline||'',
     meta:{진행:x.status||'',최초공고:x.first_posted||'',공고횟수:(x.notices||1)+'건',담당:x.demand_org||''},links:[{t:'공고 원문',u:x.url}],body:`<p>${esc(x.org)} · ${esc(x.status||'공고')} · 마감 ${esc(x.deadline||'공고문 참조')}</p>`};
   if(x.source==='나라장터')return {kind:'listing',ref:x.id,board:'공모사업',title:x.title,org:x.org,orgUrl:x.url||'',loc:x.demand_org||'',land:null,bldg:null,amount:p.estimate??null,posted:x.posted||'',end:x.deadline||'',
