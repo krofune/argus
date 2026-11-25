@@ -667,8 +667,8 @@ function sanitize(html){const t=document.createElement('template');t.innerHTML=h
 // ── 다른 페이지에서 쓰는 추가 API
 function blank(o){return Object.assign({id:uid(),space:space().id,kind:'manual',ref:null,board:'직접 등록',title:'',org:'',orgUrl:'',loc:'',land:null,bldg:null,amount:null,posted:'',end:'',start:'',due:'',status:'new',priority:'none',owners:[],body:'',links:[],custom:{},meta:{},comments:[],created:now(),updated:now(),by:ME},o)}
 function fromListing(x){const p=x.prices||{};const lh=x.source==='LH';
-  if(x.channel==='공모'&&x.source!=='나라장터')return {kind:'listing',ref:x.id,board:'공모사업',title:x.title,org:x.org,orgUrl:x.url||'',loc:x.demand_org||'',land:null,bldg:null,amount:null,posted:x.posted||'',end:'',
-    meta:{진행:x.status||'',최초공고:x.first_posted||'',공고횟수:(x.notices||1)+'건',담당:x.demand_org||''},links:[{t:'공고 원문',u:x.url}],body:`<p>${esc(x.org)} · ${esc(x.status||'공고')} · 마감일은 공고문 참조</p>`};
+  if(x.channel==='공모'&&x.source!=='나라장터')return {kind:'listing',ref:x.id,board:'공모사업',title:x.title,org:x.org,orgUrl:x.url||'',loc:x.demand_org||'',land:null,bldg:null,amount:null,posted:x.posted||'',end:x.deadline||'',
+    meta:{진행:x.status||'',최초공고:x.first_posted||'',공고횟수:(x.notices||1)+'건',담당:x.demand_org||''},links:[{t:'공고 원문',u:x.url}],body:`<p>${esc(x.org)} · ${esc(x.status||'공고')} · 마감 ${esc(x.deadline||'공고문 참조')}</p>`};
   if(x.source==='나라장터')return {kind:'listing',ref:x.id,board:'공모사업',title:x.title,org:x.org,orgUrl:x.url||'',loc:x.demand_org||'',land:null,bldg:null,amount:p.estimate??null,posted:x.posted||'',end:x.deadline||'',
     meta:{공고번호:`${(x.ref||{}).bid_no||''}-${(x.ref||{}).bid_ord||''}`,구분:x.category||'',계약방법:x.contract||'',개찰일:x.opening||'',입찰방법:'나라장터'},links:[{t:'나라장터 공고 원문',u:x.url}],body:`<p>${esc(x.org)} · ${esc(x.category||'')} · 마감 ${esc(x.deadline||'')}</p>`};
   return {kind:'listing',ref:x.id,board:x.board||(lh?'민관':'공매'),title:x.title,org:x.org,orgUrl:x.url||'',loc:x.address||x.region||'',land:x.land_sqm??null,bldg:x.bldg_sqm??null,
