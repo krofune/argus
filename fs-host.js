@@ -92,6 +92,7 @@
       if (INPUT[p]) page = h(comp(24085), null, h(comp(INPUT[p])));
       else if (OUTPUT[p]) page = h(comp(96015), null, h(comp(OUTPUT[p])));
       else if (POPUP[p]) page = h(comp(POPUP[p]));
+      else if (p === "/fm") page = null;   // 재무모델링 탭 (fs.html 이 별도 화면으로 띄움)
       else page = h(Start);   // 원본 첫 화면 대신 바로 사업개요로 (새로 만들기·파일·샘플은 위쪽 막대에)
       return h(React.Fragment, null, h(Sync), h(Boundary, { key: p }, page));
     }
