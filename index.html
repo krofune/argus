@@ -687,7 +687,8 @@ addEventListener('keydown',e=>{if(e.key==='Escape'){if(psel.classList.contains('
 .wok{background:#14243b;border-color:#14243b!important;color:#fff}
 .wok:disabled{background:#9aa3ae;border-color:#9aa3ae!important;cursor:not-allowed}
 .wok.danger{background:#c62828;border-color:#c62828!important}
-.wbox.task{width:min(1460px,96vw);height:min(880px,92vh);padding:0;display:flex;flex-direction:column;overflow:hidden}</style><script>// Argus 워크스페이스 — RedOps식 검토 보드. 지금은 이 브라우저(localStorage)에 저장 (팀 공유 저장은 다음 단계).
+.wbox.task{width:min(1460px,96vw);height:min(880px,92vh);padding:0;display:flex;flex-direction:column;overflow:hidden}</style><script>// Argus 워크스페이스 — RedOps식 검토 보드. 로그인하면 Argus 서버(Supabase ws_*)에 저장해 초대한 멤버와 함께 보고 편집한다.
+// 브라우저(localStorage)에는 화면을 빨리 띄우기 위한 사본만 둔다. 서버 표가 아직 없으면 예전처럼 이 브라우저에만 저장.
 // 모든 페이지에서 불러와 window.ARGUS_WS(추가 API)를 제공하고, #wsapp이 있는 페이지(workspace.html)에서는 보드 전체를 그린다.
 (function(){
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
@@ -695,7 +696,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const KEY='argus.ws.v2';
 const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-3);
 const now=()=>new Date().toISOString();
-const ME='나';
+let ME='나',MYID=null;
 const ST=[['new','신규','#3b4552'],['doing','진행','#d08700'],['done','완료','#2e9a62'],['hold','대기','#6b5bd0'],['arch','보관','#7d8794']];
 const STN=Object.fromEntries(ST.map(s=>[s[0],s]));
 const PR=[['none','없음','#7d8794'],['p1','최우선','#d93838'],['p2','급함','#e07a1f'],['p3','나중에','#2463a8'],['p4','접어둠','#7d8794']];
@@ -717,14 +718,76 @@ const I_={
  cal:'<svg viewBox="0 0 16 16"><rect x="2.5" y="3.5" width="11" height="10" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3" stroke="currentColor" stroke-width="1.2"/></svg>',
  ext:'<svg viewBox="0 0 16 16"><path d="M9 3h4v4M13 3 7.5 8.5M11 9.5V13H3V5h3.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
 };
-const TAGC={'민관':'g','공매':'b','공모사업':'p','PF사업장':'r','리서치':'t','직접 등록':'r','딜':'b'};
+const TAGC={'F/S 검토':'b','민관':'g','공매':'b','공모사업':'p','PF사업장':'r','리서치':'t','직접 등록':'r','딜':'b'};
 
 // ── 저장소 (페이지 사이 공유)
 function seed(){const id=uid();return {v:2,spaces:[{id,name:'내 워크스페이스',desc:'매입·개발 검토 물건',owner:ME,members:[{name:ME,role:'소유자'}],created:now()}],joined:[],cur:id,items:[],log:[]}}
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.spaces&&d.spaces.length)return d}catch(e){}return seed()}
 let S=load();
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}badge()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}badge();if(SB)queuePush()}
 addEventListener('storage',e=>{if(e.key===KEY){S=load();if(APP)render();badge()}});
+// ── 서버 저장 (Argus 계정·멤버 공유)
+let SB=null,SNAP={sp:{},it:{}},pushT=null,pushing=false,again=false,lastPull=0;
+const myRole=sid=>{const sp=S.spaces.find(s=>s.id===sid);return sp?(sp.role||'소유자'):null};
+const canEdit=sid=>SB?['소유자','편집자'].includes(myRole(sid)):true;
+const spSig=s=>JSON.stringify([s.name,s.desc||'']);
+function queuePush(){clearTimeout(pushT);pushT=setTimeout(push,350)}
+async function push(){
+  if(!SB)return;if(pushing){again=true;return}pushing=true;let bad=null;
+  try{
+    for(const sp of S.spaces){const j=spSig(sp);if(SNAP.sp[sp.id]===j||!canEdit(sp.id))continue;
+      const r=SNAP.sp[sp.id]===undefined?await SB.from('ws_spaces').insert({id:sp.id,name:sp.name,descr:sp.desc||''}):await SB.from('ws_spaces').update({name:sp.name,descr:sp.desc||'',updated_at:now()}).eq('id',sp.id);
+      if(r.error)bad=r.error;else{if(SNAP.sp[sp.id]===undefined){sp.role='소유자';sp.owner=ME;sp.members=[{name:ME,role:'소유자',uid:MYID}]}SNAP.sp[sp.id]=j}}
+    for(const id of Object.keys(SNAP.sp))if(!S.spaces.some(s=>s.id===id)){const r=await SB.from('ws_spaces').delete().eq('id',id);if(r.error)bad=r.error;else delete SNAP.sp[id]}
+    if(S.items.some(i=>SNAP.it[i.id]!==JSON.stringify(i)&&!canEdit(i.space)))bad={message:'보기 권한만 있는 워크스페이스라 수정할 수 없습니다'};
+    const up=S.items.filter(i=>SNAP.it[i.id]!==JSON.stringify(i)&&canEdit(i.space)&&SNAP.sp[i.space]!==undefined);
+    if(up.length){const r=await SB.from('ws_items').upsert(up.map(i=>({id:i.id,space_id:i.space,data:i,updated_at:now()})));if(r.error)bad=r.error;else up.forEach(i=>SNAP.it[i.id]=JSON.stringify(i))}
+    const gone=Object.keys(SNAP.it).filter(id=>!S.items.some(i=>i.id===id));
+    if(gone.length){const r=await SB.from('ws_items').delete().in('id',gone);if(r.error)bad=r.error;else gone.forEach(id=>delete SNAP.it[id])}
+    const lg=S.log.filter(l=>!l._s&&SNAP.sp[l.space]!==undefined);
+    if(lg.length){const r=await SB.from('ws_log').insert(lg.map(l=>({space_id:l.space,at:l.at,by_name:l.by,text:l.text})));if(!r.error)lg.forEach(l=>l._s=1)}
+    try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+  }catch(e){bad=e}
+  pushing=false;if(bad){toast('서버에 저장하지 못했습니다 — '+esc(bad.message||bad)+' · 서버 내용으로 다시 불러옵니다',4200);pull(true)}
+  if(again){again=false;push()}
+}
+async function pull(force){
+  if(!SB||pushing)return;if(!force&&($('#wdlg.open')||$('.wmenu')))return;
+  const [a,b,c,d]=await Promise.all([SB.from('ws_spaces').select('*').order('created_at'),SB.from('ws_members').select('*').order('added_at'),SB.from('ws_items').select('id,space_id,data'),SB.from('ws_log').select('*').order('at',{ascending:false}).limit(500)]);
+  const e=a.error||b.error||c.error||d.error;if(e)throw e;
+  const mem={};b.data.forEach(m=>(mem[m.space_id]=mem[m.space_id]||[]).push({name:m.name||m.email,role:m.role,email:m.email,uid:m.user_id}));
+  const spaces=a.data.map(r=>{const ms=mem[r.id]||[];const me=ms.find(m=>m.uid===MYID);const ow=ms.find(m=>m.role==='소유자');
+    return {id:r.id,name:r.name,desc:r.descr||'',owner:ow?ow.name:'',members:ms,created:r.created_at,role:me?me.role:(r.owner_id===MYID?'소유자':'뷰어')}});
+  const items=c.data.map(r=>Object.assign({comments:[],owners:[],links:[],meta:{},custom:{}},r.data,{id:r.id,space:r.space_id}));
+  const logs=d.data.map(r=>({at:r.at,space:r.space_id,by:r.by_name||'',text:r.text||'',_s:1}));
+  SNAP={sp:Object.fromEntries(spaces.map(s=>[s.id,spSig(s)])),it:Object.fromEntries(items.map(i=>[i.id,JSON.stringify(i)]))};
+  const cur=S.cur;S={v:2,spaces,joined:[],cur:spaces.some(s=>s.id===cur)?cur:(spaces[0]||{}).id,items,log:logs};lastPull=Date.now();
+  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(_){}
+  return spaces.length;
+}
+async function migrate(local){
+  // 처음 한 번: 이 브라우저에만 있던 워크스페이스·물건·활동기록을 내 계정으로 옮긴다 ('나' → 내 이름)
+  const fix=v=>v==='나'?ME:v;
+  local.spaces.forEach(sp=>{sp.owner=ME;sp.members=[{name:ME,role:'소유자',uid:MYID}];sp.role='소유자'});
+  local.items.forEach(i=>{i.owners=(i.owners||[]).map(fix);(i.comments||[]).forEach(c=>c.by=fix(c.by))});
+  local.log.forEach(l=>{l.by=fix(l.by);delete l._s});
+  S=local;SNAP={sp:{},it:{}};await push();
+}
+function modeNote(){const m=document.querySelector('.top .meta');if(m&&APP)m.textContent=SB?'Argus 계정에 저장 · 초대한 멤버와 공유':'지금은 이 브라우저에 저장됩니다'}
+if(window.ArgusAuth)window.ArgusAuth.ready(async r=>{
+  const p=r.profile||{};ME=p.name||(p.email||'').split('@')[0]||'나';MYID=p.id;
+  try{
+    SB=r.sb;const local=load();const hadLocal=!!localStorage.getItem(KEY);
+    const n=await pull(true);
+    if(!n){if(hadLocal&&local.spaces.length){await migrate(local);if(local.items.length)toast('이 브라우저에 있던 워크스페이스를 Argus 계정으로 옮겼습니다',4200)}
+      else{const sd=seed();sd.spaces[0].owner=ME;sd.spaces[0].members=[{name:ME,role:'소유자',uid:MYID}];sd.spaces[0].role='소유자';S=sd;SNAP={sp:{},it:{}};await push()}}
+  }catch(e){SB=null;console.warn('[워크스페이스] 서버 저장소를 쓸 수 없어 이 브라우저에만 저장합니다:',e.message||e)}
+  modeNote();badge();if(APP)render();document.dispatchEvent(new CustomEvent('ws:change'));
+  if(SB){const tick=()=>{if(document.visibilityState==='visible'&&Date.now()-lastPull>40000)pull().then(n=>{if(n!=null){badge();if(APP)render()}}).catch(()=>{})};
+    setInterval(tick,45000);document.addEventListener('visibilitychange',tick)}
+});
+window.ARGUS_WS_SYNC={pull:()=>pull(true),canEdit,role:myRole};
+
 function log(text,sid){S.log.unshift({at:now(),space:sid||S.cur,by:ME,text});S.log=S.log.slice(0,500)}
 const space=()=>S.spaces.find(s=>s.id===S.cur)||S.spaces[0];
 const items=(sid)=>S.items.filter(i=>i.space===(sid||space().id));
@@ -806,8 +869,9 @@ let view='board',q='',openSide=null,fPr='',fOwner='';
 
 function render(){
   const sp=space();
-  $('#wsown').innerHTML=S.spaces.map(s=>`<button class="wsi${s.id===sp.id?' on':''}" data-id="${s.id}"><span>${esc(s.name)}</span><small class="num">${items(s.id).filter(i=>i.status!=='arch').length}</small></button>`).join('');
-  $('#wsjoin').innerHTML=S.joined.length?'':'<div class="note wsno">아직 초대받은 워크스페이스가 없습니다</div>';
+  const own=S.spaces.filter(s=>!s.role||s.role==='소유자'),joined=S.spaces.filter(s=>s.role&&s.role!=='소유자');
+  $('#wsown').innerHTML=own.map(s=>`<button class="wsi${s.id===sp.id?' on':''}" data-id="${s.id}"><span>${esc(s.name)}</span><small class="num">${items(s.id).filter(i=>i.status!=='arch').length}</small></button>`).join('');
+  $('#wsjoin').innerHTML=joined.length?joined.map(s=>`<button class="wsi${s.id===sp.id?' on':''}" data-id="${s.id}"><span>${esc(s.name)}</span><small class="num">${items(s.id).filter(i=>i.status!=='arch').length}</small></button>`).join(''):'<div class="note wsno">아직 초대받은 워크스페이스가 없습니다</div>';
   $('#wsname').textContent=sp.name;$('#wsdesc').textContent=sp.desc||'';
   $('#wsmem').innerHTML=sp.members.slice(0,5).map(m=>`<b class="av" title="${esc(m.name)} · ${m.role}">${esc(m.name.slice(0,1))}</b>`).join('');
   $$('#wsviews button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
@@ -884,6 +948,7 @@ $('#wsviews').onclick=e=>{const b=e.target.closest('button');if(!b)return;view=b
 $('#wssearch').onclick=e=>{e.stopPropagation();const t=$('#wstool');t.classList.toggle('srch');if(t.classList.contains('srch'))$('#wsq').focus();else{q='';$('#wsq').value='';render()}};
 $('#wsq').oninput=e=>{q=e.target.value.trim().toLowerCase();render()};
 $('#wsfbtn').onclick=e=>{e.stopPropagation();const sp=space();choose($('#wsfbtn'),[['','전체 보기','',null],...PR.slice(1).map(p=>['pr:'+p[0],'우선순위 · '+p[1],I_[p[0]],p[2]]),...sp.members.map(m=>['ow:'+m.name,'담당 · '+m.name,'',null])],v=>{if(!v){fPr='';fOwner=''}else if(v.startsWith('pr:'))fPr=v.slice(3);else fOwner=v.slice(3);render()})};
+$('#wsjoin').onclick=e=>$('#wsown').onclick(e);
 $('#wsown').onclick=e=>{const b=e.target.closest('.wsi');if(!b)return;S.cur=b.dataset.id;save();q='';$('#wsq').value='';fPr=fOwner='';history.replaceState(null,'',`#space=${S.cur}`);render()};
 $('#wsnew').onclick=()=>newSpace(id=>history.replaceState(null,'',`#space=${id}`));
 $$('.wsgrp').forEach(h=>h.onclick=e=>{if(e.target.closest('#wsnew'))return;h.parentElement.classList.toggle('fold')});
@@ -908,14 +973,17 @@ function settings(tab){
   const sp=space();
   const body=()=>`<h3>관리설정</h3><div class="seg2"><button data-t="general" class="${tab==='general'?'on':''}">일반</button><button data-t="members" class="${tab==='members'?'on':''}">멤버 ${sp.members.length}</button><button data-t="danger" class="${tab==='danger'?'on':''}">삭제</button></div>
    ${tab==='general'?`<label class="fld">이름 <i>*</i><input id="d_n" value="${esc(sp.name)}" maxlength="40"></label><label class="fld">설명<textarea id="d_d" rows="3">${esc(sp.desc||'')}</textarea></label><div class="note">만든 날 ${fmtAt(sp.created)} · 소유자 ${esc(sp.owner)}</div>`
-   :tab==='members'?`<div class="fld">멤버 초대<div class="inv"><input id="d_m" placeholder="이름 또는 이메일"><select id="d_r"><option>편집자</option><option>뷰어</option></select><button id="d_add">초대</button></div><div class="note" style="margin-top:4px">지금은 이름만 등록됩니다. 팀원과 함께 보는 공유 기능은 곧 연결됩니다.</div></div>
-     <ul class="mems">${sp.members.map((m,k)=>`<li><b class="av">${esc(m.name.slice(0,1))}</b><span>${esc(m.name)}</span><span class="sp"></span>${m.role==='소유자'?'<span class="note">소유자</span>':`<select data-mr="${k}"><option ${m.role==='편집자'?'selected':''}>편집자</option><option ${m.role==='뷰어'?'selected':''}>뷰어</option></select><button class="cdel" data-md="${k}" title="내보내기">×</button>`}</li>`).join('')}</ul>`
-   :`<p>「${esc(sp.name)}」 워크스페이스와 안의 매물 ${items().length}건, 코멘트를 모두 삭제합니다. 되돌릴 수 없습니다.</p><label class="fld">확인을 위해 워크스페이스 이름을 입력하세요<input id="d_c" placeholder="${esc(sp.name)}"></label><button class="linkdanger" id="d_del" ${S.spaces.length<2?'disabled title="워크스페이스가 하나뿐이라 삭제할 수 없습니다"':''}>워크스페이스 삭제</button>`}`;
+   :tab==='members'?`<div class="fld">멤버 초대<div class="inv"><input id="d_m" placeholder="${SB?'Argus 회원 이메일':'이름 또는 이메일'}"><select id="d_r"><option>편집자</option><option>뷰어</option></select><button id="d_add">초대</button></div><div class="note" style="margin-top:4px">${SB?'Argus에 가입·승인된 회원의 이메일로 초대합니다. 초대받은 멤버는 워크스페이스의 매물·F/S 검토를 함께 보고, 편집자는 수정도 할 수 있습니다.':'지금은 이 브라우저에만 저장되어 이름만 등록됩니다.'}</div></div>
+     <ul class="mems">${sp.members.map((m,k)=>`<li><b class="av">${esc(m.name.slice(0,1))}</b><span>${esc(m.name)}${m.email?` <span class="note">${esc(m.email)}</span>`:''}</span><span class="sp"></span>${m.role==='소유자'||(SB&&sp.role!=='소유자')?`<span class="note">${m.role}</span>`:false?'':`<select data-mr="${k}"><option ${m.role==='편집자'?'selected':''}>편집자</option><option ${m.role==='뷰어'?'selected':''}>뷰어</option></select><button class="cdel" data-md="${k}" title="내보내기">×</button>`}</li>`).join('')}</ul>`
+   :`<p>「${esc(sp.name)}」 워크스페이스와 안의 매물 ${items().length}건, 코멘트를 모두 삭제합니다. 되돌릴 수 없습니다.</p><label class="fld">확인을 위해 워크스페이스 이름을 입력하세요<input id="d_c" placeholder="${esc(sp.name)}"></label><button class="linkdanger" id="d_del" ${SB&&sp.role!=='소유자'?'disabled title="소유자만 삭제할 수 있습니다"':''} ${S.spaces.filter(s=>!s.role||s.role==='소유자').length<2&&sp.role!=='편집자'&&sp.role!=='뷰어'?'disabled title="워크스페이스가 하나뿐이라 삭제할 수 없습니다"':''}>워크스페이스 삭제</button>`}`;
   const draw=()=>{dlg(body(),tab==='general'?'저장':null,()=>{const n=$('#d_n').value.trim();if(!n)return false;sp.name=n;sp.desc=$('#d_d').value.trim();log('워크스페이스 정보 수정');save();render()},()=>{
     $('#wdlg .seg2').onclick=e=>{const b=e.target.closest('button');if(!b)return;tab=b.dataset.t;draw()};
-    const ad=$('#d_add');if(ad){const go=()=>{const n=$('#d_m').value.trim();if(!n)return;if(sp.members.some(m=>m.name===n)){toast('이미 멤버입니다');return}sp.members.push({name:n,role:$('#d_r').value});log(`멤버 ${n} 초대`);save();render();draw()};ad.onclick=go;$('#d_m').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)go()};$('#d_m').focus()}
-    $$('[data-mr]').forEach(s=>s.onchange=()=>{sp.members[+s.dataset.mr].role=s.value;save()});
-    $$('[data-md]').forEach(b=>b.onclick=()=>{const m=sp.members[+b.dataset.md];sp.members.splice(+b.dataset.md,1);items().forEach(i=>i.owners=i.owners.filter(o=>o!==m.name));log(`멤버 ${m.name} 내보냄`);save();render();draw()});
+    const ad=$('#d_add');if(ad){const go=async()=>{const n=$('#d_m').value.trim();if(!n)return;if(sp.members.some(m=>m.name===n||m.email===n)){toast('이미 멤버입니다');return}
+      if(SB){if(sp.role!=='소유자'){toast('워크스페이스 소유자만 초대할 수 있습니다');return}ad.disabled=true;const r=await SB.rpc('ws_invite',{sp:sp.id,mail:n,r:$('#d_r').value});ad.disabled=false;
+        if(r.error){toast(esc(r.error.message));return}const m=r.data;sp.members.push({name:m.name||m.email,role:m.role,email:m.email,uid:m.user_id});log(`멤버 ${m.name||m.email} 초대`);save();render();draw();toast(`${esc(m.name||m.email)}님을 초대했습니다`);return}
+      sp.members.push({name:n,role:$('#d_r').value});log(`멤버 ${n} 초대`);save();render();draw()};ad.onclick=go;$('#d_m').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)go()};$('#d_m').focus()}
+    $$('[data-mr]').forEach(s=>s.onchange=async()=>{const m=sp.members[+s.dataset.mr];if(SB&&m.uid){const r=await SB.from('ws_members').update({role:s.value}).eq('space_id',sp.id).eq('user_id',m.uid);if(r.error){toast(esc(r.error.message));draw();return}}m.role=s.value;log(`멤버 ${m.name} 권한 ${s.value}`);save()});
+    $$('[data-md]').forEach(b=>b.onclick=async()=>{const m=sp.members[+b.dataset.md];if(SB&&m.uid){const r=await SB.from('ws_members').delete().eq('space_id',sp.id).eq('user_id',m.uid);if(r.error){toast(esc(r.error.message));return}}sp.members.splice(+b.dataset.md,1);items().forEach(i=>i.owners=i.owners.filter(o=>o!==m.name));log(`멤버 ${m.name} 내보냄`);save();render();draw()});
     const dd=$('#d_del');if(dd)dd.onclick=()=>{if($('#d_c').value.trim()!==sp.name){$('#d_c').closest('.fld').classList.add('bad');return}S.items=S.items.filter(i=>i.space!==sp.id);S.spaces=S.spaces.filter(s=>s.id!==sp.id);S.cur=S.spaces[0].id;S.log=S.log.filter(l=>l.space!==sp.id);save();closeDlg();history.replaceState(null,'',`#space=${S.cur}`);render();toast('워크스페이스를 삭제했습니다')};
   },'mid')};draw();
 }

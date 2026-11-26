@@ -4,7 +4,7 @@
  */
 (function () {
   "use strict";
-  var L, store, file, sb, curId = null, curName = "", dirty = false, savedSig = "";
+  var L, store, file, sb, curId = null, curName = "", curOwn = true, myId = null, dirty = false, savedSig = "";
   var $ = function (s) { return document.querySelector(s); };
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var KEY = "argus.fs.current";
@@ -23,7 +23,8 @@
       : curId ? esc(curName || "이름 없는 검토") + (dirty ? ' <span class="fsc-dirty">● 저장 안 됨</span>' : ' <span class="fsc-ok">계정에 저장됨</span>')
       : '<span class="fsc-tmp">브라우저 임시저장</span>' + (sig() && store.getState().hasStartedProject ? ' <span class="fsc-dirty">계정에 아직 저장 안 됨</span>' : "");
     ["#fsc-save", "#fsc-saveas"].forEach(function (s) { $(s).disabled = !!pv; });
-    $("#fsc-del").style.display = curId && !pv ? "" : "none";
+    $("#fsc-del").style.display = curId && !pv && curOwn ? "" : "none";
+    $("#fsc-ws").style.display = pv ? "none" : "";
   }
   function needTable(err) {
     var m = String((err && (err.message || err.hint || err.code)) || err);
@@ -45,6 +46,7 @@
       : sb.from("fs_projects").insert(row).select("id,name").single();
     var r = await q;
     if (r.error) { toast(needTable(r.error), true); return false; }
+    if (asNew || !curId) curOwn = true;
     curId = r.data.id; curName = r.data.name; savedSig = sig(); dirty = false; remember(); paint();
     toast("계정에 저장했습니다");
     return true;
@@ -54,23 +56,24 @@
     var box = $("#fsc-list");
     if (box.classList.contains("on")) { box.classList.remove("on"); return; }
     box.innerHTML = '<div class="fsc-li note">불러오는 중…</div>'; box.classList.add("on");
-    var r = await sb.from("fs_projects").select("id,name,kind,updated_at").order("updated_at", { ascending: false }).limit(200);
+    var r = await sb.from("fs_projects").select("id,name,kind,updated_at,user_id").order("updated_at", { ascending: false }).limit(200);
     if (r.error) { box.innerHTML = '<div class="fsc-li note">' + esc(needTable(r.error)) + "</div>"; return; }
     if (!r.data.length) { box.innerHTML = '<div class="fsc-li note">계정에 저장된 검토가 없습니다. 입력 후 [계정에 저장]을 눌러 주세요.</div>'; return; }
     box.innerHTML = r.data.map(function (p) {
-      return '<button class="fsc-li" data-id="' + p.id + '"><b>' + esc(p.name) + '</b><span>' + esc(p.kind) + " · " + new Date(p.updated_at).toLocaleString("ko-KR", { dateStyle: "short", timeStyle: "short" }) + "</span></button>";
+      return '<button class="fsc-li" data-id="' + p.id + '"><b>' + esc(p.name) + '</b><span>' + (myId && p.user_id !== myId ? "공유받음 · " : "") + esc(p.kind) + " · " + new Date(p.updated_at).toLocaleString("ko-KR", { dateStyle: "short", timeStyle: "short" }) + "</span></button>";
     }).join("");
   }
 
   async function open(id) {
     $("#fsc-list").classList.remove("on");
     if (store.getState().hasStartedProject && (dirty || !curId) && !confirm("지금 화면의 입력값을 계정에 저장된 검토로 바꿀까요? 저장하지 않은 내용은 사라집니다.")) return;
-    var r = await sb.from("fs_projects").select("id,name,data").eq("id", id).single();
+    var r = await sb.from("fs_projects").select("id,name,data,user_id").eq("id", id).single();
     if (r.error) return toast(needTable(r.error), true);
     var p = file.parseProjectFile(JSON.stringify(r.data.data));
     if (!p.ok) return toast("불러오기 실패: " + p.error, true);
     try { if (preview()) file.exitSampleMode(); } catch (e) {}
     store.getState().loadProject(p.data);
+    curOwn = !myId || r.data.user_id === myId;
     curId = r.data.id; curName = r.data.name; savedSig = sig(); dirty = false; remember(); paint();
     window.ArgusFSHost.push("/input/business-overview");
     toast("'" + curName + "'을(를) 열었습니다");
@@ -91,7 +94,7 @@
   // 저장 안 된 변경이 있으면 [저장하고 새로 만들기 / 저장하지 않고 새로 만들기 / 취소] 중 선택
   function startNew(msg) {
     Promise.resolve(preview() ? S().exitSampleMode() : null).then(function () {
-      store.getState().resetProject(); curId = null; curName = ""; savedSig = ""; dirty = false; remember(); paint();
+      store.getState().resetProject(); curOwn = true; curId = null; curName = ""; savedSig = ""; dirty = false; remember(); paint();
       window.ArgusFSHost.push("/input/business-overview"); toast(msg || "새 검토를 시작했습니다");
     });
   }
@@ -141,6 +144,25 @@
     });
   }
 
+  // ── 워크스페이스에 추가: 계정에 저장된 검토를 워크스페이스 카드로 올림 (멤버가 열람·편집)
+  function money(v) { return isFinite(v) ? Math.round(v / 1e5) / 1e3 + "억" : "–"; }   // 천원 → 억원
+  async function toWs(ev) {
+    var btn = ev.currentTarget;
+    if (!window.ARGUS_WS) return toast("워크스페이스 기능을 불러오지 못했습니다", true);
+    if (!curId || dirty) { if (!(await save(false))) return; }
+    var st = store.getState(), bo = st.businessOverview || {}, sm = null;
+    try { sm = L(57101).runPipeline(st).summary.target; } catch (e) {}
+    var meta = { 유형: "분양형 사업수지", 주용도: bo.mainUse || "", 대지면적: bo.landAreaSqm ? Math.round(bo.landAreaSqm).toLocaleString() + "㎡" : "",
+      공사기간: bo.constructionPeriodMonths ? bo.constructionPeriodMonths + "개월" : "" };
+    if (sm) { meta["수입 계"] = money(sm.totalRevenueThousand); meta["지출 계"] = money(sm.totalExpenseThousand);
+      meta["이익(토지비 포함)"] = money(sm.profitIncludingLandThousand); meta["이익률"] = isFinite(sm.profitRateIncludingLand) ? (sm.profitRateIncludingLand * 100).toFixed(1) + "%" : "–"; }
+    window.ARGUS_WS.pick(btn, { kind: "fs", ref: "FS:" + curId, board: "F/S 검토", title: curName || bo.projectName || "이름 없는 검토", org: "", orgUrl: "",
+      loc: "", land: bo.landAreaSqm || null, bldg: null, amount: sm && isFinite(sm.totalRevenueThousand) ? sm.totalRevenueThousand * 1000 : null,
+      posted: new Date().toISOString().slice(0, 10), end: "", meta: meta,
+      links: [{ t: "F/S 검토 열기", u: "fs.html?open=" + curId }],
+      body: "<p>F/S 검토 · 사업수지 (분양형). 워크스페이스 멤버는 [F/S 검토 열기]로 열어 보고, 편집자는 수정·저장할 수 있습니다.</p>" });
+  }
+
   function init() {
     L = window.ArgusFS.load; store = L(2101).useProjectStore; file = L(4486);
     sb = window.ArgusAuth && window.ArgusAuth.client ? window.ArgusAuth.client() : null;
@@ -154,12 +176,16 @@
     $("#fsc-saveas").onclick = function () { sb ? save(true) : toast("로그인 후 사용할 수 있습니다", true); };
     $("#fsc-del").onclick = del;
     $("#fsc-new").onclick = newProject;
+    $("#fsc-ws").onclick = function (e) { sb ? toWs(e) : toast("로그인 후 사용할 수 있습니다", true); };
     $("#fsc-sample").onclick = sample;
     $("#fsc-file").onclick = function () { $("#fsc-fmenu").classList.toggle("on"); };
     $("#fsc-fmenu").onclick = function (e) { var b = e.target.closest("[data-f]"); if (!b) return; $("#fsc-fmenu").classList.remove("on"); b.dataset.f === "load" ? loadFile() : viewFile(); };
     $("#fsc-list").onclick = function (e) { var b = e.target.closest("[data-id]"); if (b) open(b.dataset.id); };
     document.addEventListener("click", function (e) { if (!e.target.closest(".fsc-lw")) { $("#fsc-list").classList.remove("on"); $("#fsc-fmenu").classList.remove("on"); } });
     paint();
+    if (sb) sb.auth.getSession().then(function (x) { myId = x.data.session && x.data.session.user.id; paint(); });
+    var o = new URLSearchParams(location.search).get("open");   // 워크스페이스 카드의 [F/S 검토 열기]
+    if (o && sb) { history.replaceState(null, "", location.pathname + location.hash); setTimeout(function () { open(o); }, 300); }
   }
   window.ArgusFSCloud = { init: init };
 })();
