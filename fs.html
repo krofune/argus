@@ -284,23 +284,28 @@ td.mut{color:var(--tx3)}
 .vh i{display:block;width:100%}.vh b{font-weight:500;color:var(--tx2);order:-1}
 .nl{display:flex;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px solid var(--line2)}.nl .num{color:var(--tx3)}.nl .ct{font-weight:400}
 .tt td .ct{max-width:330px}
-.rail a.dis{opacity:.45;cursor:default}.rail a{position:relative}.wsbadge{display:none}
-.dash{display:flex;flex-direction:column}.dwrap{position:relative;flex:1;min-height:0;overflow:hidden}
-.dprev{padding:16px;display:grid;gap:14px;filter:blur(3px);opacity:.75}
-.dgrid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.dgrid2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
-.dcard,.dpanel{background:#fff;border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:10px}.dpanel{min-height:320px}
-.sk{background:linear-gradient(90deg,#e6eaf0,#f1f3f6,#e6eaf0);background-size:200% 100%;animation:skm 2.4s ease-in-out infinite}
-@keyframes skm{0%{background-position:100% 0}100%{background-position:-100% 0}}
-.dbars{flex:1;display:flex;align-items:flex-end;gap:8px;padding-top:12px}.dbars i{flex:1;background:#d5dde8}
-.drow{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid #eef1f5}
-.dveil{position:absolute;inset:0;background:rgba(238,241,245,.55);backdrop-filter:blur(1px);display:flex;align-items:center;justify-content:center}
-.dmsg{background:#fff;border:1px solid var(--line);border-top:3px solid #14243b;box-shadow:0 18px 50px rgba(20,35,58,.12);padding:30px 36px;text-align:center;max-width:460px}
-.dash .ph h1{color:#1d2733}.dmsg h2{font-size:18px;font-weight:600;margin:14px 0 8px;color:#14243b}.dmsg p{font-size:13px;line-height:1.75;color:var(--tx2);margin:0}
-.dic{display:flex;gap:6px;justify-content:center}.dic span{width:8px;height:8px;border-radius:50%;background:#2463a8;animation:dot 1.2s ease-in-out infinite}
-.dic span:nth-child(2){animation-delay:.15s}.dic span:nth-child(3){animation-delay:.3s}
-@keyframes dot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
-.dlinks{display:flex;gap:8px;justify-content:center;margin-top:18px}.dlinks a{border:1px solid var(--line);padding:6px 12px;font-size:12.5px;color:var(--tx);text-decoration:none}.dlinks a:hover{border-color:#14243b}
-@media (prefers-reduced-motion:reduce){.sk,.dic span{animation:none}}
+.rail a{position:relative}.wsbadge{display:none}
+.fsw{display:flex;flex-direction:column;overflow:auto;background:#F5F7FB;position:relative}
+.fsc{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:8px;padding:7px 14px;background:#fff;border-bottom:1px solid var(--line)}
+.fsc-t{font-weight:600;color:#14243b;font-size:13px}.fsc-name{color:var(--tx2);font-size:12.5px}.fsc .sp{flex:1}
+.fsc button{font:inherit;font-size:12px;padding:5px 11px;border:1px solid var(--line);background:#fff;color:var(--tx);cursor:pointer}
+.fsc button:hover{border-color:#14243b}.fsc button.pri{background:#14243b;border-color:#14243b;color:#fff}.fsc button.pri:hover{background:#0b1626}
+.fsc button:disabled{opacity:.45;cursor:default}.fsc button.del{color:#b42318}
+.fsc-dirty{color:#b45309;font-weight:500;margin-left:6px}.fsc-ok{color:#2e7d4f;margin-left:6px}.fsc-tmp{color:var(--tx3)}.fsc-pv{color:#92400e}
+.fsc-lw{position:relative}.fsc-list{display:none;position:absolute;right:0;top:calc(100% + 4px);width:340px;max-height:420px;overflow:auto;background:#fff;border:1px solid var(--line);box-shadow:0 12px 30px rgba(20,35,58,.14);z-index:60}
+.fsc-list.on{display:block}.fsc-li{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;padding:9px 12px!important;border:0!important;border-bottom:1px solid #eef1f5!important;background:#fff}
+.fsc-li:hover{background:#f4f6f9}.fsc-li b{font-weight:600;color:#14243b}.fsc-li span{font-size:11.5px;color:var(--tx3)}.fsc-li.note{color:var(--tx2);font-size:12px;line-height:1.6}
+.fsc-toast{position:fixed;right:20px;bottom:20px;background:#14243b;color:#fff;padding:9px 14px;font-size:12.5px;opacity:0;transform:translateY(6px);transition:.2s;pointer-events:none;z-index:99;max-width:460px}
+.fsc-toast.on{opacity:1;transform:none}.fsc-toast.bad{background:#b42318}
+.fs-loading{padding:40px;color:var(--tx3)}
+.fs-err{margin:24px;padding:16px;border:1px solid #f5c2c0;background:#fff4f3;color:#8a1c1c}.fs-err button{margin-left:10px}
+/* 원본(suzy.land) 공통 스타일 — 이 영역 안에서만, 우선순위 0 */
+#fsroot{font-family:Arial,Helvetica,sans-serif;color:#171717;color-scheme:light;flex:1}
+:where(#fsroot) *{box-sizing:border-box;margin:0;padding:0}:where(#fsroot) a{color:inherit;text-decoration:none}
+@keyframes kn-flash-pulse{0%,to{outline-width:1px;outline-color:#78350f59}50%{outline-width:4px;outline-color:#78350f}}
+/* 새 창(부가세 상세 등)은 Argus 틀 없이 원본 화면만 */
+body.fs-popup{display:block;overflow:auto}body.fs-popup .top,body.fs-popup .rail,body.fs-popup .fsc{display:none}
+body.fs-popup .main{display:block}body.fs-popup .fsw{overflow:visible}
 
 body{min-width:1200px}
 .rail a{text-decoration:none}
@@ -428,7 +433,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 <script>window.ARGUS_DATA=k=>new Promise((res,rej)=>ArgusAuth.ready(async({sb})=>{const r=await sb.from('site_data').select('payload').eq('key',k).single();if(r.error)rej(new Error('데이터를 불러오지 못했습니다: '+r.error.message));else res(r.data.payload)}));</script>
-<header class="top"><div class="brand"><svg class="logo" viewBox="0 0 20 20" aria-hidden="true" width="18" height="18"><g fill="none" stroke="#8fa3bd" stroke-width="1.2"><circle cx="4" cy="4" r="2"/><circle cx="10" cy="4" r="2"/><circle cx="16" cy="4" r="2"/><circle cx="4" cy="10" r="2"/><circle cx="16" cy="10" r="2"/><circle cx="4" cy="16" r="2"/><circle cx="10" cy="16" r="2"/><circle cx="16" cy="16" r="2"/></g><circle cx="10" cy="10" r="2.6" fill="#6ea6dd"/></svg>Argus <small>Research</small></div><span class="sep"></span><span class="crumb">분석 · <b>F/S 검토</b></span><span class="sp"></span><span data-ag-user style="display:flex;margin-left:12px"></span></header>
+<header class="top"><div class="brand"><svg class="logo" viewBox="0 0 20 20" aria-hidden="true" width="18" height="18"><g fill="none" stroke="#8fa3bd" stroke-width="1.2"><circle cx="4" cy="4" r="2"/><circle cx="10" cy="4" r="2"/><circle cx="16" cy="4" r="2"/><circle cx="4" cy="10" r="2"/><circle cx="16" cy="10" r="2"/><circle cx="4" cy="16" r="2"/><circle cx="10" cy="16" r="2"/><circle cx="16" cy="16" r="2"/></g><circle cx="10" cy="10" r="2.6" fill="#6ea6dd"/></svg>Argus <small>Research</small></div><span class="sep"></span><span class="crumb">분석 · <b>F/S 검토</b></span><span class="sp"></span><span class="meta">개발사업 수지분석 · 원본 KE:NNEN(suzy.land)</span><span data-ag-user style="display:flex;margin-left:12px"></span></header>
 <div class="main">
   <nav class="rail">
     <a href="dashboard.html" class=""><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>대시보드</a>
@@ -441,17 +446,17 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     <a href="legal.html" class=""><svg viewBox="0 0 24 24"><path d="M12 4v16M7 20h10"/><path d="M4 8h16"/><path d="m4 8-2 6h4zM20 8l-2 6h4z"/><circle cx="12" cy="4" r="1"/></svg>법률검토</a>
   </nav>
 
-  <section class="work dash">
-    <div class="ph"><h1>F/S 검토</h1><span class="sp"></span></div>
-    <div class="dwrap">
-      <div class="dprev" aria-hidden="true">
-        <div class="dgrid4"><div class="dcard"><div class="sk" style="width:40%;height:10px"></div><div class="sk" style="width:60%;height:22px"></div><div class="sk" style="width:90%;height:8px"></div></div><div class="dcard"><div class="sk" style="width:40%;height:10px"></div><div class="sk" style="width:60%;height:22px"></div><div class="sk" style="width:90%;height:8px"></div></div><div class="dcard"><div class="sk" style="width:40%;height:10px"></div><div class="sk" style="width:60%;height:22px"></div><div class="sk" style="width:90%;height:8px"></div></div><div class="dcard"><div class="sk" style="width:40%;height:10px"></div><div class="sk" style="width:60%;height:22px"></div><div class="sk" style="width:90%;height:8px"></div></div></div>
-        <div class="dgrid2"><div class="dpanel"><div class="sk" style="width:30%;height:10px"></div><div class="dbars"><i style="height:34%"></i><i style="height:52%"></i><i style="height:41%"></i><i style="height:66%"></i><i style="height:58%"></i><i style="height:73%"></i><i style="height:49%"></i><i style="height:81%"></i><i style="height:62%"></i><i style="height:70%"></i><i style="height:55%"></i><i style="height:88%"></i><i style="height:64%"></i><i style="height:77%"></i><i style="height:59%"></i><i style="height:92%"></i></div></div><div class="dpanel"><div class="sk" style="width:40%;height:10px"></div><div class="drow"><div class="sk" style="width:12%;height:9px"></div><div class="sk" style="width:38%;height:9px"></div><div class="sk" style="width:18%;height:9px"></div><div class="sk" style="width:14%;height:9px"></div></div><div class="drow"><div class="sk" style="width:12%;height:9px"></div><div class="sk" style="width:38%;height:9px"></div><div class="sk" style="width:18%;height:9px"></div><div class="sk" style="width:14%;height:9px"></div></div><div class="drow"><div class="sk" style="width:12%;height:9px"></div><div class="sk" style="width:38%;height:9px"></div><div class="sk" style="width:18%;height:9px"></div><div class="sk" style="width:14%;height:9px"></div></div><div class="drow"><div class="sk" style="width:12%;height:9px"></div><div class="sk" style="width:38%;height:9px"></div><div class="sk" style="width:18%;height:9px"></div><div class="sk" style="width:14%;height:9px"></div></div><div class="drow"><div class="sk" style="width:12%;height:9px"></div><div class="sk" style="width:38%;height:9px"></div><div class="sk" style="width:18%;height:9px"></div><div class="sk" style="width:14%;height:9px"></div></div><div class="drow"><div class="sk" style="width:12%;height:9px"></div><div class="sk" style="width:38%;height:9px"></div><div class="sk" style="width:18%;height:9px"></div><div class="sk" style="width:14%;height:9px"></div></div><div class="drow"><div class="sk" style="width:12%;height:9px"></div><div class="sk" style="width:38%;height:9px"></div><div class="sk" style="width:18%;height:9px"></div><div class="sk" style="width:14%;height:9px"></div></div></div></div>
-      </div>
-      <div class="dveil"><div class="dmsg">
-        <div class="dic"><span></span><span></span><span></span></div>
-        <h2>F/S 검토 화면을 준비하고 있습니다</h2><p>매입·개발 사업의 사업성 검토(수지·현금흐름·IRR·민감도)를<br>한 화면에서 작성하고 비교할 수 있도록 정리하는 중입니다.</p><div class="dlinks"><a href="workspace.html">워크스페이스</a><a href="markets.html">시장지표</a><a href="index.html">딜 DB</a></div>
-      </div></div>
+  <section class="work fsw">
+    <div class="fsc">
+      <span class="fsc-t">F/S 검토</span><span id="fsc-name" class="fsc-name"></span><span class="sp"></span>
+      <span class="fsc-lw"><button id="fsc-open">내 F/S 목록 ▾</button><div id="fsc-list" class="fsc-list"></div></span>
+      <button id="fsc-save" class="pri">계정에 저장</button><button id="fsc-saveas">다른 이름으로 저장</button><button id="fsc-del" class="del">삭제</button>
     </div>
+    <div id="fsroot"><div class="fs-loading">F/S 검토 화면을 불러오는 중…</div></div>
+    <div id="fsc-toast" class="fsc-toast"></div>
   </section>
-</div></body></html>
+</div>
+<script>window.ArgusFSBase="";window.ArgusFSVer="ca29257ff7";</script>
+<script src="fs-host.js?v=ca29257ff7"></script><script src="fs-app.js?v=ca29257ff7"></script><script src="fs-cloud.js?v=ca29257ff7"></script>
+<script>(function(){function go(){ArgusFSHost.mount(document.getElementById("fsroot"));ArgusFSCloud.init();}
+if(window.ArgusAuth)ArgusAuth.ready(go);else go();})();</script></body></html>
