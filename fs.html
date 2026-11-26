@@ -304,7 +304,13 @@ td.mut{color:var(--tx3)}
 #fsroot input,#fsroot select,#fsroot textarea,#fsroot button{font-family:inherit}
 #fsroot input:focus,#fsroot select:focus,#fsroot textarea:focus{outline:none;border-color:var(--ac)!important;box-shadow:0 0 0 2px rgba(36,99,168,.12)}
 :where(#fsroot) *{box-sizing:border-box;margin:0;padding:0}:where(#fsroot) a{color:inherit;text-decoration:none}
-#fsroot a[href="#/"]{visibility:hidden}  /* 원본 첫 화면이 없어졌으므로 [← 처음으로] 숨김 */
+#fsroot a[href="#/"]{visibility:hidden}
+/* 원본은 왼쪽 메뉴 없는 전체 폭 기준 — Argus 왼쪽 메뉴만큼 좁아져 오른쪽 '부가 조건' 카드가 잘리던 것 보정 */
+/* Argus 공통 표 스타일(base.css: 표 최소폭 1080px·고정 머리줄·줄바꿈 금지 등)이 원본 표에 새어 들어가 표가 카드 밖으로 잘리던 것 차단 */
+#fsroot table{width:revert;min-width:0;border-collapse:revert;border-spacing:revert}
+#fsroot thead th{position:revert;background:revert;z-index:auto;font-weight:revert;color:revert;font-size:revert;text-align:revert;white-space:revert;border-bottom:revert}
+#fsroot tbody td{padding:revert;height:auto;border-bottom:revert;white-space:revert;vertical-align:revert}
+#fsroot tbody tr{cursor:auto}#fsroot tbody tr:hover td{background:revert}  /* 원본 첫 화면이 없어졌으므로 [← 처음으로] 숨김 */
 @keyframes kn-flash-pulse{0%,to{outline-width:1px;outline-color:#78350f59}50%{outline-width:4px;outline-color:#78350f}}
 /* 새 창(부가세 상세 등)은 Argus 틀 없이 원본 화면만 */
 body.fs-popup{display:block;overflow:auto}body.fs-popup .top,body.fs-popup .rail,body.fs-popup .fsc{display:none}
@@ -462,7 +468,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     <div id="fsc-toast" class="fsc-toast"></div>
   </section>
 </div>
-<script>window.ArgusFSBase="";window.ArgusFSVer="6ea8c18d99";</script>
-<script src="fs-host.js?v=6ea8c18d99"></script><script src="fs-app.js?v=6ea8c18d99"></script><script src="fs-cloud.js?v=6ea8c18d99"></script>
+<script>window.ArgusFSBase="";window.ArgusFSVer="86e2373888";</script>
+<script src="fs-host.js?v=86e2373888"></script><script src="fs-app.js?v=86e2373888"></script><script src="fs-cloud.js?v=86e2373888"></script>
 <script>(function(){function go(){ArgusFSHost.mount(document.getElementById("fsroot"));ArgusFSCloud.init();}
 if(window.ArgusAuth)ArgusAuth.ready(go);else go();})();</script></body></html>
