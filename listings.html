@@ -9,11 +9,11 @@
   --ac:#2463a8; --ac-bg:#e8f0fa; --ac2:#1a4f8a;
   --b-done:#2e7d5b; --b-pref:#2a7f8f; --b-mkt:#a86a14; --b-bid:#8a5bb0; --b-wd:#b23b3b;
   --b-pf:#2463a8; --b-br:#4f6a8f; --b-ln:#5c6b7a;
-  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --mono:'IBM Plex Sans KR',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{font:13px/1.45 'IBM Plex Sans KR',system-ui,sans-serif;color:var(--tx);background:var(--bg);display:grid;grid-template-rows:40px 1fr;overflow:hidden}
+body{font:13px/1.45 'IBM Plex Sans KR',system-ui,sans-serif;font-variant-numeric:tabular-nums;color:var(--tx);background:var(--bg);display:grid;grid-template-rows:40px 1fr;overflow:hidden}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* scrollbar: thin, low-contrast */
 *{scrollbar-width:thin;scrollbar-color:#cfd5dd transparent}
@@ -579,7 +579,7 @@ body.ag-locked>:not(#ag-gate):not(script){display:none!important}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>// 마우스를 올리면 바로 뜨는 작은 설명 상자: data-tip="HTML" 을 가진 요소(SVG 포함) 공용
 (function(){if(window.__agtip)return;window.__agtip=1;
-const st=document.createElement('style');st.textContent='.agtip{position:fixed;z-index:9999;pointer-events:none;background:#fff;border:1px solid #c3cbd6;box-shadow:0 6px 18px rgba(20,36,59,.14);padding:7px 10px;font:12px/1.55 "IBM Plex Sans KR",system-ui,sans-serif;color:#1d2733;max-width:320px;display:none}.agtip b{font-weight:600}.agtip .g{color:#8b95a3;font-size:11px}.agtip .n{font-family:"IBM Plex Mono",monospace}.agtip .row{display:flex;gap:10px;justify-content:space-between}.agtip i{display:inline-block;width:8px;height:8px;margin-right:5px;vertical-align:middle}';
+const st=document.createElement('style');st.textContent='.agtip{position:fixed;z-index:9999;pointer-events:none;background:#fff;border:1px solid #c3cbd6;box-shadow:0 6px 18px rgba(20,36,59,.14);padding:7px 10px;font:12px/1.55 "IBM Plex Sans KR",system-ui,sans-serif;color:#1d2733;max-width:320px;display:none}.agtip b{font-weight:600}.agtip .g{color:#8b95a3;font-size:11px}.agtip .n{font-family:"IBM Plex Sans KR",monospace}.agtip .row{display:flex;gap:10px;justify-content:space-between}.agtip i{display:inline-block;width:8px;height:8px;margin-right:5px;vertical-align:middle}';
 document.head.appendChild(st);const t=document.createElement('div');t.className='agtip';
 const add=()=>document.body.appendChild(t);document.body?add():document.addEventListener('DOMContentLoaded',add);
 let cur=null;
@@ -1259,13 +1259,13 @@ function chart(x){
   const X=i=>P.l+i*(W-P.l-P.r)/(rs.length-1),Y=v=>P.t+(1-v/mx)*(H-P.t-P.b),ci=rs.findIndex(r=>String(r.round)===String(x.round));
   let p='';rs.forEach((r,i)=>p+=(i?`H${X(i)}V${Y(r.min_bid)}`:`M${X(0)},${Y(r.min_bid)}`));
   let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:680px;display:block">`;
-  [0,.5,1].forEach(f=>{s+=`<line x1="${P.l}" x2="${W-P.r}" y1="${Y(mx*f)}" y2="${Y(mx*f)}" stroke="#e9edf2"/><text x="${P.l-6}" y="${Y(mx*f)+3}" text-anchor="end" font-size="9" fill="#8b95a3" font-family="IBM Plex Mono">${eok(mx*f)}</text>`});
+  [0,.5,1].forEach(f=>{s+=`<line x1="${P.l}" x2="${W-P.r}" y1="${Y(mx*f)}" y2="${Y(mx*f)}" stroke="#e9edf2"/><text x="${P.l-6}" y="${Y(mx*f)+3}" text-anchor="end" font-size="9" fill="#8b95a3" font-family="IBM Plex Sans KR">${eok(mx*f)}</text>`});
   if(x.apsl)s+=`<line x1="${P.l}" x2="${W-P.r}" y1="${Y(x.apsl)}" y2="${Y(x.apsl)}" stroke="#a86a14" stroke-dasharray="3 3"/><text x="${W-P.r}" y="${Y(x.apsl)-4}" text-anchor="end" font-size="9" fill="#a86a14">감정가 ${eok(x.apsl)}</text>`;
   s+=`<path d="${p}" fill="none" stroke="#2463a8" stroke-width="1.6"/>`;
   const tipR=(r,i)=>{const prev=rs[i-1];const cut=prev&&prev.min_bid?(r.min_bid/prev.min_bid-1):null;return esc(`<b>${+r.round||r.round}회차</b>${String(r.round)===String(x.round)?' <span class="g">· 다음 입찰</span>':''}<div class="row"><span class="g">입찰 기간</span><span class="n">${(r.bid_start||'').slice(5)} ~ ${(r.deadline||'').slice(5)}${r.deadline_time?' '+r.deadline_time:''}</span></div><div class="row"><span class="g">최저입찰가</span><b class="n">${won(r.min_bid)}</b></div><div class="row"><span class="g">감정가 대비</span><span class="n">${pct(r.to_appraisal)??'–'}</span></div>${cut!=null?`<div class="row"><span class="g">직전 회차 대비</span><span class="n">${(cut*100).toFixed(1)}%</span></div>`:''}${r.stat?`<div class="g">${r.stat}</div>`:''}`)};
   const hw=(W-P.l-P.r)/Math.max(1,rs.length-1);
   rs.forEach((r,i)=>{s+=`<rect x="${X(i)-hw/2}" y="${P.t}" width="${hw}" height="${H-P.t-P.b}" fill="transparent" data-tip="${tipR(r,i)}" class="hit"/>`});
-  rs.forEach((r,i)=>{const on=i===ci;s+=`<circle cx="${X(i)}" cy="${Y(r.min_bid)}" r="${on?4:2.2}" fill="${on?'#fff':'#2463a8'}" stroke="#2463a8" stroke-width="${on?2:0}" pointer-events="none"></circle>`;if(rs.length<=12||i===0||on||i===rs.length-1)s+=`<text x="${X(i)}" y="${H-6}" text-anchor="middle" font-size="9" fill="${on?'#1d2733':'#8b95a3'}" font-family="IBM Plex Mono">${+r.round||r.round}</text>`});
+  rs.forEach((r,i)=>{const on=i===ci;s+=`<circle cx="${X(i)}" cy="${Y(r.min_bid)}" r="${on?4:2.2}" fill="${on?'#fff':'#2463a8'}" stroke="#2463a8" stroke-width="${on?2:0}" pointer-events="none"></circle>`;if(rs.length<=12||i===0||on||i===rs.length-1)s+=`<text x="${X(i)}" y="${H-6}" text-anchor="middle" font-size="9" fill="${on?'#1d2733':'#8b95a3'}" font-family="IBM Plex Sans KR">${+r.round||r.round}</text>`});
   return s+'</svg>';
 }
 const sec=(t,body,extra='')=>`<section class="ms"><button class="msh" aria-expanded="true"><span>${t}${extra}</span><svg viewBox="0 0 12 12"><path d="m3 7.5 3-3 3 3"/></svg></button><div class="msb">${body}</div></section>`;

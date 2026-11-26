@@ -14,11 +14,11 @@
   --ac:#2463a8; --ac-bg:#e8f0fa; --ac2:#1a4f8a;
   --b-done:#2e7d5b; --b-pref:#2a7f8f; --b-mkt:#a86a14; --b-bid:#8a5bb0; --b-wd:#b23b3b;
   --b-pf:#2463a8; --b-br:#4f6a8f; --b-ln:#5c6b7a;
-  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --mono:'IBM Plex Sans KR',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{font:13px/1.45 'IBM Plex Sans KR',system-ui,sans-serif;color:var(--tx);background:var(--bg);display:grid;grid-template-rows:40px 1fr;overflow:hidden}
+body{font:13px/1.45 'IBM Plex Sans KR',system-ui,sans-serif;font-variant-numeric:tabular-nums;color:var(--tx);background:var(--bg);display:grid;grid-template-rows:40px 1fr;overflow:hidden}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* scrollbar: thin, low-contrast */
 *{scrollbar-width:thin;scrollbar-color:#cfd5dd transparent}
@@ -281,7 +281,7 @@ body.ag-locked>:not(#ag-gate):not(script){display:none!important}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>// 마우스를 올리면 바로 뜨는 작은 설명 상자: data-tip="HTML" 을 가진 요소(SVG 포함) 공용
 (function(){if(window.__agtip)return;window.__agtip=1;
-const st=document.createElement('style');st.textContent='.agtip{position:fixed;z-index:9999;pointer-events:none;background:#fff;border:1px solid #c3cbd6;box-shadow:0 6px 18px rgba(20,36,59,.14);padding:7px 10px;font:12px/1.55 "IBM Plex Sans KR",system-ui,sans-serif;color:#1d2733;max-width:320px;display:none}.agtip b{font-weight:600}.agtip .g{color:#8b95a3;font-size:11px}.agtip .n{font-family:"IBM Plex Mono",monospace}.agtip .row{display:flex;gap:10px;justify-content:space-between}.agtip i{display:inline-block;width:8px;height:8px;margin-right:5px;vertical-align:middle}';
+const st=document.createElement('style');st.textContent='.agtip{position:fixed;z-index:9999;pointer-events:none;background:#fff;border:1px solid #c3cbd6;box-shadow:0 6px 18px rgba(20,36,59,.14);padding:7px 10px;font:12px/1.55 "IBM Plex Sans KR",system-ui,sans-serif;color:#1d2733;max-width:320px;display:none}.agtip b{font-weight:600}.agtip .g{color:#8b95a3;font-size:11px}.agtip .n{font-family:"IBM Plex Sans KR",monospace}.agtip .row{display:flex;gap:10px;justify-content:space-between}.agtip i{display:inline-block;width:8px;height:8px;margin-right:5px;vertical-align:middle}';
 document.head.appendChild(st);const t=document.createElement('div');t.className='agtip';
 const add=()=>document.body.appendChild(t);document.body?add():document.addEventListener('DOMContentLoaded',add);
 let cur=null;

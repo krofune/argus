@@ -9,11 +9,11 @@
   --ac:#2463a8; --ac-bg:#e8f0fa; --ac2:#1a4f8a;
   --b-done:#2e7d5b; --b-pref:#2a7f8f; --b-mkt:#a86a14; --b-bid:#8a5bb0; --b-wd:#b23b3b;
   --b-pf:#2463a8; --b-br:#4f6a8f; --b-ln:#5c6b7a;
-  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --mono:'IBM Plex Sans KR',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{font:13px/1.45 'IBM Plex Sans KR',system-ui,sans-serif;color:var(--tx);background:var(--bg);display:grid;grid-template-rows:40px 1fr;overflow:hidden}
+body{font:13px/1.45 'IBM Plex Sans KR',system-ui,sans-serif;font-variant-numeric:tabular-nums;color:var(--tx);background:var(--bg);display:grid;grid-template-rows:40px 1fr;overflow:hidden}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* scrollbar: thin, low-contrast */
 *{scrollbar-width:thin;scrollbar-color:#cfd5dd transparent}
@@ -293,9 +293,9 @@ td.mut{color:var(--tx3)}
 .ph2{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:#fff;flex-wrap:wrap}
 .ph2 b{font-size:13px}.ph2 .s,.g{color:var(--tx3);font-size:11.5px}.ph2 .sp{flex:1}.ph2.bt{border-top:1px solid var(--line)}
 .empty{padding:40px;text-align:center;color:var(--tx3);font-size:12.5px}
-.ax{font:10px var(--mono,'IBM Plex Mono');fill:#8b95a3}
+.ax{font:10px var(--mono);fill:#8b95a3}
 .cw{position:relative}.tip{position:absolute;display:none;background:#fff;border:1px solid #c3cbd6;box-shadow:0 6px 18px rgba(20,36,59,.12);padding:8px 10px;font-size:11.5px;min-width:230px;max-width:340px;pointer-events:none;z-index:5}
-.tip>b{display:block;margin-bottom:4px;font-family:var(--mono,'IBM Plex Mono')}
+.tip>b{display:block;margin-bottom:4px;font-family:var(--mono)}
 .tip .tr{display:flex;align-items:center;gap:6px;margin-top:4px}.tip .tr i{width:10px;height:3px;flex:none}.tip .tr span{flex:1;color:var(--tx2)}.tip .tr small{color:var(--tx3);font-weight:400}
 .tip .src{color:var(--tx3);font-size:10.5px;padding-left:16px}
 .lg{display:flex;flex-wrap:wrap;gap:4px 14px;padding:4px 0 8px 46px;font-size:11.5px;color:var(--tx2)}.lg i{display:inline-block;width:12px;height:3px;margin-right:5px;vertical-align:middle}
@@ -309,9 +309,10 @@ table.mt .r{text-align:right}.na{color:#c0c7d1}.up{color:#b23b3b}.dn{color:#2463
 table.mt td.df{white-space:normal;color:var(--tx2);font-size:11px;max-width:320px}.src{color:var(--tx3);font-size:10.5px}
 table.mt td.hi{color:#b23b3b}table.mt td.lo{color:#2463a8}table.mt tr.rg td{color:var(--tx3);background:#fafbfc}
 /* 탐색기 */
+.ex.tc{grid-template-columns:1fr}.ex.tc .tree{display:none}.ph2 .sbt{margin-right:4px}
 .ex{display:grid;grid-template-columns:280px 1fr;height:100%;min-height:0}
 .tree{background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
-.tq{padding:10px 12px 6px}.tq input{width:100%;height:28px;border:1px solid var(--line);padding:0 9px;font:inherit;font-size:12px;outline:none}.tq input:focus{border-color:#14243b}
+.tq{padding:10px 12px 6px;display:flex;gap:6px;align-items:center}.tq .sbt{height:28px;width:28px}.tq input{flex:1;min-width:0;height:28px;border:1px solid var(--line);padding:0 9px;font:inherit;font-size:12px;outline:none}.tq input:focus{border-color:#14243b}
 .tsel{display:flex;justify-content:space-between;align-items:center;padding:2px 12px 8px;font-size:11.5px;color:var(--tx3);border-bottom:1px solid var(--line)}
 .tsel b{color:var(--tx)}.tsel button{border:0;background:none;color:var(--ac,#2463a8);font-size:11.5px;cursor:pointer}
 .tl{overflow:auto;flex:1;padding-bottom:20px}
@@ -333,7 +334,7 @@ table.mt td.hi{color:#b23b3b}table.mt td.lo{color:#2463a8}table.mt tr.rg td{colo
 .mon{height:100%;overflow:auto;display:flex;flex-direction:column}
 .panel{background:#fff;border:1px solid var(--line)}
 .hw{margin:12px 14px 0;overflow:auto}
-table.heat{border-collapse:collapse;font:11px var(--mono,'IBM Plex Mono');width:100%}
+table.heat{border-collapse:collapse;font:11px var(--mono);width:100%}
 table.heat th{font-weight:500;color:var(--tx3);padding:5px 2px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
 table.heat th.l,table.heat td.l{text-align:left;padding:5px 10px;font-family:inherit}table.heat th.yr{border-left:1px solid var(--line)}table.heat th.q{font-weight:400;font-size:10px}
 table.heat td{text-align:center;padding:0 2px;height:44px;border-bottom:1px solid #fff;min-width:28px}
@@ -381,7 +382,7 @@ body.ag-locked>:not(#ag-gate):not(script){display:none!important}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>// 마우스를 올리면 바로 뜨는 작은 설명 상자: data-tip="HTML" 을 가진 요소(SVG 포함) 공용
 (function(){if(window.__agtip)return;window.__agtip=1;
-const st=document.createElement('style');st.textContent='.agtip{position:fixed;z-index:9999;pointer-events:none;background:#fff;border:1px solid #c3cbd6;box-shadow:0 6px 18px rgba(20,36,59,.14);padding:7px 10px;font:12px/1.55 "IBM Plex Sans KR",system-ui,sans-serif;color:#1d2733;max-width:320px;display:none}.agtip b{font-weight:600}.agtip .g{color:#8b95a3;font-size:11px}.agtip .n{font-family:"IBM Plex Mono",monospace}.agtip .row{display:flex;gap:10px;justify-content:space-between}.agtip i{display:inline-block;width:8px;height:8px;margin-right:5px;vertical-align:middle}';
+const st=document.createElement('style');st.textContent='.agtip{position:fixed;z-index:9999;pointer-events:none;background:#fff;border:1px solid #c3cbd6;box-shadow:0 6px 18px rgba(20,36,59,.14);padding:7px 10px;font:12px/1.55 "IBM Plex Sans KR",system-ui,sans-serif;color:#1d2733;max-width:320px;display:none}.agtip b{font-weight:600}.agtip .g{color:#8b95a3;font-size:11px}.agtip .n{font-family:"IBM Plex Sans KR",monospace}.agtip .row{display:flex;gap:10px;justify-content:space-between}.agtip i{display:inline-block;width:8px;height:8px;margin-right:5px;vertical-align:middle}';
 document.head.appendChild(st);const t=document.createElement('div');t.className='agtip';
 const add=()=>document.body.appendChild(t);document.body?add():document.addEventListener('DOMContentLoaded',add);
 let cur=null;
@@ -564,11 +565,12 @@ function explorer(){
   const ser=sel.map((s,i)=>({...withMode(s,st.mode),col:C[i],lab:s.h+' · '+s.name,gap:/\.\d{2}$/.test(s.last.p)?.2:.6}));
   const keys=[...new Set(sel.flatMap(s=>s.pts.map(p=>p.p)))].map(p=>({p,t:T(p)})).sort((a,b)=>a.t-b.t).slice(-8);
   const yu=st.mode==='val'?unit:(unit==='%'?'%p':unit);
-  $('#ct').innerHTML=`<div class="ex">
-  <aside class="tree"><div class="tq"><input id="tq" placeholder="지표 · 권역 · 발행사 검색" value="${esc(st.q)}"></div>
+  const tc=(()=>{try{return localStorage.getItem('mk_tree')==='0'}catch(e){return false}})();
+  $('#ct').innerHTML=`<div class="ex ${tc?'tc':''}">
+  <aside class="tree"><div class="tq"><button class="sbt on" data-tt="1" title="지표 목록 접기" aria-label="지표 목록 접기" aria-expanded="true"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="1.5"/><rect class="fill" x="4.2" y="5.7" width="4.8" height="12.6" fill="none" stroke="none"/><path d="M9.5 4.5v15"/></svg></button><input id="tq" placeholder="지표 · 권역 · 발행사 검색" value="${esc(st.q)}"></div>
     <div class="tsel"><span>선택 <b>${sel.length}</b> / 6${unit?` · 단위 <b>${esc(unit)}</b>`:''}</span>${sel.length?'<button id="clr">모두 해제</button>':''}</div><div class="tl">${tree}</div></aside>
   <div class="exm">
-    <div class="ph2"><b>${sel.length?esc(sel.length===1?sel[0].h+' · '+sel[0].name:[...new Set(sel.map(s=>s.m))].join(' · ')):'왼쪽에서 시계열을 고르세요'}</b><span class="s">${yu?esc(yu):''}</span><span class="sp"></span>
+    <div class="ph2">${tc?`<button class="sbt" data-tt="0" title="지표 목록 펼치기" aria-label="지표 목록 펼치기" aria-expanded="false"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="1.5"/><rect class="fill" x="4.2" y="5.7" width="4.8" height="12.6" fill="none" stroke="none"/><path d="M9.5 4.5v15"/></svg></button>`:''}<b>${sel.length?esc(sel.length===1?sel[0].h+' · '+sel[0].name:[...new Set(sel.map(s=>s.m))].join(' · ')):'왼쪽에서 시계열을 고르세요'}</b><span class="s">${yu?esc(yu):''}</span><span class="sp"></span>
       <div class="seg" id="span">${[[3,'3년'],[5,'5년'],[10,'10년'],[0,'전체']].map(([v,t])=>`<button data-v="${v}" class="${st.span===v?'on':''}">${t}</button>`).join('')}</div>
       <div class="seg" id="mode">${[['val','값'],['qoq','전기 대비'],['yoy','전년 대비']].map(([v,t])=>`<button data-v="${v}" class="${st.mode===v?'on':''}">${t}</button>`).join('')}</div></div>
     <div class="chartbox">${sel.length?chart(980,330,ser,{t0,unit:yu,zero:st.mode==='val'&&unit==='%'}):'<div class="empty">시계열을 1개 이상 선택하면 차트가 그려집니다.</div>'}
@@ -579,6 +581,7 @@ function explorer(){
   $('#tq').oninput=e=>{st.q=e.target.value;const pos=e.target.selectionStart;explorer();const n=$('#tq');n.focus();n.setSelectionRange(pos,pos)};
   $$('.tree .th').forEach(h=>h.onclick=()=>{const k=h.dataset.h;st.open[k]=!h.classList.contains('op');explorer()});
   $$('.tree input[type=checkbox]').forEach(c=>c.onchange=()=>{const ix=+c.dataset.ix;st.sel=c.checked?[...st.sel,ix]:st.sel.filter(x=>x!==ix);save();explorer()});
+  $$('[data-tt]').forEach(b=>b.onclick=()=>{try{localStorage.setItem('mk_tree',b.dataset.tt==='1'?'0':'1')}catch(e){}explorer()});
   $('#clr')&&($('#clr').onclick=()=>{st.sel=[];save();explorer()});
   $$('#span button').forEach(b=>b.onclick=()=>{st.span=+b.dataset.v;save();explorer()});
   $$('#mode button').forEach(b=>b.onclick=()=>{st.mode=b.dataset.v;save();explorer()});
