@@ -300,8 +300,8 @@ td.mut{color:var(--tx3)}
 .fsc-toast.on{opacity:1;transform:none}
 /* 재무모델링 탭: 모델터(원본) 화면을 같은 사이트 안 별도 문서로 띄움 */
 .fmw{display:none}body.fs-fm .fmw{display:block;flex:1 0 auto}body.fs-fm .fsb{display:none}
-.fmw iframe{display:block;width:100%;height:calc(100vh - 84px);border:0;background:#fff}
-body.fs-fm .fsc>button,body.fs-fm .fsc>.fsc-lw,body.fs-fm .fsc>.fsc-sep,body.fs-fm .fsc>.fsc-name{display:none!important}
+.fmw iframe{display:block;width:100%;height:calc(100vh - 125px);border:0;background:#eef1f5}
+.fmt{display:flex;justify-content:flex-end;align-items:center;gap:8px;height:41px;padding:0 16px;background:#fff;border-bottom:1px solid var(--line)}.fmt button{font:inherit;font-size:12px;padding:3px 10px;border:1px solid var(--line);background:#fff;color:var(--tx);cursor:pointer}.fmt button:hover{border-color:#14243b}.fmt .fsc-list{width:300px}
 body.fs-fm .fsw{overflow:hidden}
 .fsc-modal{position:fixed;inset:0;background:rgba(20,36,59,.35);display:flex;align-items:center;justify-content:center;z-index:100}
 .fsc-modal .box{background:#fff;border:1px solid var(--line);box-shadow:0 16px 40px rgba(20,35,58,.2);padding:20px 22px;width:440px}
@@ -516,11 +516,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     </aside></div>
     <div id="fsroot"><div class="fs-loading">F/S 검토 화면을 불러오는 중…</div>
   </div></div>
-    <div id="fmw" class="fmw"><iframe id="fmf" title="재무모델링"></iframe></div>
+    <div id="fmw" class="fmw"><div class="fmt"><span class="fsc-lw"><button id="fmt-dl">저장 ↓</button><div id="fmt-dmenu" class="fsc-list fsc-menu"><button class="fsc-li" data-d="xlDownload"><b>엑셀 재무모델</b><span>작업 시트 6개 + 검증, 수식 포함 (.xlsx)</span></button><button class="fsc-li" data-d="tzDownload"><b>원페이지 티저</b><span>투자 요약 1장 (.pptx)</span></button><button class="fsc-li" data-d="icDownload"><b>IC 패키지</b><span>투자심의용 7장 (.pptx)</span></button></div></span><button id="fmt-pop">새창으로 보기 ↗</button></div><iframe id="fmf" title="재무모델링"></iframe></div>
     <div id="fsc-toast" class="fsc-toast"></div>
   </section>
 </div>
-<script>window.ArgusFSBase="";window.ArgusFSVer="f5ac04cf2d";</script>
+<script>window.ArgusFSBase="";window.ArgusFSVer="41998e537a";</script>
 <style>@keyframes tin{from{opacity:0;transform:translate(-50%,8px)}}
 .wmenu{position:fixed;z-index:200;background:#fff;border:1px solid var(--line);box-shadow:0 10px 28px rgba(20,36,59,.16);padding:5px;min-width:190px;border-radius:8px}
 .wmenu button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:7px 9px;font-size:12.5px;color:var(--tx);border-radius:5px}
@@ -964,8 +964,8 @@ render();
 addEventListener('hashchange',()=>{const h=new URLSearchParams(location.hash.slice(1));const sp=h.get('space');if(sp&&sp!==S.cur&&S.spaces.some(s=>s.id===sp)){S.cur=sp;render()}const it=h.get('item');if(it&&(!$('#wdlg .task')||$('#wdlg .task').dataset.id!==it)&&S.items.some(i=>i.id===it))detail(it)});
 })();
 </script>
-<script src="fs-host.js?v=f5ac04cf2d"></script><script src="fs-app.js?v=f5ac04cf2d"></script><script src="fs-cloud.js?v=f5ac04cf2d"></script>
-<script>(function(){var FMV="47274b15fa";function tab(){var fm=location.hash.indexOf("#/fm")===0;document.body.classList.toggle("fs-fm",fm);
+<script src="fs-host.js?v=41998e537a"></script><script src="fs-app.js?v=41998e537a"></script><script src="fs-cloud.js?v=41998e537a"></script>
+<script>window.ArgusFMVer="0ddf07a0d5";(function(){var FMV="0ddf07a0d5";function tab(){var fm=location.hash.indexOf("#/fm")===0;document.body.classList.toggle("fs-fm",fm);
 document.getElementById("fst-su").classList.toggle("on",!fm);document.getElementById("fst-fm").classList.toggle("on",fm);
 var f=document.getElementById("fmf");if(fm&&!f.getAttribute("src"))f.setAttribute("src","fm-app.html?v="+FMV);}
 document.getElementById("fst-su").onclick=function(){if(location.hash.indexOf("#/fm")===0)location.hash="#/input/business-overview";};

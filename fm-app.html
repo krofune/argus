@@ -7,22 +7,22 @@
 <script>(function(){try{var t=localStorage.getItem('mt_theme');if(!t){t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}
 /* 재방문 착지를 첫 렌더 전에 적용 */
 try{if(localStorage.getItem('mt_used')==='1')document.documentElement.setAttribute('data-back','1');}catch(e){}})();</script>
-<title>모델터 · CRE 딜 검토 첫 계산 | 부동산 재무모델</title>
+<title>Argus · CRE 딜 검토 첫 계산 | 부동산 재무모델</title>
 
 <meta name="description" content="한국 상업용 부동산 딜의 첫 IRR·DSCR을 계산합니다. 매입가, 임대료 또는 NOI, 대출 조건, Exit Cap을 넣고 결과와 같은 수식의 엑셀을 내려받으세요." />
 <meta name="author" content="김성훈 (Seonghoon Kim)" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="딜 받았으면, 모델터부터. | 부동산 투자 검토" />
+<meta property="og:title" content="딜 받았으면, Argus부터. | 부동산 투자 검토" />
 <meta property="og:description" content="IM이나 티저를 받으면 매입가, 임대료 또는 NOI, 대출 조건, Exit Cap으로 첫 IRR·DSCR과 하방을 확인하세요." />
-<meta property="og:url" content="https://modelter.com/" />
-<meta property="og:image" content="https://modelter.com/og-first-deal-v1.png" />
+<meta property="og:url" content="https://Argus Research/" />
+<meta property="og:image" content="https://Argus Research/og-first-deal-v1.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="딜 받았으면, 모델터부터. 한국 CRE 딜 첫 계산" />
+<meta property="og:image:alt" content="딜 받았으면, Argus부터. 한국 CRE 딜 첫 계산" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="딜 받았으면, 모델터부터. | 부동산 투자 검토" />
+<meta name="twitter:title" content="딜 받았으면, Argus부터. | 부동산 투자 검토" />
 <meta name="twitter:description" content="첫 IRR·DSCR과 하방을 확인하고 같은 숫자로 엑셀과 PPT를 만드세요." />
-<meta name="twitter:image" content="https://modelter.com/og-first-deal-v1.png" />
+<meta name="twitter:image" content="https://Argus Research/og-first-deal-v1.png" />
 
 
 
@@ -912,7 +912,7 @@ button:focus-visible,select:focus-visible,a:focus-visible,[role="button"]:focus-
 .why-who.full .who-grid{text-align:left; margin-top:2px}
 @media(max-width:820px){ .who-grid{grid-template-columns:1fr 1fr} }
 @media(max-width:480px){ .who-grid{grid-template-columns:1fr} }
-/* 모델터 소개 — 맨 아래 글 */
+/* Argus 소개 — 맨 아래 글 */
 .why-end{padding:26px 0 6px; border-top:1px solid var(--line-soft)}
 .why-end-label{font-family:var(--font); font-weight:700; font-size:12px; letter-spacing:.01em; color:var(--accent-deep); background:rgba(169,121,43,.08); padding:5px 12px; border-radius:999px; display:inline-block; margin-bottom:12px}
 .why-end p{font-size:14px; color:var(--ink-2); line-height:1.8; max-width:760px; margin:0}
@@ -1320,6 +1320,29 @@ details.imfold[open]>summary .chev{transform:rotate(180deg)}
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#a9792b">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style id="argus-skin">/* Argus: 재무모델링 탭(모델터 원본)에 Argus 스타일 입히기 — 색·글꼴·모서리만 바꾸고 기능은 그대로.
+   모델터 자체 상단바·공지·소개·푸터는 숨기고(Argus F/S 검토 상단 막대가 대신함), 딜 유형은 사업수지 목록과 같은 왼쪽 카드로 */
+:root,[data-theme]{--bg:#eef1f5;--panel:#fff;--ink:#1d2733;--ink-2:#3a4656;--ink-3:#5b6675;--muted:#5b6675;--line:#dbe0e7;--line-soft:#e9edf2;
+ --accent:#2463a8;--accent-deep:#1b4f8a;--accent-solid:#2463a8;--blue:#2463a8;--green:#2e7d5b;--red:#b23b3b;--shadow:0 6px 20px rgba(20,35,58,.10);--soft:0 1px 2px rgba(20,35,58,.06);--r:4px;
+ --font:'IBM Plex Sans KR',system-ui,sans-serif;--serif:'IBM Plex Sans KR',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+body{background:var(--bg)!important;position:relative}
+header,#announce,#top.intro,section.why,section.compare,section.why-end,footer,a.skip{display:none!important}
+section.builder [class*=card],section.builder>div>div,section.builder section{box-shadow:none!important}
+*{border-radius:3px!important}input[type=checkbox],input[type=radio],[class*=switch],[class*=toggle] *,.dot,[class*=dot]{border-radius:999px!important}
+#builder-start.dealbar{position:fixed;left:16px;top:16px;width:184px;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:0!important;padding:6px 0!important;margin:0!important;
+ background:#fff!important;border:1px solid var(--line)!important;box-shadow:0 1px 2px rgba(20,35,58,.05)!important;z-index:5}
+#builder-start.dealbar::before{content:"딜 유형";font-size:11px;font-weight:600;color:#8b95a3;letter-spacing:.4px;padding:10px 14px 4px}
+#builder-start .wrap,#builder-start .deal-tabs{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:0!important;padding:0!important;margin:0!important;max-width:none!important;width:100%!important}
+#builder-start .deal-tab{display:flex!important;justify-content:space-between;align-items:center;width:100%!important;margin:0!important;padding:9px 14px!important;background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+ color:var(--ink)!important;font-size:13.5px!important;font-weight:400!important;text-align:left}
+#builder-start .deal-tab:hover{background:#f4f6f9!important}
+#builder-start .deal-tab.on{background:#e8f0fa!important;font-weight:600!important;box-shadow:inset 2px 0 0 var(--accent)!important}
+#builder-start .deal-soon{color:#8b95a3!important}
+#builder-start .deal-tab:not(.deal-soon)+.deal-soon{border-top:1px solid var(--line-soft)!important;margin-top:6px!important;padding-top:12px!important}
+#builder-start .badge-base{background:#e8f0fa!important;color:#2463a8!important}
+section.builder{margin-left:216px!important;max-width:none!important;padding-left:0!important;padding-right:16px!important;padding-top:16px!important}
+section.builder>*{max-width:none!important}
+</style>
 <meta name="ag-base" content="">
 <style>
 body.ag-locked>:not(#ag-gate):not(script){display:none!important}
@@ -1440,7 +1463,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     <a class="brand" href="#top">
       <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><defs><linearGradient id="mtmark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b9842f"/><stop offset="1" stop-color="#8a5f20"/></linearGradient></defs><rect width="32" height="32" rx="8.5" fill="url(#mtmark)"/><g fill="#fbf6ec"><rect x="8.5" y="17.5" width="3.4" height="6" rx="1.1"/><rect x="14.3" y="14" width="3.4" height="9.5" rx="1.1"/><rect x="20.1" y="10.5" width="3.4" height="13" rx="1.1"/><rect x="7.5" y="24.2" width="17" height="1.7" rx="0.85"/></g></svg></span>
       <div class="wordmark">
-        <b>모델터</b>
+        <b>Argus</b>
         <span class="tag-full">부동산 투자 검토</span>
         <span class="tag-short">부동산 투자 검토</span>
       </div>
@@ -1598,7 +1621,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       <!-- 온보딩 모달이 하던 보안 안내를, 닫아버리는 창이 아니라 '숫자를 넣는 자리'에 상시로 둔다 -->
       <p class="panel-priv">입력값은 이 브라우저에서 계산하며 서버에 전송하지 않습니다. <a href="/trust" target="_blank" rel="noopener">보안·개인정보 →</a></p>
       <div class="sample-start" id="sampleStart" hidden><span><b>예시값이 입력되어 있습니다.</b> 검토할 조건으로 수정하세요.</span><button type="button" class="ss-btn" id="sampleStartBtn">내 조건 입력 →</button></div>
-      <details id="inputGuide" class="input-guide"><summary>처음이라면: 입력 → 결과 확인 → 저장·엑셀</summary><div><p id="inputGuideFields"></p><ol><li>예시 숫자를 내 조건으로 바꾸세요. 빈 칸의 기본 가정과 남은 예시도 확인합니다.</li><li>화면 결과와 오류·주의 항목을 확인하세요. 예시는 실제 시세가 아닙니다.</li><li>‘딜로 저장’으로 버전을 남기고 엑셀을 받으세요. 다른 기기에서는 .modelter 백업 파일을 가져옵니다.</li></ol><button type="button" class="sl-btn" id="guideStart">첫 숫자 입력하기</button> <button type="button" class="sl-btn" id="guideSample">샘플 입력으로 연습</button></div></details>
+      <details id="inputGuide" class="input-guide"><summary>처음이라면: 입력 → 결과 확인 → 저장·엑셀</summary><div><p id="inputGuideFields"></p><ol><li>예시 숫자를 내 조건으로 바꾸세요. 빈 칸의 기본 가정과 남은 예시도 확인합니다.</li><li>화면 결과와 오류·주의 항목을 확인하세요. 예시는 실제 시세가 아닙니다.</li><li>‘딜로 저장’으로 버전을 남기고 엑셀을 받으세요. 다른 기기에서는 .argus 백업 파일을 가져옵니다.</li></ol><button type="button" class="sl-btn" id="guideStart">첫 숫자 입력하기</button> <button type="button" class="sl-btn" id="guideSample">샘플 입력으로 연습</button></div></details>
       <div class="inp-prog" id="inpProg" hidden><span class="ip-bar"><span class="ip-fill" id="ipFill"></span></span><span class="ip-txt" id="ipTxt"></span></div>
       <button type="button" class="ex-chip" id="exChip" hidden onclick="exChipClick()"></button>
       <div class="slots-bar slots-primary">
@@ -1617,7 +1640,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
         <div class="tf-body">
           <div id="toolsDyn"></div>
           <div class="slots-bar">
-            <button class="sl-btn" id="wsOpen" type="button" title="버전 목록·산출물 이력·.modelter 백업" hidden>백업·가져오기</button>
+            <button class="sl-btn" id="wsOpen" type="button" title="버전 목록·산출물 이력·.argus 백업" hidden>백업·가져오기</button>
             <button class="sl-btn" id="slotDel" type="button" title="선택 딜 삭제" hidden>삭제</button>
             <button class="sl-btn sl-cmp" id="cmpOpen" type="button" title="저장한 딜과 현재 입력을 나란히 비교" hidden>딜 비교</button>
           </div>
@@ -1746,7 +1769,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
             의견 보내기
           </button>
         </div>
-        <p class="fb-note">의견과 이메일은 <b>Web3Forms(api.web3forms.com)</b>를 통해 제작자에게 전달됩니다. 모델터 서버에는 저장하지 않습니다. <b>실제 딜명·자산명·수치·임차인명·회사명은 적지 마세요.</b></p>
+        <p class="fb-note">의견과 이메일은 <b>Web3Forms(api.web3forms.com)</b>를 통해 제작자에게 전달됩니다. Argus 서버에는 저장하지 않습니다. <b>실제 딜명·자산명·수치·임차인명·회사명은 적지 마세요.</b></p>
       </div>
     </div>
   </div>
@@ -1754,7 +1777,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 <section class="why-end">
   <div class="wrap">
-    <div class="why-end-label">모델터 소개</div>
+    <div class="why-end-label">Argus 소개</div>
     <p>반복되는 엑셀 작업을 줄이려고 만들었습니다. 투자 조건을 입력해 수익성을 검토하고, 같은 내용을 수식이 연결된 엑셀로 이어서 작업할 수 있습니다.</p>
   </div>
 </section>
@@ -1769,7 +1792,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
           <span>상업용 부동산 금융 9년차 · 상장리츠 · PF · 구조화금융 · <a href="https://www.linkedin.com/in/seonghoonk/" target="_blank" rel="noopener">LinkedIn</a></span>
         </div>
       </div>
-      <p class="foot-note">개인이 운영하는 도구로, 소속 회사의 공식 서비스가 아닙니다. 투자 권유가 아닌 정보 제공 목적이며, 예시는 실제 거래 정보가 아닙니다.<br>© 2026 모델터 · 업데이트 <span id="footUpd"></span></p>
+      <p class="foot-note">개인이 운영하는 도구로, 소속 회사의 공식 서비스가 아닙니다. 투자 권유가 아닌 정보 제공 목적이며, 예시는 실제 거래 정보가 아닙니다.<br>© 2026 Argus · 업데이트 <span id="footUpd"></span></p>
       <nav class="foot-guide" aria-label="사이트 안내"><a href="/howto">사용 안내</a> · <a href="/trust">개인정보·보안</a></nav>
     </div>
   </div>
@@ -3327,12 +3350,12 @@ function wsDownloadBackup(f){
   var nm=String(f.deal.name).replace(/[\\\/:*?"<>|]/g,'').trim()||'딜';
   var d2=new Date(), ymd=''+d2.getFullYear()+('0'+(d2.getMonth()+1)).slice(-2)+('0'+d2.getDate()).slice(-2);
   var blob=new Blob([JSON.stringify(f,null,1)],{type:'application/json'});
-  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Modelter_Deal_'+nm+'_'+ymd+'.modelter'; a.click(); URL.revokeObjectURL(a.href);
-  toast('.modelter 파일로 내보냈습니다 — 다른 브라우저에서 가져오기로 복원할 수 있습니다');
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Argus_Deal_'+nm+'_'+ymd+'.argus'; a.click(); URL.revokeObjectURL(a.href);
+  toast('.argus 파일로 내보냈습니다 — 다른 브라우저에서 가져오기로 복원할 수 있습니다');
 }
 function wsImportFile(obj){
-  if(!obj||obj.fileType!=='MODELTER_DEAL_EXPORT'||!obj.deal||!obj.deal.versions) throw new Error('Modelter 딜 백업 파일이 아닙니다');
-  if(String(obj.schema||'').split('.')[0]!=='1') throw new Error('지원하지 않는 파일 버전입니다 — 최신 모델터에서 다시 내보내 주세요');
+  if(!obj||obj.fileType!=='MODELTER_DEAL_EXPORT'||!obj.deal||!obj.deal.versions) throw new Error('Argus 딜 백업 파일이 아닙니다');
+  if(String(obj.schema||'').split('.')[0]!=='1') throw new Error('지원하지 않는 파일 버전입니다 — 최신 Argus에서 다시 내보내 주세요');
   var n=Array.isArray(obj.deal.versions)?wsVersionSeq(obj.deal):-1;if(n<0)throw new Error('버전 번호를 확인해 주세요.');
   if(!wsValidDeal(obj.deal)||JSON.stringify(obj).length>8000000)throw new Error('백업 파일의 입력 형식 또는 크기가 올바르지 않습니다. 현재 작업은 유지합니다.');
   var db=wsDB(),d=JSON.parse(JSON.stringify(obj.deal));d.versionSeq=n;
@@ -3349,7 +3372,7 @@ function wsImportFile(obj){
 
 function wsImportWithRecovery(obj){
   if(!_wsBlocked)return wsImportFile(obj);
-  if(!obj||obj.fileType!=='MODELTER_DEAL_EXPORT'||String(obj.schema||'').split('.')[0]!=='1'||!wsValidDeal(obj.deal)||JSON.stringify(obj).length>8000000)throw new Error('유효한 .modelter 백업 파일을 선택해 주세요. 손상 원본은 유지됩니다.');
+  if(!obj||obj.fileType!=='MODELTER_DEAL_EXPORT'||String(obj.schema||'').split('.')[0]!=='1'||!wsValidDeal(obj.deal)||JSON.stringify(obj).length>8000000)throw new Error('유효한 .argus 백업 파일을 선택해 주세요. 손상 원본은 유지됩니다.');
   if(!confirm('보관함이 손상되었습니다. 손상 원본을 이 브라우저에 별도 보존하고 선택한 백업으로 보관함을 복구할까요?'))return null;
   var before=_wsCache;
   try{localStorage.setItem(WS_KEY+'_damaged',localStorage.getItem(WS_KEY)||'');_wsBlocked=false;return wsImportFile(obj);}
@@ -3484,7 +3507,7 @@ function cmpTableText(){
     });
     out.push(cells.join('\t'));
   });
-  return '[모델터] 딜 비교 — '+new Date().toISOString().slice(0,10)+'\n'+out.join('\n')+'\n※ 입력 가정 기반 추정치 · 투자 권유가 아닌 정보 제공 목적';
+  return '[Argus] 딜 비교 — '+new Date().toISOString().slice(0,10)+'\n'+out.join('\n')+'\n※ 입력 가정 기반 추정치 · 투자 권유가 아닌 정보 제공 목적';
 }
 if(typeof document!=='undefined'&&!document.__cmpDeleg){ document.__cmpDeleg=1;
   document.addEventListener('change',function(e){
@@ -3519,7 +3542,7 @@ function wsPipelineReport(){
   if(!ids.length){ toast('저장된 딜이 없습니다 — 딜로 저장 후 사용하세요'); return; }
   var by={};
   ids.forEach(function(id){ var d=db.deals[id]; var st=d.status||'검토중'; (by[st]=by[st]||[]).push(d); });
-  var L=['[모델터] 딜 파이프라인 — '+new Date().toISOString().slice(0,10)+' · 딜 '+ids.length+'개',''];
+  var L=['[Argus] 딜 파이프라인 — '+new Date().toISOString().slice(0,10)+' · 딜 '+ids.length+'개',''];
   WS_STATUSES.forEach(function(st){
     var arr=by[st]; if(!arr||!arr.length) return;
     arr.sort(function(a,b){ return (b.updatedAt||'').localeCompare(a.updatedAt||''); });
@@ -3582,7 +3605,7 @@ function wsLinkDiff(){
   var a=document.getElementById('wsLnkA'), b=document.getElementById('wsLnkB'), box=document.getElementById('wsLnkDiff');
   if(!box) return;
   var pa=wsParseLink(a&&a.value), pb=wsParseLink(b&&b.value);
-  if(!pa||!pb){ box.innerHTML='<div class="ws-diff"><p class="md-sub">링크를 해석하지 못했습니다 — 모델터 공유 링크(#v=… 또는 #e=…) 2개를 순서대로 붙여넣으세요.</p></div>'; return; }
+  if(!pa||!pb){ box.innerHTML='<div class="ws-diff"><p class="md-sub">링크를 해석하지 못했습니다 — Argus 공유 링크(#v=… 또는 #e=…) 2개를 순서대로 붙여넣으세요.</p></div>'; return; }
   var rows=wsDiffSnaps(pa,pb);
   var sa=null, sb=null; try{ sa=wsSummary(pa); sb=wsSummary(pb); }catch(e){}
   var head='<div class="ws-diff-h">이전 링크 → 이후 링크 · 가정 변경 '+rows.length+'건</div>'
@@ -3625,7 +3648,7 @@ function renderWsPanel(){
           '<div class="ws-deal-s">'+esc(_wsFmtSum(cv&&cv.summary))+'</div>'+
           '<div class="ws-deal-a">'+(WS.dealId===id?'<span class="ws-now">열려 있음</span>':('<button class="sl-btn" data-ws="open" data-deal="'+id+'">열기</button>'))+
           '<button class="sl-btn" data-ws="dup" data-deal="'+id+'" title="원본 이력은 그대로 두고 이 딜 기준으로 새 딜(v0.1)을 시작합니다">복제해 새 딜</button>'+
-          '<button class="sl-btn" data-ws="export" data-deal="'+id+'">.modelter 내보내기</button>'+
+          '<button class="sl-btn" data-ws="export" data-deal="'+id+'">.argus 내보내기</button>'+
           '<button class="sl-btn" data-ws="deldeal" data-deal="'+id+'">삭제</button></div></div>';
       }).join('')+'</div>';
   } else {
@@ -3660,9 +3683,9 @@ function renderWsPanel(){
     +'<div id="wsLnkDiff"></div>';
 
   html+='<div class="ws-sec-h">백업 · 가져오기</div>'+
-    '<div class="ws-backup"><label class="sl-btn ws-import">딜 가져오기 (.modelter)<input type="file" id="wsImport" accept=".modelter,application/json" hidden></label>'+
+    '<div class="ws-backup"><label class="sl-btn ws-import">딜 가져오기 (.argus)<input type="file" id="wsImport" accept=".argus,.argus,application/json" hidden></label>'+
     '<label class="sl-btn ws-import" title="수정·재저장 전 다운로드 원본 파일의 가정을 불러옵니다. 엑셀에서 수정한 값은 반영되지 않습니다.">다운로드 원본에서 복원 (.xlsx)<input type="file" id="wsXlsxRestore" accept=".xlsx" hidden></label>'+
-    '<span class="ws-note">.modelter 파일에는 입력값·렌트롤 요약이 포함됩니다(원본 파일·임차인 실명은 저장되지 않음). 저장 데이터는 이 브라우저 로컬에만 보관됩니다.</span></div>';
+    '<span class="ws-note">.argus 파일에는 입력값·렌트롤 요약이 포함됩니다(원본 파일·임차인 실명은 저장되지 않음). 저장 데이터는 이 브라우저 로컬에만 보관됩니다.</span></div>';
   body.innerHTML=html;
 }
 (function(){
@@ -3716,7 +3739,7 @@ function renderWsPanel(){
       try{
         var txt=new TextDecoder('utf-8',{fatal:false}).decode(new Uint8Array(fr.result));
         var m=txt.match(/MTSNAP1:([A-Za-z0-9_-]+):PANSTM/);
-        if(!m){ toast('복원 코드를 찾지 못했습니다. 수정·재저장 전 모델터 다운로드 원본 파일을 선택하세요.'); t.value=''; return; }
+        if(!m){ toast('복원 코드를 찾지 못했습니다. 수정·재저장 전 Argus 다운로드 원본 파일을 선택하세요.'); t.value=''; return; }
         var p=JSON.parse(mtLZ.decompress(m[1]));
         resumeLocal(); applySharedPayload(p);
         var ovl=document.getElementById('wsOverlay'); if(ovl){ ovl.hidden=true; document.body.style.overflow=''; }
@@ -3810,7 +3833,7 @@ function buildPrintSummary(){
     }
   }catch(eQR){}
   $('printSummary').innerHTML=
-    '<div class="ps-head"><div class="ps-brand">모델터 · 부동산 재무모델 빌더</div><div class="ps-date">'+date+'</div></div>'+
+    '<div class="ps-head"><div class="ps-brand">Argus · 부동산 재무모델 빌더</div><div class="ps-date">'+date+'</div></div>'+
     '<h1 class="ps-title">'+esc(title)+' <span>'+esc(d.label)+' · '+esc(dp.label)+' ('+sheets.length+'시트)</span></h1>'+
     kpiStrip+
     '<div class="ps-cols"><div class="ps-col"><h2>즉시 점검</h2><table class="ps-tbl">'+rowsHtml+'</table>'+warnHtml+stackHtml+rrHtml+'</div>'+
@@ -3818,7 +3841,7 @@ function buildPrintSummary(){
     sensHtml+
     '<h2>AI용 시트 설계 (다운로드 엑셀과 별도)</h2><p class="ps-sheets">'+esc(sheetHtml)+'</p>'+
     recHtml+
-    '<div class="ps-foot">modelter.com · 코람코자산신탁 상장리츠팀 김성훈 · 본 요약은 입력값 기반 직접계산·추정치이며 투자 권유가 아닙니다.</div>';
+    '<div class="ps-foot">Argus Research · 코람코자산신탁 상장리츠팀 김성훈 · 본 요약은 입력값 기반 직접계산·추정치이며 투자 권유가 아닙니다.</div>';
 }
 function printSummary(){ if(typeof exConfirmOutput==='function'&&!exConfirmOutput('한 장 요약(인쇄)')) return; buildPrintSummary(); document.body.classList.add('psum'); window.print(); }
 window.addEventListener('afterprint',function(){ document.body.classList.remove('psum'); });
@@ -4783,7 +4806,7 @@ function dealVerdict(r){
       var _si=parseNum(state.sellerirr);
       if(isFinite(_si)&&_si>0){
         var _d=(irr-_si/100)*100;
-        if(_d<=-1) { parts.push('매도자 제시 IRR '+mfmt(_si,1)+'%, 모델터 계산 '+fp(irr)+' · '+mfmt(-_d,1)+'%p 낮습니다. 임대료와 Exit Cap 가정을 대조하세요.'); tone='warn'; }
+        if(_d<=-1) { parts.push('매도자 제시 IRR '+mfmt(_si,1)+'%, Argus 계산 '+fp(irr)+' · '+mfmt(-_d,1)+'%p 낮습니다. 임대료와 Exit Cap 가정을 대조하세요.'); tone='warn'; }
         else if(_d<0) parts.push('매도자 제시 IRR보다 '+mfmt(-_d,1)+'%p 낮습니다.');
         else parts.push('매도자 제시 IRR보다 '+mfmt(_d,1)+'%p 높습니다.');
       }
@@ -5056,8 +5079,8 @@ function clearAll(){
 async function copyOut(){ try{ await navigator.clipboard.writeText($("outText").textContent); }catch(e){ const ta=document.createElement("textarea"); ta.value=$("outText").textContent; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); } toast("복사했습니다. Claude in Excel 패널에 붙여넣으세요"); const lbl=$("copyLabel"), btn=$("copyBtn"); if(lbl){ const o=lbl.textContent; lbl.textContent="복사됨 ✓"; btn.style.background="#2e7d5b"; btn.style.borderColor="#2e7d5b"; setTimeout(()=>{ lbl.textContent=o; btn.style.background=""; btn.style.borderColor=""; },1500); } }
 function downloadOut(){ const blob=new Blob([$("outText").textContent],{type:"text/markdown"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="model-prompt-"+cur+".md"; a.click(); URL.revokeObjectURL(a.href); toast("다운로드를 시작합니다"); }
 function mailPrompt(){
-  const body=encodeURIComponent($("outText").textContent+"\n\n— 모델터(modelter.com)에서 생성");
-  const subject=encodeURIComponent("[모델터] "+DEALS[cur].label+" 모델 지시문");
+  const body=encodeURIComponent($("outText").textContent+"\n\n— Argus(Argus Research)에서 생성");
+  const subject=encodeURIComponent("[Argus] "+DEALS[cur].label+" 모델 지시문");
   window.location.href=`mailto:?subject=${subject}&body=${body}`;
   toast("메일 앱을 엽니다. PC에서 받아 Claude in Excel에 붙여넣으세요");
 }
@@ -5098,10 +5121,10 @@ async function sendFeedback(){
       headers:{"Content-Type":"application/json","Accept":"application/json"},
       body:JSON.stringify({
         access_key:WEB3FORMS_KEY,
-        subject:"[모델터] 딜 검토 시작점 피드백",
-        from_name:"모델터 피드백",
-        email: email||"no-reply@modelter.com",
-        message: txt + "\n\n— modelter.com 의견 보내기"
+        subject:"[Argus] 딜 검토 시작점 피드백",
+        from_name:"Argus 피드백",
+        email: email||"no-reply@Argus Research",
+        message: txt + "\n\n— Argus Research 의견 보내기"
       })
     });
     const data=await res.json();
@@ -5397,7 +5420,7 @@ function inquiryText(rows){
   }catch(e){}
   if(n===1) L.push('· 확인 요청 항목이 없습니다 — 핵심 가정이 모두 입력되어 있고 통상 범위 안입니다.');
   L.push('');
-  L.push('※ 모델터 자동 생성 초안 — 문구를 다듬어 사용하세요 · 입력 가정 기반이며 투자 권유가 아닙니다');
+  L.push('※ Argus 자동 생성 초안 — 문구를 다듬어 사용하세요 · 입력 가정 기반이며 투자 권유가 아닙니다');
   return L.join('\n');
 }
 function chkPop(){
@@ -5565,7 +5588,7 @@ function oneLineReport(){
   var url=shareLink(true,'share')||'';
   var exRem=(typeof exRemaining==='function')?exRemaining():[];
   var exTag=exRem.length?(exUserEdited?' · (일부 가정은 예시값)':' · (전부 예시값 · 실제 시세 아님)'):'';
-  return '[모델터] 1차 검토 · '+name+' · '+DEALS[cur].label+' — '+parts.join(' · ')+vTxt+exTag+'\n'+url;
+  return '[Argus] 1차 검토 · '+name+' · '+DEALS[cur].label+' — '+parts.join(' · ')+vTxt+exTag+'\n'+url;
 }
 /* 검토 메모 초안 — 카톡 한 줄과 IC 패키지 사이의 '메일 본문 10줄' */
 function reviewMemo(){
@@ -5576,7 +5599,7 @@ function reviewMemo(){
   var fx=function(x){ return (x!=null&&isFinite(x))?x.toFixed(2)+'x':'—'; };
   var L=[];
   L.push('[검토 메모] '+name+' — '+DEALS[cur].label);
-  L.push('기준일 '+new Date().toISOString().slice(0,10)+' · 모델터로 작성');
+  L.push('기준일 '+new Date().toISOString().slice(0,10)+' · Argus로 작성');
   L.push('');
   if((cur==='office'||cur==='logistics')&&r.raw){
     var w=r.raw, gfa=parseNum(state.gfa);
@@ -5633,7 +5656,7 @@ function reviewMemo(){
   var exs=(typeof exRemaining==='function')?exRemaining():[];
   if(exs.length) L.push(exUserEdited?'※ 일부 항목은 아직 예시값입니다. 보내기 전에 실제 값인지 확인하세요.':'※ 아직 모두 예시값입니다. 실제 값으로 바꾼 뒤 사용하세요.');
   L.push('※ 입력 가정에 따른 추정치이며, 투자 권유가 아닌 정보 제공 목적입니다.');
-  if(mtBuild()) L.push('※ 생성 빌드 '+mtBuild()+' · 화면과 엑셀 계산 검증: modelter.com/verification');
+  if(mtBuild()) L.push('※ 생성 빌드 '+mtBuild()+' · 화면과 엑셀 계산 검증: Argus Research/verification');
   return L.join('\n');
 }
 /* 결과 요약 카드 PNG — 카톡에 이미지로 붙이는 1200×630 카드 (임차인 정보 미포함·고지 포함) */
@@ -5690,11 +5713,11 @@ function summaryCardPNG(){
     g.fillText('※ 일부는 아직 예시 숫자입니다 — 보내기 전에 실제 값인지 확인하세요', 64, 514, _maxW); }
   g.fillStyle='#8b8f98'; g.font='500 21px '+F;
   g.fillText('입력 가정에 따른 추정치 · 투자 권유가 아닌 정보 제공 목적 · 임차인 정보 미포함', 64, 572, 900);
-  if(!_qok){ g.fillStyle='#a9792b'; g.font='800 26px '+F; g.fillText('modelter.com', 1010, 572); }
+  if(!_qok){ g.fillStyle='#a9792b'; g.font='800 26px '+F; g.fillText('Argus Research', 1010, 572); }
   cv.toBlob(function(b){
     if(!b) return;
     var a=document.createElement('a'); a.href=URL.createObjectURL(b);
-    a.download='모델터_'+name.replace(/[\\/:*?"<>|\s]+/g,'_')+'_요약.png';
+    a.download='Argus_'+name.replace(/[\\/:*?"<>|\s]+/g,'_')+'_요약.png';
     document.body.appendChild(a); a.click();
     setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },400);
   },'image/png');
@@ -5857,15 +5880,15 @@ function localStatus(message,retry){var e=$('saveStatus');if(e)e.textContent=mes
 function saveLocal(){
   if(localPause||window.__mtReadonly){localStatus('공유·예시 보기 중 · 기존 자동 저장은 유지합니다.',false);return false;}
   try{
-    if(_localBlocked)throw new Error('손상된 자동 저장 원본을 보호하고 있습니다. .modelter 파일로 현재 입력을 보관해 주세요.');
+    if(_localBlocked)throw new Error('손상된 자동 저장 원본을 보호하고 있습니다. .argus 파일로 현재 입력을 보관해 주세요.');
     var old=localStorage.getItem('mt_state');
     if(_localDiskRaw!==undefined&&old!==_localDiskRaw)throw new Error('다른 탭에서 입력이 변경되었습니다. 딜로 저장하거나 백업한 뒤 새로고침해 주세요.');
     var p=wsSnapshot();p.ws=WS;var next=JSON.stringify(p);
     if(!wsValidSnapshot(JSON.parse(next)))throw new Error('자동 저장 형식 또는 입력 길이 한도를 벗어났습니다. 입력을 확인하고 백업해 주세요.');
-    if(next.length>8000000)throw new Error('입력 데이터가 너무 큽니다. .modelter 파일로 보관해 주세요.');
+    if(next.length>8000000)throw new Error('입력 데이터가 너무 큽니다. .argus 파일로 보관해 주세요.');
     if(old&&old!==next&&!_localSkipBackup){try{localStorage.setItem('mt_state_backup',old);}catch(backupError){}}
     localStorage.setItem('mt_state',next);_localDiskRaw=next;_localSkipBackup=false;localWarn=false;
-    localStatus(_localRecoveryNotice?'이전 정상 자동 저장본을 복구했습니다. 최신 변경을 확인해 주세요.':'자동 저장됨 · 이 브라우저에만 보관됩니다. 기기 이동 전 .modelter 백업을 받으세요.',false);return true;
+    localStatus(_localRecoveryNotice?'이전 정상 자동 저장본을 복구했습니다. 최신 변경을 확인해 주세요.':'자동 저장됨 · 이 브라우저에만 보관됩니다. 기기 이동 전 .argus 백업을 받으세요.',false);return true;
   }catch(e){localStatus('자동 저장 실패 · '+(e.name==='QuotaExceededError'?'저장 공간이 부족합니다. 백업 후 다시 시도해 주세요.':e.message),true);if(!localWarn){localWarn=true;toast('자동 저장하지 못했습니다. 화면을 닫기 전에 딜로 저장하거나 입력값을 파일로 백업해 주세요.',4500);}return false;}
 }
 function tryRestoreLocal(){
@@ -6660,8 +6683,8 @@ const XLTMPL={"sheets":[{"name":"00_Cover","hidden":false,"cells":[{"r":"B1","ro
         var _rc=window.__mtSnapForXlsx();
         if(_rc){
           t.sheets.push({name:'_Restore', hidden:true, cells:[
-            {r:'B1', role:'ti', s:'모델터 복원 코드'},
-            {r:'B2', role:'st', s:'이 시트는 modelter.com의 [엑셀에서 복원] 기능용입니다 — 내용을 수정하지 마세요. 임차인 실명은 담기지 않습니다.'},
+            {r:'B1', role:'ti', s:'Argus 복원 코드'},
+            {r:'B2', role:'st', s:'이 시트는 Argus Research의 [엑셀에서 복원] 기능용입니다 — 내용을 수정하지 마세요. 임차인 실명은 담기지 않습니다.'},
             {r:'B3', role:'da', s:'MTSNAP1:'+_rc+':PANSTM'}
           ], maxcol:3, widths:{B:40.0}});
         }
@@ -6726,7 +6749,7 @@ const XLTMPL={"sheets":[{"name":"00_Cover","hidden":false,"cells":[{"r":"B1","ro
   if(typeof module!=='undefined'&&module.exports) module.exports=api; else global.XLSXGEN=api;
 })(typeof window!=='undefined'?window:globalThis);
 
-/* ── 모델터 입력 → 01_Assumptions 매핑 & 엑셀 다운로드 (오피스·물류 매입) ── */
+/* ── Argus 입력 → 01_Assumptions 매핑 & 엑셀 다운로드 (오피스·물류 매입) ── */
 (function(){
   function $id(id){ return document.getElementById(id); }
   function parseN(v){ var x=parseFloat(String(v==null?'':v).replace(/,/g,'')); return isFinite(x)?x:null; }
@@ -7656,13 +7679,13 @@ const XLTMPL={"sheets":[{"name":"00_Cover","hidden":false,"cells":[{"r":"B1","ro
     var A="'01_Assumptions'!";
     var today=new Date().toISOString().slice(0,10);
     var nm=(typeof state!=='undefined'&&state&&state.asset)?String(state.asset):'대상 자산';
-    var covB2='모델터 — 리파이낸싱 대안 비교 (텀시트·연도별 DSCR·수식 연결)';
+    var covB2='Argus — 리파이낸싱 대안 비교 (텀시트·연도별 DSCR·수식 연결)';
     if(ctx) covB2+=' · Deal: '+ctx.dealName+(ctx.dirty?' (저장 안 된 변경 반영)':(' '+ctx.label+(ctx.vname?('·'+ctx.vname):'')));
     var cover={name:'00_Cover', cells:[
       {r:'B2',s:covB2,role:'ti'},
       {r:'B4',s:'자산명',role:'lb'},{r:'C4',s:nm,role:'da'},
       {r:'B5',s:'생성일',role:'lb'},{r:'C5',s:today,role:'da'},
-      {r:'B6',s:'생성 도구',role:'lb'},{r:'C6',s:'modelter.com · 리파이낸싱',role:'da'},
+      {r:'B6',s:'생성 도구',role:'lb'},{r:'C6',s:'Argus Research · 리파이낸싱',role:'da'},
       {r:'B8',s:'시트 구성',role:'se'},
       {r:'B9',s:'01_Assumptions',role:'lbb'},{r:'C9',s:'현재 NOI·성장률·감정가·기존 대출·대안 3안 조건 (파란 값 = 수정 가능)',role:'da'},
       {r:'B10',s:'02_Term_Sheets',role:'lbb'},{r:'C10',s:'대안별 한도·순인출·비용·DSCR·총이자·벌룬 비교와 기준 충족 판정',role:'da'},
@@ -7782,18 +7805,18 @@ const XLTMPL={"sheets":[{"name":"00_Cover","hidden":false,"cells":[{"r":"B1","ro
     var countOK='AND(ISNUMBER('+A+'C19),'+A+'C19>=1,'+A+'C19<=12,'+A+'C19=ROUND('+A+'C19,0))';
     var valid='IFERROR(AND('+schedule+','+countOK+',ISNUMBER('+A+'C37),'+A+'C37>=0,'+A+'C37<=120,'+A+'C37=ROUND('+A+'C37,0)),FALSE)';
     var safeCount='MAX(1,MIN(12,IFERROR(ROUND('+A+'C$19,0),1)))';
-    var invalidNote='일정·중도금 회차·토지 잔금 시점을 확인하세요. 일정 변경은 모델터에서 수정 후 다시 받으세요.';
+    var invalidNote='일정·중도금 회차·토지 잔금 시점을 확인하세요. 일정 변경은 Argus에서 수정 후 다시 받으세요.';
     var today=new Date().toISOString().slice(0,10);
     var nm=(typeof state!=='undefined'&&state&&state.asset)?String(state.asset):'분양사업';
 
     /* 00_Cover */
-    var covB2='모델터 — 공동주택 분양 사업수지 (월별 현금흐름·수식 연결)';
+    var covB2='Argus — 공동주택 분양 사업수지 (월별 현금흐름·수식 연결)';
     if(ctx) covB2+=' · Deal: '+ctx.dealName+(ctx.dirty?' (저장 안 된 변경 반영)':(' '+ctx.label+(ctx.vname?('·'+ctx.vname):'')));
     var cover={name:'00_Cover', cells:[
       {r:'B2',s:covB2,role:'ti'},
       {r:'B4',s:'사업명',role:'lb'},{r:'C4',s:nm,role:'da'},
       {r:'B5',s:'생성일',role:'lb'},{r:'C5',s:today,role:'da'},
-      {r:'B6',s:'생성 도구',role:'lb'},{r:'C6',s:'modelter.com · 개발 · PF(공동주택 분양)',role:'da'},
+      {r:'B6',s:'생성 도구',role:'lb'},{r:'C6',s:'Argus Research · 개발 · PF(공동주택 분양)',role:'da'},
       {r:'B8',s:'시트 구성',role:'se'},
       {r:'B9',s:'01_Assumptions',role:'lbb'},{r:'C9',s:'사업비·납부·금융 가정은 파일에서 수정. 공사·분양 일정은 웹에서 변경 후 다시 다운로드',role:'da'},
       {r:'B10',s:'02_Unit_Mix',role:'lbb'},{r:'C10',s:'평형별 세대수·분양가와 상업시설 분양 조건',role:'da'},
@@ -7982,7 +8005,7 @@ const XLTMPL={"sheets":[{"name":"00_Cover","hidden":false,"cells":[{"r":"B1","ro
             if(vv!=null&&isFinite(vv)) sens.cells.push({r:String.fromCharCode(67+cj2)+(5+ri),f:'IF('+sensRef+'="'+sensNote+'",'+vv+',"")',role:'vn',z:'pct1'});
           }
         }
-        sens.cells.push({r:'B'+(6+smx.ecSteps.length),f:'IF('+unchanged+',"'+sensNote+'","가정이 바뀌어 민감도 표를 비웠습니다. 모델터에서 수정 후 다시 받으세요.")',role:'no'});
+        sens.cells.push({r:'B'+(6+smx.ecSteps.length),f:'IF('+unchanged+',"'+sensNote+'","가정이 바뀌어 민감도 표를 비웠습니다. Argus에서 수정 후 다시 받으세요.")',role:'no'});
       }
     }catch(eS){}
 
@@ -8139,11 +8162,11 @@ const XLTMPL={"sheets":[{"name":"00_Cover","hidden":false,"cells":[{"r":"B1","ro
         if(!blobR.size) throw new Error('엑셀 파일이 비어 있습니다');
         generated=true; if(window.mtTrack) try{ mtTrack('xlsx_ready'); }catch(e){}
         var nmR=assetName?String(assetName).replace(/[\\\/:*?"<>|]/g,'').trim():'자산';
-        var fnameR='모델터_'+(nmR||'자산')+'_리파이낸싱비교.xlsx';
+        var fnameR='Argus_'+(nmR||'자산')+'_리파이낸싱비교.xlsx';
         if(ctx&&!ctx.dirty&&ctx.label){
           var _dnR=String(ctx.dealName).replace(/[\\\/:*?"<>|]/g,'').trim()||'딜';
           var _dR=new Date(), _ymdR=''+_dR.getFullYear()+('0'+(_dR.getMonth()+1)).slice(-2)+('0'+_dR.getDate()).slice(-2);
-          fnameR='모델터_'+_dnR+'_'+ctx.label+'_'+_ymdR+'.xlsx';
+          fnameR='Argus_'+_dnR+'_'+ctx.label+'_'+_ymdR+'.xlsx';
         }
         if(ctx&&typeof wsLogOutput==='function') wsLogOutput(ctx.dealId, ctx.dirty?null:ctx.versionId, 'xlsx', fnameR, ctx.dirty?'unsaved':'saved');
       xlsxOffer(blobR,fnameR);
@@ -8164,11 +8187,11 @@ const XLTMPL={"sheets":[{"name":"00_Cover","hidden":false,"cells":[{"r":"B1","ro
         if(!blobD.size) throw new Error('엑셀 파일이 비어 있습니다');
         generated=true; if(window.mtTrack) try{ mtTrack('xlsx_ready'); }catch(e){}
         var nmD=assetName?String(assetName).replace(/[\\\/:*?"<>|]/g,'').trim():'분양사업';
-        var fnameD='모델터_'+(nmD||'분양사업')+'_분양수지.xlsx';
+        var fnameD='Argus_'+(nmD||'분양사업')+'_분양수지.xlsx';
         if(ctx&&!ctx.dirty&&ctx.label){
           var _dnD=String(ctx.dealName).replace(/[\\\/:*?"<>|]/g,'').trim()||'딜';
           var _dD=new Date(), _ymdD=''+_dD.getFullYear()+('0'+(_dD.getMonth()+1)).slice(-2)+('0'+_dD.getDate()).slice(-2);
-          fnameD='모델터_'+_dnD+'_'+ctx.label+'_'+_ymdD+'.xlsx';
+          fnameD='Argus_'+_dnD+'_'+ctx.label+'_'+_ymdD+'.xlsx';
         }
         if(ctx&&typeof wsLogOutput==='function') wsLogOutput(ctx.dealId, ctx.dirty?null:ctx.versionId, 'xlsx', fnameD, ctx.dirty?'unsaved':'saved');
       xlsxOffer(blobD,fnameD);
@@ -8257,14 +8280,14 @@ const XLTMPL={"sheets":[{"name":"00_Cover","hidden":false,"cells":[{"r":"B1","ro
       try{
         var _recovery=recoverLinkInfo('xlsx'),_rl=_recovery.url;
         if(_recovery.reason!=='disabled'){
-          var _restoreNote='modelter.com의 내 딜에서 다운로드 원본 파일로 복원하세요. 수정·재저장 전 파일만 지원하며, 엑셀에서 수정한 값은 반영되지 않습니다.';
+          var _restoreNote='Argus Research의 내 딜에서 다운로드 원본 파일로 복원하세요. 수정·재저장 전 파일만 지원하며, 엑셀에서 수정한 값은 반영되지 않습니다.';
           var _missingLink=_recovery.reason==='too_long'?'가정이 많아 복원 링크를 넣지 않았습니다.':'복원 링크를 만들지 못했습니다.';
           var _cov=null,_cvi; for(_cvi=0;_cvi<_TPL.sheets.length;_cvi++) if(_TPL.sheets[_cvi].name==='00_Cover'){_cov=_TPL.sheets[_cvi];break;}
           if(_cov){
             var _mr=0; _cov.cells.forEach(function(c){ var mm=/^[A-Z]+(\d+)$/.exec(c.r); if(mm){ var rn=+mm[1]; if(rn>_mr)_mr=rn; } });
             var _lr=_mr+2;
             _cov.cells.push({r:'B'+_lr, role:'se', s:_rl?'다운로드 시점 모델 열기':'다운로드 원본으로 복원'});
-            _cov.cells.push(_rl?{r:'B'+(_lr+1), role:'lbb', s:'modelter.com에서 다운로드 시점 가정 열기', link:_rl}:{r:'B'+(_lr+1), role:'nw', s:_missingLink});
+            _cov.cells.push(_rl?{r:'B'+(_lr+1), role:'lbb', s:'Argus Research에서 다운로드 시점 가정 열기', link:_rl}:{r:'B'+(_lr+1), role:'nw', s:_missingLink});
             _cov.cells.push({r:'B'+(_lr+2), role:_rl?'da':'nw', s:_rl?'다운로드 당시 가정이 열립니다. 엑셀에서 수정한 값은 반영되지 않습니다. 임차인명은 가려집니다.':_restoreNote});
           }
 
@@ -8284,11 +8307,11 @@ const XLTMPL={"sheets":[{"name":"00_Cover","hidden":false,"cells":[{"r":"B1","ro
       if(!blob.size) throw new Error('엑셀 파일이 비어 있습니다');
       generated=true; if(window.mtTrack) try{ mtTrack('xlsx_ready'); }catch(e){}
       var nm=assetName?String(assetName).replace(/[\\\/:*?"<>|]/g,'').trim():'매입';
-      var fname='모델터_'+(nm||'매입')+'_재무모델.xlsx';
+      var fname='Argus_'+(nm||'매입')+'_재무모델.xlsx';
       if(ctx&&!ctx.dirty&&ctx.label){
         var _dn=String(ctx.dealName).replace(/[\\\/:*?"<>|]/g,'').trim()||'딜';
         var _d3=new Date(), _ymd3=''+_d3.getFullYear()+('0'+(_d3.getMonth()+1)).slice(-2)+('0'+_d3.getDate()).slice(-2);
-        fname='모델터_'+_dn+'_'+ctx.label+'_'+_ymd3+'.xlsx';
+        fname='Argus_'+_dn+'_'+ctx.label+'_'+_ymd3+'.xlsx';
       }
       if(ctx&&typeof wsLogOutput==='function') wsLogOutput(ctx.dealId, ctx.dirty?null:ctx.versionId, 'xlsx', fname, ctx.dirty?'unsaved':'saved');
       xlsxOffer(blob,fname);
@@ -8535,7 +8558,7 @@ if(typeof module!=='undefined'&&module.exports) module.exports=api; else global.
       GEN:'Internal · Generated '+ymd,
       TITLE:title,
       SUBT:(cur==='office'?'Office':'Logistics')+' · 보유 '+H+'년 · Senior'+(prefOn?' + Preferred / Common Equity':' + Common Equity'),
-      STATNOTE:'모델터 화면 결과와 동일한 값으로 생성됩니다.',
+      STATNOTE:'Argus 화면 결과와 동일한 값으로 생성됩니다.',
       PP:meok(price), USES:meok(r.uses),
       SUCHK1:'S&U check: '+eokNum(r.uses-(r.loan+r.prefAmt+r.common+dep))+'억',
       CAPS:pct(giCap,2)+' / '+pct(r.exitCap,2),
@@ -8584,10 +8607,10 @@ if(typeof module!=='undefined'&&module.exports) module.exports=api; else global.
       WF2:prefOn?('우선주 배당 '+pct(r.prefCoc,1)+((stackState['pref_extra']||'누적적')==='누적적'?'(누적)':'')+' + 원금 회수'):'해당 없음 (우선주 미사용)',
       WF3:'보통주 원금 회수',
       WF4:'잔여차익 Common 100%'+(prefOn?' (우선주는 약정 배당·원금까지)':''),
-      N1:'• 모델터 화면 결과와 동일한 엔진 값 (티저에서 재계산 없음)',
+      N1:'• Argus 화면 결과와 동일한 엔진 값 (티저에서 재계산 없음)',
       N2:'• 최소 DSCR '+mult(r.minDSCR)+' · 만기시점 Debt Yield '+pct((noiL!=null&&endL>0)?noiL/endL:null,1),
       N3:(window.rrModel&&window.rrModel.on&&window.rrModel.leases)?('• 렌트롤 '+window.rrModel.leases.length+'개 임차인 실제 계약 반영'):'• 임대료·공실은 입력 가정 기준 (렌트롤 미반영)',
-      FOOT:'modelter.com · Modelter Teaser'
+      FOOT:'Argus Research · Argus Teaser'
     };
     return V;
   }
@@ -8596,7 +8619,7 @@ if(typeof module!=='undefined'&&module.exports) module.exports=api; else global.
     if(!V) return null;
     if(ctx){
       V.GEN='Internal · '+(ctx.dirty?'미저장 변경 반영':(ctx.label+(ctx.vname?(' '+ctx.vname):'')))+' · Generated '+V.GEN.split('Generated ')[1];
-      V.FOOT='modelter.com · '+ctx.dealName+(ctx.dirty?'':(' · '+ctx.label))+' · Modelter Teaser';
+      V.FOOT='Argus Research · '+ctx.dealName+(ctx.dirty?'':(' · '+ctx.label))+' · Argus Teaser';
     }
     var files=XLSXREAD.readZip(b2u(TPL_B64));
     var slide=XLSXREAD.entryText(files['ppt/slides/slide1.xml']);
@@ -8619,10 +8642,10 @@ if(typeof module!=='undefined'&&module.exports) module.exports=api; else global.
     if(!bytes){ if(typeof toast==='function') toast('먼저 오피스·물류 딜에서 매입가 등 값을 입력하세요'); return; }
     var d=new Date(), ymd=''+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2);
     var nm=(state.asset||'딜').replace(/[\\\/:*?"<>|]/g,'').trim()||'딜';
-    var fname='모델터_티저_'+nm+'_'+ymd+'.pptx';
+    var fname='Argus_티저_'+nm+'_'+ymd+'.pptx';
     if(ctx&&!ctx.dirty&&ctx.label){
       var dn=String(ctx.dealName).replace(/[\\\/:*?"<>|]/g,'').trim()||'딜';
-      fname='모델터_티저_'+dn+'_'+ctx.label+'_'+ymd+'.pptx';
+      fname='Argus_티저_'+dn+'_'+ctx.label+'_'+ymd+'.pptx';
     }
     if(ctx&&typeof wsLogOutput==='function') wsLogOutput(ctx.dealId, ctx.dirty?null:ctx.versionId, 'pptx', fname, ctx.dirty?'unsaved':'saved');
     var blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.presentationml.presentation'});
@@ -8714,7 +8737,7 @@ function frame(title, sub, pageNo, total){
   if(sub) s.push(box(cm(1.35),cm(1.52),cm(28),cm(0.75),[{runs:[{t:sub,sz:1050,color:C.mut}]}]));
   s.push(box(cm(0.9),cm(2.34),cm(32.06),cm(0.045),[{runs:[{t:' ',sz:100}]}],{fill:C.line}));
   s.push(box(cm(0.9),cm(17.86),cm(32.06),cm(0.03),[{runs:[{t:' ',sz:100}]}],{fill:C.line}));
-  s.push(box(cm(0.9),cm(18.05),cm(28),cm(0.66),[{runs:[{t:'modelter.com · 입력값 기반 직접계산·추정치 · 투자 권유가 아닌 정보 제공 목적',sz:850,color:C.mut}]}]));
+  s.push(box(cm(0.9),cm(18.05),cm(28),cm(0.66),[{runs:[{t:'Argus Research · 입력값 기반 직접계산·추정치 · 투자 권유가 아닌 정보 제공 목적',sz:850,color:C.mut}]}]));
   s.push(box(cm(30.6),cm(18.05),cm(2.4),cm(0.66),[{runs:[{t:pageNo+' / '+total,sz:850,color:C.mut}],align:'r'}]));
   return s;
 }
@@ -8772,7 +8795,7 @@ function buildIcPptx(){
     s.push(box(cm(0.9),cm(5.1),cm(30),cm(1.0),[{runs:[{t:'Investment Committee Package',sz:1300,b:1,color:C.acc2}]}]));
     s.push(box(cm(0.9),cm(6.0),cm(31),cm(2.7),[{runs:[{t:D.name,sz:4400,b:1,color:C.wh}]}]));
     s.push(box(cm(0.9),cm(8.9),cm(12),cm(0.95),[{runs:[{t:'  '+D.deal+'  ',sz:1150,b:1,color:C.wh}]}],{fill:C.acc,rounded:true,anchor:'ctr'}));
-    s.push(box(cm(13.3),cm(8.9),cm(12),cm(0.95),[{runs:[{t:D.date+' · 모델터'+(typeof mtBuild==='function'&&mtBuild()?(' · 빌드 '+mtBuild()):''),sz:1100,color:C.cwh}]}],{anchor:'ctr'}));
+    s.push(box(cm(13.3),cm(8.9),cm(12),cm(0.95),[{runs:[{t:D.date+' · Argus'+(typeof mtBuild==='function'&&mtBuild()?(' · 빌드 '+mtBuild()):''),sz:1100,color:C.cwh}]}],{anchor:'ctr'}));
     var _ptag=(typeof houseTag==='function')?houseTag():'';
     if(_ptag) s.push(box(cm(0.9),cm(10.0),cm(31),cm(0.7),[{runs:[{t:'✓ '+_ptag,sz:1050,b:1,color:C.acc2}]}]));
 
@@ -8783,7 +8806,7 @@ function buildIcPptx(){
         {runs:[{t:k.v,sz:2200,b:1,color:C.wh}],spcB:300}
       ],{fill:C.dk2,rounded:true}));
     });
-    s.push(box(cm(0.9),cm(16.6),cm(32),cm(1.7),[{runs:[{t:'본 자료의 수치는 모델터 화면과 동일한 계산 엔진에서 산출한 입력값 기반 추정치이며, 재계산 없이 그대로 옮겨졌습니다. 화면 결과와 다운로드 엑셀은 동일 계산식(파리티 검증)입니다. 투자 권유가 아닌 정보 제공 목적입니다.',sz:950,color:C.mut}]}]));
+    s.push(box(cm(0.9),cm(16.6),cm(32),cm(1.7),[{runs:[{t:'본 자료의 수치는 Argus 화면과 동일한 계산 엔진에서 산출한 입력값 기반 추정치이며, 재계산 없이 그대로 옮겨졌습니다. 화면 결과와 다운로드 엑셀은 동일 계산식(파리티 검증)입니다. 투자 권유가 아닌 정보 제공 목적입니다.',sz:950,color:C.mut}]}]));
     slides.push(slideXml(s));
   })();
 
@@ -9001,15 +9024,15 @@ function buildIcPptx(){
     }
     s.push(box(cm(0.9),cm(Math.max(y+0.4,12.6)),cm(32),cm(4.3),[
       {runs:[{t:'방법론 · 신뢰성',sz:1100,b:1,color:C.ink}]},
-      {runs:[{t:'· 본 패키지의 모든 수치는 modelter.com 화면과 동일한 계산 엔진에서 나왔으며, 엑셀 다운로드와도 같은 계산식입니다(파리티 검증).',sz:1000,color:C.mut}],spcB:400},
+      {runs:[{t:'· 본 패키지의 모든 수치는 Argus Research 화면과 동일한 계산 엔진에서 나왔으며, 엑셀 다운로드와도 같은 계산식입니다(파리티 검증).',sz:1000,color:C.mut}],spcB:400},
       {runs:[{t:'· 딜 데이터는 서버에 저장·전송되지 않고 브라우저 안에서만 계산됩니다.',sz:1000,color:C.mut}],spcB:200},
       {runs:[{t:'· 수치는 입력 가정 기반 추정치로, 감정평가·실사 결과를 대체하지 않습니다.',sz:1000,color:C.mut}],spcB:200},
       (function(){
         // 회수 링크(옵트인) — 클릭 시 이 가정 그대로 라이브 모델(읽기 전용·임차인명 마스킹), 채널 src=ppt
         var _rec=(typeof recoverUrl==='function')?recoverUrl('ppt'):null;
         if(_rec) slides.__hl={idx:slides.length, url:_rec};   // 이 슬라이드는 아직 push 전 → 현재 length가 곧 이 슬라이드의 인덱스
-        return {runs:(_rec?[{t:'같은 가정으로 모델터 열기: ',sz:1000,b:1,color:C.acc}]:[]).concat([
-          {t:_rec?'modelter.com에서 열기':'modelter.com',sz:1000,b:1,color:C.acc2,link:_rec?'rIdHL':null}]),spcB:300};
+        return {runs:(_rec?[{t:'같은 가정으로 Argus 열기: ',sz:1000,b:1,color:C.acc}]:[]).concat([
+          {t:_rec?'Argus Research에서 열기':'Argus Research',sz:1000,b:1,color:C.acc2,link:_rec?'rIdHL':null}]),spcB:300};
       })()
     ],{fill:C.bg,line:C.line,rounded:true}));
     slides.push(slideXml(s));
@@ -9081,7 +9104,7 @@ function download(ctx){
   if(!bytes){ if(typeof toast==='function') toast('먼저 결과가 나오도록 핵심 입력을 채워주세요'); return; }
   var d=new Date(), ymd=''+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2);
   var nm=(state.asset||'딜').replace(/[\\\/:*?"<>|]/g,'').trim()||'딜';
-  var fname='모델터_IC패키지_'+nm+'_'+ymd+'.pptx';
+  var fname='Argus_IC패키지_'+nm+'_'+ymd+'.pptx';
   if(ctx&&typeof wsLogOutput==='function') wsLogOutput(ctx.dealId, ctx.dirty?null:ctx.versionId, 'pptx', fname, ctx.dirty?'unsaved':'saved');
   var blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.presentationml.presentation'});
   var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fname; a.click(); URL.revokeObjectURL(a.href);
@@ -9414,7 +9437,7 @@ if(typeof module!=='undefined'&&module.exports) module.exports=api; else global.
       mapRows+='<tr'+(curFld===''?' class="rr-skip"':'')+'><td class="rr-oc">'+_hesc(h)+'</td><td><select class="rr-fld" data-rrcol="'+c+'">'+opts+'</select></td><td class="rr-smp">'+_hesc(samples.join(' · ')||'—')+'</td></tr>';
     }
     $id('rrMap').innerHTML='<div class="rr-map-h">① 열 매핑 확인 <span>자동으로 찾은 결과입니다. 잘못 연결된 열은 직접 바꿔 주세요</span></div>'+
-      '<div class="rr-map-wrap"><table class="rr-maptbl"><tr><th>원본 열</th><th>모델터 항목</th><th>샘플 값</th></tr>'+mapRows+'</table></div>'+
+      '<div class="rr-map-wrap"><table class="rr-maptbl"><tr><th>원본 열</th><th>Argus 항목</th><th>샘플 값</th></tr>'+mapRows+'</table></div>'+
       '<div class="rr-note">면적단위 '+(ex.areaUnit==='sqm'?'㎡→평 환산':'평')+' · 임차인 '+agg.count+'개 인식</div>';
 
     var W=pending.warns||[];
@@ -9551,7 +9574,7 @@ if(typeof module!=='undefined'&&module.exports) module.exports=api; else global.
     ];
     var cells=[],cols=['B','C','D','E','F','G','H','I'];
     cells.push({r:'B1',role:'ti',s:'렌트롤 샘플 양식 (Rent Roll Template)'});
-    cells.push({r:'B2',role:'st',s:'이 형식으로 작성해 모델터 ‘렌트롤 업로드’에 붙여넣거나 .xlsx/.csv로 올리세요 · 전용·임대면적 둘 다 있으면 임대면적으로 모델링합니다 · 면적은 평 또는 ㎡, 금액은 원 단위'});
+    cells.push({r:'B2',role:'st',s:'이 형식으로 작성해 Argus ‘렌트롤 업로드’에 붙여넣거나 .xlsx/.csv로 올리세요 · 전용·임대면적 둘 다 있으면 임대면적으로 모델링합니다 · 면적은 평 또는 ㎡, 금액은 원 단위'});
     var hd=['임차인','전용면적(평)','임대면적(평)','보증금(원)','월임대료(원)','월관리비(원)','계약시작','계약만기'];
     hd.forEach(function(h,i){ cells.push({r:cols[i]+'4',role:'th',s:h}); });
     var r=5,NA=0,LA=0,DEP=0,RE=0,CA=0;
@@ -12042,7 +12065,7 @@ var qrcode = function() {
 /* ── 업그레이드 공지 배너 + What's new 모달 ── */
 (function(){
 /* ── IM 가정 추출 (BYOK): IM 텍스트 + 본인 Anthropic API 키 → 매입 딜 가정 자동 채움 ──
- * 원칙: 텍스트·키는 브라우저에서 api.anthropic.com으로만 직접 전송(모델터 서버 무경유).
+ * 원칙: 텍스트·키는 브라우저에서 api.anthropic.com으로만 직접 전송(Argus 서버 무경유).
  *       키는 메모리 보관(선택 시 이 탭 세션스토리지) — localStorage·state·공유 링크에 절대 저장하지 않음. */
 (function(){
   var KEY='';                       // 메모리 보관
@@ -12226,9 +12249,9 @@ var qrcode = function() {
       var b3=e.target.closest('[data-im]'); if(!b3) return;
       if(b3.dataset.im==='close') close();
       else if(b3.dataset.im==='ckcopy'){
-        var txt='[모델터] IM에서 찾을 숫자 — '+d.label+'\n'
+        var txt='[Argus] IM에서 찾을 숫자 — '+d.label+'\n'
           +secs.map(function(sc){ return '■ '+sc.h+'\n'+sc.rows.map(function(r){ return '□ '+r.l+(r.u?(' ('+r.u+')'):'')+(r.h?(' — '+r.h):''); }).join('\n'); }).join('\n\n')
-          +'\n\n※ 금액=백만원 · 면적=평 · 필수값은 직접 확인 · 나머지 빈 항목은 기본 가정 적용 · modelter.com/im-checklist';
+          +'\n\n※ 금액=백만원 · 면적=평 · 필수값은 직접 확인 · 나머지 빈 항목은 기본 가정 적용 · Argus Research/im-checklist';
         var done=function(){ if(typeof toast==='function') toast('체크리스트를 복사했습니다 — 메모장·인쇄용으로 붙여넣으세요',2400); };
         if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done).catch(function(){ prompt('아래 내용을 복사하세요:',txt); });
         else prompt('아래 내용을 복사하세요:',txt);
@@ -12366,7 +12389,7 @@ var qrcode = function() {
       +'<div class="imx-err"></div>'
       +'<div class="imx-act"><button type="button" data-im="close">닫기</button><button type="button" class="pri" id="imxGo" data-im="go">추출하기</button></div>'
       +'</div>'
-      +'<div class="imx-priv"><b>개인정보·보안</b> IM 텍스트와 API 키는 브라우저에서 <b>api.anthropic.com으로 직접 전송</b>됩니다. 모델터 서버에는 보내거나 저장하지 않습니다. 키는 기본적으로 저장하지 않으며, 위 항목을 선택한 경우에만 이 탭의 세션 저장소에 보관합니다. 공유 링크와 저장본에는 넣지 않습니다. 문서 반출과 외부 API 사용에 관한 회사 정책을 먼저 확인하세요. 비용은 본인 Anthropic 계정에 청구됩니다. <a href="/trust" target="_blank" rel="noopener">데이터 흐름과 보안 확인 →</a></div>'
+      +'<div class="imx-priv"><b>개인정보·보안</b> IM 텍스트와 API 키는 브라우저에서 <b>api.anthropic.com으로 직접 전송</b>됩니다. Argus 서버에는 보내거나 저장하지 않습니다. 키는 기본적으로 저장하지 않으며, 위 항목을 선택한 경우에만 이 탭의 세션 저장소에 보관합니다. 공유 링크와 저장본에는 넣지 않습니다. 문서 반출과 외부 API 사용에 관한 회사 정책을 먼저 확인하세요. 비용은 본인 Anthropic 계정에 청구됩니다. <a href="/trust" target="_blank" rel="noopener">데이터 흐름과 보안 확인 →</a></div>'
       +'</div>';
     document.body.appendChild(ov); document.body.style.overflow='hidden';
     ov.addEventListener('click',function(e){
