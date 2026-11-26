@@ -1365,6 +1365,13 @@ body,body *{font-variant-numeric:tabular-nums}
 /* 원본 '딜 보관함'(이 브라우저에만 저장)은 F/S 검토 막대의 내 F/S 목록·계정에 저장과 겹치므로 숨김 — 사용자 요청
    (브라우저 자동 임시저장은 그대로 동작) */
 .slots-bar.slots-primary,#resultSave,#saveStatus,#saveBackup,#saveRetry,.tools-fold .slots-bar{display:none!important}
+/* 투자 조건: 머리줄 아래 '처음이라면'·진행 막대가 붙어 보여 위아래 여백 */
+#inputGuide{margin-top:16px!important}
+.inp-prog{padding-bottom:16px!important;margin-top:6px!important}
+/* 재무모델 비교 창: 여러 모델이 한눈에 보이도록 넓게 */
+.cmp-modal{width:min(1180px,94vw)!important;max-width:none!important}
+/* 간격을 사업수지와 같게: 왼쪽 카드–본문 16px, 오른쪽 끝 16px (원본 .wrap 좌우 여백 24px 제거) */
+section.builder>.wrap{padding-left:0!important;padding-right:0!important}
 </style>
 <meta name="ag-base" content="">
 <style>
@@ -1530,8 +1537,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   <div class="wn-modal cmp-modal" role="dialog" aria-modal="true" aria-labelledby="cmpTitle">
     <button class="wn-x" id="cmpClose" type="button" aria-label="닫기">×</button>
     <div class="wn-eyebrow">딜 비교 · Compare</div>
-    <h3 id="cmpTitle">저장한 딜 나란히 비교</h3>
-    <p class="md-sub">현재 입력값과 보관함에 저장한 딜을 한 표에서 비교합니다. 서로 다른 값은 강조하고, 세전 IRR이 가장 높은 딜에는 배지를 붙입니다.</p>
+    <h3 id="cmpTitle">저장한 재무모델 나란히 비교</h3>
+    <p class="md-sub">현재 입력값과 계정에 저장한 재무모델(최근 30개)을 한 표에서 비교합니다. 서로 다른 값은 강조하고, 세전 IRR이 가장 높은 딜에는 배지를 붙입니다.</p>
     <div id="cmpBody"></div>
   </div>
 </div>

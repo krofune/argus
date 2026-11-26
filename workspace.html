@@ -773,6 +773,8 @@ const inWs=ref=>S.items.filter(i=>i.ref===ref);
 window.ARGUS_WS={pick,add,inWs,fromListing,fromReport,fromDeal,open:(sid,iid)=>location.href=`workspace.html#space=${sid}${iid?'&item='+iid:''}`};
 
 // ── 공용 대화상자
+// F/S 검토 카드의 링크 이름: 'F/S 검토 - 사업수지: 이름' / 'F/S 검토 - 재무모델링: 이름' (예전 카드의 'F/S 검토 열기'도 같은 형식으로 보여줌)
+function linkLabel(i,l){if(i.kind!=='fs'||!/^F\/S 검토/.test(l.t||''))return l.t;const t=(i.meta&&i.meta['유형'])||'';return 'F/S 검토 - '+(/재무모델/.test(t)?'재무모델링':'사업수지')+': '+(i.title||'')}
 function dlgRoot(){let d=$('#wdlg');if(!d){d=document.createElement('div');d.id='wdlg';document.body.appendChild(d);d.addEventListener('mousedown',e=>{if(e.target.id==='wdlg'&&!d.querySelector('.task'))closeDlg()})}return d}
 function dlg(html,ok,onOk,onOpen,cls){
   const d=dlgRoot();d.innerHTML=`<div class="wbox ${cls||''}"><button class="wx" aria-label="닫기">×</button>${html}${ok?`<div class="wfoot"><button class="wcancel">취소</button><button class="wok">${ok}</button></div>`:''}</div>`;d.classList.add('open');
@@ -970,7 +972,7 @@ function detail(id){
     ${metaRows.length?`<dl class="mi ${info.length?'sub':''}">${metaRows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${v}</dd>`).join('')}</dl>`:''}
     ${i.kind==='listing'?`<a class="golist" href="listings.html#${encodeURIComponent(i.ref)}">매물·공고에서 최신 정보 보기 ↗</a>`:''}
     <section class="tsec"><h5>본문 내용 <span class="note" title="공고 원문 요약과 검토 메모를 자유롭게 고칠 수 있습니다">ⓘ</span><span class="sp"></span><button class="fold">⌃</button></h5><div class="rte"><div class="rtb">${TB}</div><div class="rbody" id="t_b" contenteditable="true" data-ph="검토 메모, 공고 요약 등을 적어 두세요.">${sanitize(i.body)}</div></div></section>
-    ${i.links.length?`<section class="tsec"><h5>첨부 문서 <span class="note">ⓘ</span><span class="sp"></span><button class="fold">⌃</button></h5><div>${i.links.map(l=>`<div class="att"><span>📎 ${esc(l.t)}</span><a href="${esc(l.u)}" target="_blank" rel="noopener">바로 가기</a></div>`).join('')}</div></section>`:''}
+    ${i.links.length?`<section class="tsec"><h5>첨부 문서 <span class="note">ⓘ</span><span class="sp"></span><button class="fold">⌃</button></h5><div>${i.links.map(l=>`<div class="att"><span>📎 ${esc(linkLabel(i,l))}</span><a href="${esc(l.u)}" target="_blank" rel="noopener">바로 가기</a></div>`).join('')}</div></section>`:''}
     <section class="tsec"><h5>커스텀 필드 <span class="note">${Object.keys(i.custom).length}/10</span><span class="sp"></span><button class="fold">⌃</button></h5><div>${Object.entries(i.custom).map(([k,v])=>`<label class="cfrow"><span>${esc(k)}</span><input data-tcf="${esc(k)}" value="${esc(v)}"><button class="cdel" data-tcfd="${esc(k)}">×</button></label>`).join('')}<div class="cfchips">${CUSTOM.filter(k=>!(k in i.custom)).map(k=>`<button data-tcfa="${k}">+ ${k}</button>`).join('')}</div></div></section>
     <div class="note" style="margin:14px 0 4px">등록 ${fmtAt(i.created)} · ${esc(i.by)} · 최근 수정 ${ago(i.updated)}</div></div>
    <div class="tr"><div class="trh"><b>코멘트</b><span class="kc num">${i.comments.length}</span><span class="sp"></span><button id="t_sort" class="note">${csort>0?'과거순 ↑':'최신순 ↓'}</button></div>

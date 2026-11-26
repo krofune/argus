@@ -224,6 +224,25 @@
     b.click();
   }
 
+  // ── 재무모델 비교: 원본 '딜 비교' 화면을 그대로 쓰되, 비교 대상을 원본 딜 보관함 대신 계정에 저장한 재무모델로 바꿔 넣는다
+  async function fmCompare() {
+    if (!sb) return toast(LOGIN, true);
+    var w; try { w = await whenFm(); } catch (e) { return toast(e.message, true); }
+    var r = await sb.from("fs_projects").select("id,name,kind,data,updated_at").like("kind", "재무모델%").order("updated_at", { ascending: false }).limit(30);
+    if (r.error) return toast(needTable(r.error), true);
+    var slots = {};
+    r.data.forEach(function (p) {
+      if (!p.data || !p.data.fm) return;
+      var nm = p.name || "이름 없는 모델", k = nm, i = 2;
+      while (slots[k]) k = nm + " (" + i++ + ")";
+      try { var sn = w.JSON.parse(JSON.stringify(p.data.fm)); if (w.wsValidSnapshot(sn)) slots[k] = sn; } catch (e) {}
+    });
+    if (!Object.keys(slots).length) toast("계정에 저장한 재무모델이 없습니다 — [계정에 저장] 후 비교할 수 있습니다", true);
+    w.loadSlots = function () { return slots; };
+    try { w.eval("CMP_SEL=null"); } catch (e) {}
+    var b = w.document.getElementById("cmpOpen"); if (b) b.click();
+  }
+
   // ── 워크스페이스에 추가: 계정에 저장된 검토를 워크스페이스 카드로 올림 (멤버가 열람·편집)
   function money(v) { return isFinite(v) ? Math.round(v / 1e5) / 1e3 + "억" : "–"; }   // 천원 → 억원
   function pct(v) { return v != null && isFinite(v) ? (v * 100).toFixed(2) + "%" : "–"; }
@@ -237,7 +256,7 @@
       card = { title: d.name || FM.name() || "이름 없는 모델", land: null, amount: price,
         meta: { 유형: FM.kind(), 매입가: price ? Math.round(price / 1e8).toLocaleString() + "억" : "–", "Levered IRR": pct(sm.IRR), "Equity Multiple": sm.EM != null ? sm.EM.toFixed(2) + "x" : "–",
           "최소 DSCR": sm.minDSCR != null ? sm.minDSCR.toFixed(2) + "x" : "–", "Exit Cap": sm.exitCap != null ? pct(sm.exitCap > 1 ? sm.exitCap / 100 : sm.exitCap) : "–" },
-        body: "<p>F/S 검토 · 재무모델링 (" + esc(FM.label()) + "). 워크스페이스 멤버는 [F/S 검토 열기]로 열어 보고, 편집자는 수정·저장할 수 있습니다.</p>" };
+        body: "<p>F/S 검토 · 재무모델링 (" + esc(FM.label()) + "). 워크스페이스 멤버는 아래 F/S 검토 링크로 열어 보고, 편집자는 수정·저장할 수 있습니다.</p>" };
     } else {
       var st = store.getState(), bo = st.businessOverview || {}, s2 = null;
       try { s2 = L(57101).runPipeline(st).summary.target; } catch (e) {}
@@ -246,10 +265,10 @@
       if (s2) { meta["수입 계"] = money(s2.totalRevenueThousand); meta["지출 계"] = money(s2.totalExpenseThousand);
         meta["이익(토지비 포함)"] = money(s2.profitIncludingLandThousand); meta["이익률"] = isFinite(s2.profitRateIncludingLand) ? (s2.profitRateIncludingLand * 100).toFixed(1) + "%" : "–"; }
       card = { title: d.name || bo.projectName || "이름 없는 검토", land: bo.landAreaSqm || null, amount: s2 && isFinite(s2.totalRevenueThousand) ? s2.totalRevenueThousand * 1000 : null, meta: meta,
-        body: "<p>F/S 검토 · 사업수지 (분양형). 워크스페이스 멤버는 [F/S 검토 열기]로 열어 보고, 편집자는 수정·저장할 수 있습니다.</p>" };
+        body: "<p>F/S 검토 · 사업수지 (분양형). 워크스페이스 멤버는 아래 F/S 검토 링크로 열어 보고, 편집자는 수정·저장할 수 있습니다.</p>" };
     }
     window.ARGUS_WS.pick(btn, Object.assign({ kind: "fs", ref: "FS:" + d.id, board: "F/S 검토", org: "", orgUrl: "", loc: "", bldg: null,
-      posted: new Date().toISOString().slice(0, 10), end: "", links: [{ t: "F/S 검토 열기", u: "fs.html?open=" + d.id }] }, card));
+      posted: new Date().toISOString().slice(0, 10), end: "", links: [{ t: "F/S 검토 - " + (mode() === "fm" ? "재무모델링" : "사업수지") + ": " + card.title, u: "fs.html?open=" + d.id }] }, card));
   }
 
   function init() {
@@ -283,6 +302,7 @@
       dl.onclick = function () { dm.classList.toggle("on"); };
       dm.onclick = function (e) { var b = e.target.closest("[data-d]"); if (!b) return; dm.classList.remove("on"); fmDownload(b.dataset.d); };
       var nt = $("#fmt-note"), nm = $("#fmt-nmenu"); nt.onclick = function () { nm.classList.toggle("on"); dm.classList.remove("on"); };
+      $("#fmt-cmp").onclick = fmCompare;
       $("#fmt-pop").onclick = function () { window.open("fm-app.html?v=" + (window.ArgusFMVer || ""), "argus-fm", "width=1440,height=900"); };
     }
     document.addEventListener("click", function (e) { if (!e.target.closest(".fsc-lw")) { $("#fsc-list").classList.remove("on"); $("#fsc-fmenu").classList.remove("on"); if (dm) dm.classList.remove("on"); if ($("#fmt-nmenu")) $("#fmt-nmenu").classList.remove("on"); } });

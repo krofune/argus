@@ -516,11 +516,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     </aside></div>
     <div id="fsroot"><div class="fs-loading">F/S 검토 화면을 불러오는 중…</div>
   </div></div>
-    <div id="fmw" class="fmw"><div class="fmt"><span class="fsc-lw"><button id="fmt-dl">저장 ↓</button><div id="fmt-dmenu" class="fsc-list fsc-menu"><button class="fsc-li" data-d="xlDownload"><b>엑셀 재무모델</b><span>작업 시트 6개 + 검증, 수식 포함 (.xlsx)</span></button><button class="fsc-li" data-d="tzDownload"><b>원페이지 티저</b><span>투자 요약 1장 (.pptx)</span></button><button class="fsc-li" data-d="icDownload"><b>IC 패키지</b><span>투자심의용 7장 (.pptx)</span></button></div></span><span class="fsc-lw"><button id="fmt-note">주의사항 ▾</button><div id="fmt-nmenu" class="fsc-list fmt-note"><b class="nt">사용 방법</b><ol><li><b>딜 유형</b>을 고르고 숫자를 입력하면 오른쪽에 <b>IRR과 멀티플</b>이 표시됩니다.</li><li><b>오피스 매입</b>은 결과와 같은 수식이 들어 있는 엑셀로 내려받을 수 있습니다. 작업 시트는 6개이며, 렌트롤 반영 시 7개입니다.</li><li><b>렌트롤</b>을 올리면 현재 계약, 공실, 만기를 임차인별로 반영합니다.</li><li>추가 작업이 필요하면 <b>지시문</b>을 복사해 <b>Claude in Excel</b>에서 수정할 수 있습니다.</li></ol><b class="nt">결과는 이 순서로 보세요</b><ol><li><b>주요 지표</b>: IRR(연 수익률), EM(원금 대비 회수액), 배당률</li><li><b>판정</b>: 각 지표가 기준을 넘는지 확인</li><li><b>민감도·시나리오</b>: 가정이 나빠졌을 때 결과 확인</li></ol></div></span><button id="fmt-pop">새창으로 보기 ↗</button></div><iframe id="fmf" title="재무모델링"></iframe></div>
+    <div id="fmw" class="fmw"><div class="fmt"><span class="fsc-lw"><button id="fmt-dl">저장 ↓</button><div id="fmt-dmenu" class="fsc-list fsc-menu"><button class="fsc-li" data-d="xlDownload"><b>엑셀 재무모델</b><span>작업 시트 6개 + 검증, 수식 포함 (.xlsx)</span></button><button class="fsc-li" data-d="tzDownload"><b>원페이지 티저</b><span>투자 요약 1장 (.pptx)</span></button><button class="fsc-li" data-d="icDownload"><b>IC 패키지</b><span>투자심의용 7장 (.pptx)</span></button></div></span><button id="fmt-cmp" title="계정에 저장한 재무모델과 지금 입력을 나란히 비교">재무모델 비교</button><span class="fsc-lw"><button id="fmt-note">주의사항 ▾</button><div id="fmt-nmenu" class="fsc-list fmt-note"><b class="nt">사용 방법</b><ol><li><b>딜 유형</b>을 고르고 숫자를 입력하면 오른쪽에 <b>IRR과 멀티플</b>이 표시됩니다.</li><li><b>오피스 매입</b>은 결과와 같은 수식이 들어 있는 엑셀로 내려받을 수 있습니다. 작업 시트는 6개이며, 렌트롤 반영 시 7개입니다.</li><li><b>렌트롤</b>을 올리면 현재 계약, 공실, 만기를 임차인별로 반영합니다.</li><li>추가 작업이 필요하면 <b>지시문</b>을 복사해 <b>Claude in Excel</b>에서 수정할 수 있습니다.</li></ol><b class="nt">결과는 이 순서로 보세요</b><ol><li><b>주요 지표</b>: IRR(연 수익률), EM(원금 대비 회수액), 배당률</li><li><b>판정</b>: 각 지표가 기준을 넘는지 확인</li><li><b>민감도·시나리오</b>: 가정이 나빠졌을 때 결과 확인</li></ol></div></span><button id="fmt-pop">새창으로 보기 ↗</button></div><iframe id="fmf" title="재무모델링"></iframe></div>
     <div id="fsc-toast" class="fsc-toast"></div>
   </section>
 </div>
-<script>window.ArgusFSBase="";window.ArgusFSVer="72abfb4a1d";</script>
+<script>window.ArgusFSBase="";window.ArgusFSVer="2ecd1feecb";</script>
 <style>@keyframes tin{from{opacity:0;transform:translate(-50%,8px)}}
 .wmenu{position:fixed;z-index:200;background:#fff;border:1px solid var(--line);box-shadow:0 10px 28px rgba(20,36,59,.16);padding:5px;min-width:190px;border-radius:8px}
 .wmenu button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:7px 9px;font-size:12.5px;color:var(--tx);border-radius:5px}
@@ -717,6 +717,8 @@ const inWs=ref=>S.items.filter(i=>i.ref===ref);
 window.ARGUS_WS={pick,add,inWs,fromListing,fromReport,fromDeal,open:(sid,iid)=>location.href=`workspace.html#space=${sid}${iid?'&item='+iid:''}`};
 
 // ── 공용 대화상자
+// F/S 검토 카드의 링크 이름: 'F/S 검토 - 사업수지: 이름' / 'F/S 검토 - 재무모델링: 이름' (예전 카드의 'F/S 검토 열기'도 같은 형식으로 보여줌)
+function linkLabel(i,l){if(i.kind!=='fs'||!/^F\/S 검토/.test(l.t||''))return l.t;const t=(i.meta&&i.meta['유형'])||'';return 'F/S 검토 - '+(/재무모델/.test(t)?'재무모델링':'사업수지')+': '+(i.title||'')}
 function dlgRoot(){let d=$('#wdlg');if(!d){d=document.createElement('div');d.id='wdlg';document.body.appendChild(d);d.addEventListener('mousedown',e=>{if(e.target.id==='wdlg'&&!d.querySelector('.task'))closeDlg()})}return d}
 function dlg(html,ok,onOk,onOpen,cls){
   const d=dlgRoot();d.innerHTML=`<div class="wbox ${cls||''}"><button class="wx" aria-label="닫기">×</button>${html}${ok?`<div class="wfoot"><button class="wcancel">취소</button><button class="wok">${ok}</button></div>`:''}</div>`;d.classList.add('open');
@@ -914,7 +916,7 @@ function detail(id){
     ${metaRows.length?`<dl class="mi ${info.length?'sub':''}">${metaRows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${v}</dd>`).join('')}</dl>`:''}
     ${i.kind==='listing'?`<a class="golist" href="listings.html#${encodeURIComponent(i.ref)}">매물·공고에서 최신 정보 보기 ↗</a>`:''}
     <section class="tsec"><h5>본문 내용 <span class="note" title="공고 원문 요약과 검토 메모를 자유롭게 고칠 수 있습니다">ⓘ</span><span class="sp"></span><button class="fold">⌃</button></h5><div class="rte"><div class="rtb">${TB}</div><div class="rbody" id="t_b" contenteditable="true" data-ph="검토 메모, 공고 요약 등을 적어 두세요.">${sanitize(i.body)}</div></div></section>
-    ${i.links.length?`<section class="tsec"><h5>첨부 문서 <span class="note">ⓘ</span><span class="sp"></span><button class="fold">⌃</button></h5><div>${i.links.map(l=>`<div class="att"><span>📎 ${esc(l.t)}</span><a href="${esc(l.u)}" target="_blank" rel="noopener">바로 가기</a></div>`).join('')}</div></section>`:''}
+    ${i.links.length?`<section class="tsec"><h5>첨부 문서 <span class="note">ⓘ</span><span class="sp"></span><button class="fold">⌃</button></h5><div>${i.links.map(l=>`<div class="att"><span>📎 ${esc(linkLabel(i,l))}</span><a href="${esc(l.u)}" target="_blank" rel="noopener">바로 가기</a></div>`).join('')}</div></section>`:''}
     <section class="tsec"><h5>커스텀 필드 <span class="note">${Object.keys(i.custom).length}/10</span><span class="sp"></span><button class="fold">⌃</button></h5><div>${Object.entries(i.custom).map(([k,v])=>`<label class="cfrow"><span>${esc(k)}</span><input data-tcf="${esc(k)}" value="${esc(v)}"><button class="cdel" data-tcfd="${esc(k)}">×</button></label>`).join('')}<div class="cfchips">${CUSTOM.filter(k=>!(k in i.custom)).map(k=>`<button data-tcfa="${k}">+ ${k}</button>`).join('')}</div></div></section>
     <div class="note" style="margin:14px 0 4px">등록 ${fmtAt(i.created)} · ${esc(i.by)} · 최근 수정 ${ago(i.updated)}</div></div>
    <div class="tr"><div class="trh"><b>코멘트</b><span class="kc num">${i.comments.length}</span><span class="sp"></span><button id="t_sort" class="note">${csort>0?'과거순 ↑':'최신순 ↓'}</button></div>
@@ -964,8 +966,8 @@ render();
 addEventListener('hashchange',()=>{const h=new URLSearchParams(location.hash.slice(1));const sp=h.get('space');if(sp&&sp!==S.cur&&S.spaces.some(s=>s.id===sp)){S.cur=sp;render()}const it=h.get('item');if(it&&(!$('#wdlg .task')||$('#wdlg .task').dataset.id!==it)&&S.items.some(i=>i.id===it))detail(it)});
 })();
 </script>
-<script src="fs-host.js?v=72abfb4a1d"></script><script src="fs-app.js?v=72abfb4a1d"></script><script src="fs-cloud.js?v=72abfb4a1d"></script>
-<script>window.ArgusFMVer="c18d5447b2";(function(){var FMV="c18d5447b2";function tab(){var fm=location.hash.indexOf("#/fm")===0;document.body.classList.toggle("fs-fm",fm);
+<script src="fs-host.js?v=2ecd1feecb"></script><script src="fs-app.js?v=2ecd1feecb"></script><script src="fs-cloud.js?v=2ecd1feecb"></script>
+<script>window.ArgusFMVer="931e9d21b6";(function(){var FMV="931e9d21b6";function tab(){var fm=location.hash.indexOf("#/fm")===0;document.body.classList.toggle("fs-fm",fm);
 document.getElementById("fst-su").classList.toggle("on",!fm);document.getElementById("fst-fm").classList.toggle("on",fm);
 var f=document.getElementById("fmf");if(fm&&!f.getAttribute("src"))f.setAttribute("src","fm-app.html?v="+FMV);}
 document.getElementById("fst-su").onclick=function(){if(location.hash.indexOf("#/fm")===0)location.hash="#/input/business-overview";};
