@@ -1356,6 +1356,12 @@ section.builder>*{max-width:none!important}
 body,body *{font-variant-numeric:tabular-nums}
 /* "입력값은 이 브라우저에서 계산하며… 보안·개인정보 →" 안내 삭제 — 사용자 요청 */
 .panel-priv{display:none!important}
+/* 예시값 남음 표시: 다른 줄과 같은 안쪽 여백에 맞추고, 빨간 알약 대신 차분한 안내 줄로 */
+.ex-chip{display:flex!important;align-items:center;gap:6px;width:calc(100% - 40px);margin:0 20px 12px!important;padding:7px 12px!important;border:1px solid #ecdfba!important;border-left:3px solid #a86a14!important;
+ background:#fbf6ea!important;color:#7a4f10!important;font-size:12px!important;font-weight:500!important;text-align:left;border-radius:2px!important}
+.ex-chip[hidden]{display:none!important}
+.ex-chip:hover{background:#f7edd6!important}
+.ex-chip::after{content:"눌러서 해당 칸 보기 →";margin-left:auto;color:#a86a14;font-weight:400}
 </style>
 <meta name="ag-base" content="">
 <style>
