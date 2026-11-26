@@ -32,21 +32,22 @@
   }
 
   async function save(asNew) {
-    if (preview()) return toast("샘플·조회 화면은 계정에 저장할 수 없습니다", true);
+    if (preview()) { toast("샘플·조회 화면은 계정에 저장할 수 없습니다", true); return false; }
     var st = store.getState();
     var name = (st.businessOverview && st.businessOverview.projectName) || curName || "";
     if (asNew || !curId) {
       name = prompt("저장할 이름", name || "이름 없는 검토");
-      if (name === null) return;
+      if (name === null) return false;
     }
     var data = JSON.parse(file.serializeProject(pick(st)));
     var row = { name: name || "이름 없는 검토", kind: "분양형", data: data, updated_at: new Date().toISOString() };
     var q = (!asNew && curId) ? sb.from("fs_projects").update(row).eq("id", curId).select("id,name").single()
       : sb.from("fs_projects").insert(row).select("id,name").single();
     var r = await q;
-    if (r.error) return toast(needTable(r.error), true);
+    if (r.error) { toast(needTable(r.error), true); return false; }
     curId = r.data.id; curName = r.data.name; savedSig = sig(); dirty = false; remember(); paint();
     toast("계정에 저장했습니다");
+    return true;
   }
 
   async function list() {
@@ -86,11 +87,27 @@
   // ── 원본 첫 화면에 있던 기능 (새로 만들기 · 파일 불러오기/조회 · 샘플 보기)
   function S() { return L(56599); }
   function started() { return !preview() && store.getState().hasStartedProject; }
-  function newProject() {
-    if (started() && !confirm("입력한 모든 값을 지우고 새로 시작할까요?" + (curId && !dirty ? "" : " 저장하지 않았다면 되돌릴 수 없습니다."))) return;
+  // 새로 만들기: 지금 검토가 계정에 저장돼 있으면 바로 새로 시작(이전 검토는 내 F/S 목록에 그대로),
+  // 저장 안 된 변경이 있으면 [저장하고 새로 만들기 / 저장하지 않고 새로 만들기 / 취소] 중 선택
+  function startNew(msg) {
     Promise.resolve(preview() ? S().exitSampleMode() : null).then(function () {
-      store.getState().resetProject(); curId = null; curName = ""; remember(); paint();
-      window.ArgusFSHost.push("/input/business-overview"); toast("새 검토를 시작했습니다");
+      store.getState().resetProject(); curId = null; curName = ""; savedSig = ""; dirty = false; remember(); paint();
+      window.ArgusFSHost.push("/input/business-overview"); toast(msg || "새 검토를 시작했습니다");
+    });
+  }
+  function ask(cb) {
+    var m = document.createElement("div"); m.className = "fsc-modal";
+    m.innerHTML = '<div class="box"><b>새 검토 만들기</b><p>' + (curId ? "'" + esc(curName) + "'에 저장하지 않은 변경이 있습니다." : "지금 작업이 아직 계정에 저장되지 않았습니다.") +
+      '</p><div class="act"><button data-a="cancel">취소</button><button data-a="discard">저장하지 않고 새로 만들기</button><button class="pri" data-a="save">저장하고 새로 만들기</button></div></div>';
+    m.onclick = function (e) { var b = e.target.closest("[data-a]"); if (!b && e.target !== m) return; m.remove(); cb(b ? b.dataset.a : "cancel"); };
+    document.body.appendChild(m); m.querySelector(".pri").focus();
+  }
+  function newProject() {
+    if (preview() || !store.getState().hasStartedProject || (curId && !dirty))
+      return startNew(curId ? "새 검토를 시작했습니다 — '" + curName + "'은(는) 내 F/S 목록에 있습니다" : null);
+    ask(function (a) {
+      if (a === "discard") startNew();
+      else if (a === "save") save(false).then(function (ok) { if (ok) startNew("저장하고 새 검토를 시작했습니다 — 이전 검토는 내 F/S 목록에 있습니다"); });
     });
   }
   function pickFile(cb) {

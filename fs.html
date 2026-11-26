@@ -297,7 +297,12 @@ td.mut{color:var(--tx3)}
 .fsc-list.on{display:block}.fsc-li{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;padding:9px 12px!important;border:0!important;border-bottom:1px solid #eef1f5!important;background:#fff}
 .fsc-li:hover{background:#f4f6f9}.fsc-li b{font-weight:600;color:#14243b}.fsc-li span{font-size:11.5px;color:var(--tx3)}.fsc-li.note{color:var(--tx2);font-size:12px;line-height:1.6}
 .fsc-toast{position:fixed;right:20px;bottom:20px;background:#14243b;color:#fff;padding:9px 14px;font-size:12.5px;opacity:0;transform:translateY(6px);transition:.2s;pointer-events:none;z-index:99;max-width:460px}
-.fsc-toast.on{opacity:1;transform:none}.fsc-toast.bad{background:#b42318}
+.fsc-toast.on{opacity:1;transform:none}
+.fsc-modal{position:fixed;inset:0;background:rgba(20,36,59,.35);display:flex;align-items:center;justify-content:center;z-index:100}
+.fsc-modal .box{background:#fff;border:1px solid var(--line);box-shadow:0 16px 40px rgba(20,35,58,.2);padding:20px 22px;width:440px}
+.fsc-modal b{font-size:15px;font-weight:600;color:var(--tx)}.fsc-modal p{margin:10px 0 18px;color:var(--tx2);font-size:13px;line-height:1.6}
+.fsc-modal .act{display:flex;justify-content:flex-end;gap:6px}.fsc-modal button{font:inherit;font-size:12.5px;padding:6px 12px;border:1px solid var(--line);background:#fff;color:var(--tx);cursor:pointer}
+.fsc-modal button:hover{border-color:#14243b}.fsc-modal button.pri{background:#14243b;border-color:#14243b;color:#fff}.fsc-toast.bad{background:#b42318}
 .fs-loading{padding:40px;color:var(--tx3)}
 .fs-err{margin:24px;padding:16px;border:1px solid #f5c2c0;background:#fff4f3;color:#8a1c1c}.fs-err button{margin-left:10px}
 /* 원본(suzy.land) 공통 스타일 — 이 영역 안에서만, 우선순위 0 */
@@ -509,8 +514,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     <div id="fsc-toast" class="fsc-toast"></div>
   </section>
 </div>
-<script>window.ArgusFSBase="";window.ArgusFSVer="86e2373888";</script>
-<script src="fs-host.js?v=86e2373888"></script><script src="fs-app.js?v=86e2373888"></script><script src="fs-cloud.js?v=86e2373888"></script>
+<script>window.ArgusFSBase="";window.ArgusFSVer="b056b98004";</script>
+<script src="fs-host.js?v=b056b98004"></script><script src="fs-app.js?v=b056b98004"></script><script src="fs-cloud.js?v=b056b98004"></script>
 <script>(function(){function nav(){var h=(location.hash||"#/").split("?")[0];document.querySelectorAll(".fss .wsi").forEach(function(a){a.classList.toggle("on",a.getAttribute("href")===h);});}
 window.addEventListener("hashchange",nav);nav();
 function pos(){var b=document.querySelector(".fsb"),m=document.querySelector("#fsroot main"),h=document.querySelector("#fsroot header");if(!b||!m)return;var t=m.getBoundingClientRect().top-b.getBoundingClientRect().top+parseFloat(getComputedStyle(m).paddingTop||0);b.style.setProperty("--fs-navtop",t+"px");if(h)b.style.setProperty("--fs-stick",h.parentElement.getBoundingClientRect().height+"px");}
