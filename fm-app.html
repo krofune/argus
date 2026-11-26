@@ -1362,6 +1362,9 @@ body,body *{font-variant-numeric:tabular-nums}
 .ex-chip[hidden]{display:none!important}
 .ex-chip:hover{background:#f7edd6!important}
 .ex-chip::after{content:"눌러서 해당 칸 보기 →";margin-left:auto;color:#a86a14;font-weight:400}
+/* 원본 '딜 보관함'(이 브라우저에만 저장)은 F/S 검토 막대의 내 F/S 목록·계정에 저장과 겹치므로 숨김 — 사용자 요청
+   (브라우저 자동 임시저장은 그대로 동작) */
+.slots-bar.slots-primary,#resultSave,#saveStatus,#saveBackup,#saveRetry,.tools-fold .slots-bar{display:none!important}
 </style>
 <meta name="ag-base" content="">
 <style>
