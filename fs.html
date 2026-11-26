@@ -285,7 +285,7 @@ td.mut{color:var(--tx3)}
 .nl{display:flex;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px solid var(--line2)}.nl .num{color:var(--tx3)}.nl .ct{font-weight:400}
 .tt td .ct{max-width:330px}
 .rail a{position:relative}.wsbadge{display:none}
-.fsw{display:flex;flex-direction:column;overflow:auto;background:#F5F7FB;position:relative}
+.fsw{display:flex;flex-direction:column;overflow:auto;background:var(--bg);position:relative}
 .fsc{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:8px;padding:7px 14px;background:#fff;border-bottom:1px solid var(--line)}
 .fsc-t{font-weight:600;color:#14243b;font-size:13px}.fsc-name{color:var(--tx2);font-size:12.5px}.fsc .sp{flex:1}
 .fsc button{font:inherit;font-size:12px;padding:5px 11px;border:1px solid var(--line);background:#fff;color:var(--tx);cursor:pointer}
@@ -300,7 +300,9 @@ td.mut{color:var(--tx3)}
 .fs-loading{padding:40px;color:var(--tx3)}
 .fs-err{margin:24px;padding:16px;border:1px solid #f5c2c0;background:#fff4f3;color:#8a1c1c}.fs-err button{margin-left:10px}
 /* 원본(suzy.land) 공통 스타일 — 이 영역 안에서만, 우선순위 0 */
-#fsroot{font-family:Arial,Helvetica,sans-serif;color:#171717;color-scheme:light;flex:1}
+#fsroot{font-family:'IBM Plex Sans KR',system-ui,sans-serif;color:var(--tx);color-scheme:light;flex:1;font-variant-numeric:tabular-nums}
+#fsroot input,#fsroot select,#fsroot textarea,#fsroot button{font-family:inherit}
+#fsroot input:focus,#fsroot select:focus,#fsroot textarea:focus{outline:none;border-color:var(--ac)!important;box-shadow:0 0 0 2px rgba(36,99,168,.12)}
 :where(#fsroot) *{box-sizing:border-box;margin:0;padding:0}:where(#fsroot) a{color:inherit;text-decoration:none}
 @keyframes kn-flash-pulse{0%,to{outline-width:1px;outline-color:#78350f59}50%{outline-width:4px;outline-color:#78350f}}
 /* 새 창(부가세 상세 등)은 Argus 틀 없이 원본 화면만 */
@@ -456,7 +458,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     <div id="fsc-toast" class="fsc-toast"></div>
   </section>
 </div>
-<script>window.ArgusFSBase="";window.ArgusFSVer="5077a6b773";</script>
-<script src="fs-host.js?v=5077a6b773"></script><script src="fs-app.js?v=5077a6b773"></script><script src="fs-cloud.js?v=5077a6b773"></script>
+<script>window.ArgusFSBase="";window.ArgusFSVer="1dcadcf597";</script>
+<script src="fs-host.js?v=1dcadcf597"></script><script src="fs-app.js?v=1dcadcf597"></script><script src="fs-cloud.js?v=1dcadcf597"></script>
 <script>(function(){function go(){ArgusFSHost.mount(document.getElementById("fsroot"));ArgusFSCloud.init();}
 if(window.ArgusAuth)ArgusAuth.ready(go);else go();})();</script></body></html>
