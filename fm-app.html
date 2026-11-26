@@ -1346,6 +1346,11 @@ section.builder>*{max-width:none!important}
 #feedback,.wrap:has(>#feedback){display:none!important}
 /* 사용 방법·결과 보는 순서 안내는 F/S 검토 막대의 [주의사항]으로 옮김 */
 #coachMark,.wrap:has(>.howto){display:none!important}
+/* 투자 조건 머리줄: 제목과 버튼 3개를 한 줄로 (좁은 화면에서 버튼이 아래로 떨어지지 않게) */
+.panel-head{flex-wrap:nowrap!important;gap:10px!important;align-items:center!important}
+.panel-head .t{white-space:nowrap;flex:0 1 auto;min-width:0}
+.ph-actions{flex-wrap:nowrap!important;gap:6px!important;margin-left:auto!important;flex:0 0 auto}
+.ph-actions button{padding:6px 10px!important;font-size:12.5px!important;white-space:nowrap}
 </style>
 <meta name="ag-base" content="">
 <style>
