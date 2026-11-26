@@ -320,6 +320,8 @@ td.mut{color:var(--tx3)}
 #fsroot .kn-plan-grid>section:first-child table th:nth-last-child(2){width:auto!important}
 #fsroot .kn-plan-grid>section:first-child table th:last-child{width:34%!important}
 #fsroot .kn-plan-grid>section:first-child table tr>:nth-last-child(2){text-align:right!important;padding-right:110px!important}
+/* 민감도 분석 '요약 수지결과' 표: 640px 제한을 풀어 카드 폭에 맞춤 */
+#fsroot table[style*="max-width: 640px"],#fsroot table[style*="max-width:640px"]{max-width:none!important}
 @keyframes kn-flash-pulse{0%,to{outline-width:1px;outline-color:#78350f59}50%{outline-width:4px;outline-color:#78350f}}
 /* 새 창(부가세 상세 등)은 Argus 틀 없이 원본 화면만 */
 body.fs-popup{display:block;overflow:auto}body.fs-popup .top,body.fs-popup .rail,body.fs-popup .fsc{display:none}
