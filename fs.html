@@ -301,7 +301,7 @@ td.mut{color:var(--tx3)}
 /* 재무모델링 탭: 모델터(원본) 화면을 같은 사이트 안 별도 문서로 띄움 */
 .fmw{display:none}body.fs-fm .fmw{display:block;flex:1 0 auto}body.fs-fm .fsb{display:none}
 .fmw iframe{display:block;width:100%;height:calc(100vh - 125px);border:0;background:#eef1f5}
-.fmt{display:flex;justify-content:flex-end;align-items:center;gap:8px;height:41px;padding:0 16px;background:#fff;border-bottom:1px solid var(--line)}.fmt button{font:inherit;font-size:12px;padding:3px 10px;border:1px solid var(--line);background:#fff;color:var(--tx);cursor:pointer}.fmt button:hover{border-color:#14243b}.fmt .fsc-list{width:300px}
+.fmt{display:flex;justify-content:flex-end;align-items:center;gap:8px;height:41px;padding:0 16px;background:#fff;border-bottom:1px solid var(--line)}.fmt button{font:inherit;font-size:12px;padding:3px 10px;border:1px solid var(--line);background:#fff;color:var(--tx);cursor:pointer}.fmt button:hover{border-color:#14243b}.fmt .fsc-list{width:300px}.fmt .fmt-note{width:460px;padding:14px 18px 6px;font-size:12.5px;line-height:1.65;color:var(--tx2)}.fmt-note .nt{display:block;font-size:13px;color:var(--tx);margin:0 0 4px}.fmt-note ol{margin:0 0 12px;padding-left:18px}.fmt-note li b{color:var(--tx)}
 body.fs-fm .fsw{overflow:hidden}
 .fsc-modal{position:fixed;inset:0;background:rgba(20,36,59,.35);display:flex;align-items:center;justify-content:center;z-index:100}
 .fsc-modal .box{background:#fff;border:1px solid var(--line);box-shadow:0 16px 40px rgba(20,35,58,.2);padding:20px 22px;width:440px}
@@ -516,11 +516,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     </aside></div>
     <div id="fsroot"><div class="fs-loading">F/S 검토 화면을 불러오는 중…</div>
   </div></div>
-    <div id="fmw" class="fmw"><div class="fmt"><span class="fsc-lw"><button id="fmt-dl">저장 ↓</button><div id="fmt-dmenu" class="fsc-list fsc-menu"><button class="fsc-li" data-d="xlDownload"><b>엑셀 재무모델</b><span>작업 시트 6개 + 검증, 수식 포함 (.xlsx)</span></button><button class="fsc-li" data-d="tzDownload"><b>원페이지 티저</b><span>투자 요약 1장 (.pptx)</span></button><button class="fsc-li" data-d="icDownload"><b>IC 패키지</b><span>투자심의용 7장 (.pptx)</span></button></div></span><button id="fmt-pop">새창으로 보기 ↗</button></div><iframe id="fmf" title="재무모델링"></iframe></div>
+    <div id="fmw" class="fmw"><div class="fmt"><span class="fsc-lw"><button id="fmt-dl">저장 ↓</button><div id="fmt-dmenu" class="fsc-list fsc-menu"><button class="fsc-li" data-d="xlDownload"><b>엑셀 재무모델</b><span>작업 시트 6개 + 검증, 수식 포함 (.xlsx)</span></button><button class="fsc-li" data-d="tzDownload"><b>원페이지 티저</b><span>투자 요약 1장 (.pptx)</span></button><button class="fsc-li" data-d="icDownload"><b>IC 패키지</b><span>투자심의용 7장 (.pptx)</span></button></div></span><span class="fsc-lw"><button id="fmt-note">주의사항 ▾</button><div id="fmt-nmenu" class="fsc-list fmt-note"><b class="nt">사용 방법</b><ol><li><b>딜 유형</b>을 고르고 숫자를 입력하면 오른쪽에 <b>IRR과 멀티플</b>이 표시됩니다.</li><li><b>오피스 매입</b>은 결과와 같은 수식이 들어 있는 엑셀로 내려받을 수 있습니다. 작업 시트는 6개이며, 렌트롤 반영 시 7개입니다.</li><li><b>렌트롤</b>을 올리면 현재 계약, 공실, 만기를 임차인별로 반영합니다.</li><li>추가 작업이 필요하면 <b>지시문</b>을 복사해 <b>Claude in Excel</b>에서 수정할 수 있습니다.</li></ol><b class="nt">결과는 이 순서로 보세요</b><ol><li><b>주요 지표</b>: IRR(연 수익률), EM(원금 대비 회수액), 배당률</li><li><b>판정</b>: 각 지표가 기준을 넘는지 확인</li><li><b>민감도·시나리오</b>: 가정이 나빠졌을 때 결과 확인</li></ol></div></span><button id="fmt-pop">새창으로 보기 ↗</button></div><iframe id="fmf" title="재무모델링"></iframe></div>
     <div id="fsc-toast" class="fsc-toast"></div>
   </section>
 </div>
-<script>window.ArgusFSBase="";window.ArgusFSVer="41998e537a";</script>
+<script>window.ArgusFSBase="";window.ArgusFSVer="72abfb4a1d";</script>
 <style>@keyframes tin{from{opacity:0;transform:translate(-50%,8px)}}
 .wmenu{position:fixed;z-index:200;background:#fff;border:1px solid var(--line);box-shadow:0 10px 28px rgba(20,36,59,.16);padding:5px;min-width:190px;border-radius:8px}
 .wmenu button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:7px 9px;font-size:12.5px;color:var(--tx);border-radius:5px}
@@ -964,8 +964,8 @@ render();
 addEventListener('hashchange',()=>{const h=new URLSearchParams(location.hash.slice(1));const sp=h.get('space');if(sp&&sp!==S.cur&&S.spaces.some(s=>s.id===sp)){S.cur=sp;render()}const it=h.get('item');if(it&&(!$('#wdlg .task')||$('#wdlg .task').dataset.id!==it)&&S.items.some(i=>i.id===it))detail(it)});
 })();
 </script>
-<script src="fs-host.js?v=41998e537a"></script><script src="fs-app.js?v=41998e537a"></script><script src="fs-cloud.js?v=41998e537a"></script>
-<script>window.ArgusFMVer="749e15ed37";(function(){var FMV="749e15ed37";function tab(){var fm=location.hash.indexOf("#/fm")===0;document.body.classList.toggle("fs-fm",fm);
+<script src="fs-host.js?v=72abfb4a1d"></script><script src="fs-app.js?v=72abfb4a1d"></script><script src="fs-cloud.js?v=72abfb4a1d"></script>
+<script>window.ArgusFMVer="9d21eabe79";(function(){var FMV="9d21eabe79";function tab(){var fm=location.hash.indexOf("#/fm")===0;document.body.classList.toggle("fs-fm",fm);
 document.getElementById("fst-su").classList.toggle("on",!fm);document.getElementById("fst-fm").classList.toggle("on",fm);
 var f=document.getElementById("fmf");if(fm&&!f.getAttribute("src"))f.setAttribute("src","fm-app.html?v="+FMV);}
 document.getElementById("fst-su").onclick=function(){if(location.hash.indexOf("#/fm")===0)location.hash="#/input/business-overview";};

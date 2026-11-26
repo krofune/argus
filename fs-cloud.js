@@ -282,9 +282,10 @@
     if (dl) {
       dl.onclick = function () { dm.classList.toggle("on"); };
       dm.onclick = function (e) { var b = e.target.closest("[data-d]"); if (!b) return; dm.classList.remove("on"); fmDownload(b.dataset.d); };
+      var nt = $("#fmt-note"), nm = $("#fmt-nmenu"); nt.onclick = function () { nm.classList.toggle("on"); dm.classList.remove("on"); };
       $("#fmt-pop").onclick = function () { window.open("fm-app.html?v=" + (window.ArgusFMVer || ""), "argus-fm", "width=1440,height=900"); };
     }
-    document.addEventListener("click", function (e) { if (!e.target.closest(".fsc-lw")) { $("#fsc-list").classList.remove("on"); $("#fsc-fmenu").classList.remove("on"); if (dm) dm.classList.remove("on"); } });
+    document.addEventListener("click", function (e) { if (!e.target.closest(".fsc-lw")) { $("#fsc-list").classList.remove("on"); $("#fsc-fmenu").classList.remove("on"); if (dm) dm.classList.remove("on"); if ($("#fmt-nmenu")) $("#fmt-nmenu").classList.remove("on"); } });
     paint();
     if (sb) sb.auth.getSession().then(function (x) { myId = x.data.session && x.data.session.user.id; paint(); });
     var o = new URLSearchParams(location.search).get("open");   // 워크스페이스 카드의 [F/S 검토 열기]
