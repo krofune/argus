@@ -520,7 +520,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     <div id="fsc-toast" class="fsc-toast"></div>
   </section>
 </div>
-<script>window.ArgusFSBase="";window.ArgusFSVer="2ecd1feecb";</script>
+<script>window.ArgusFSBase="";window.ArgusFSVer="5fbb0ad821";</script>
 <style>@keyframes tin{from{opacity:0;transform:translate(-50%,8px)}}
 .wmenu{position:fixed;z-index:200;background:#fff;border:1px solid var(--line);box-shadow:0 10px 28px rgba(20,36,59,.16);padding:5px;min-width:190px;border-radius:8px}
 .wmenu button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:7px 9px;font-size:12.5px;color:var(--tx);border-radius:5px}
@@ -966,8 +966,8 @@ render();
 addEventListener('hashchange',()=>{const h=new URLSearchParams(location.hash.slice(1));const sp=h.get('space');if(sp&&sp!==S.cur&&S.spaces.some(s=>s.id===sp)){S.cur=sp;render()}const it=h.get('item');if(it&&(!$('#wdlg .task')||$('#wdlg .task').dataset.id!==it)&&S.items.some(i=>i.id===it))detail(it)});
 })();
 </script>
-<script src="fs-host.js?v=2ecd1feecb"></script><script src="fs-app.js?v=2ecd1feecb"></script><script src="fs-cloud.js?v=2ecd1feecb"></script>
-<script>window.ArgusFMVer="931e9d21b6";(function(){var FMV="931e9d21b6";function tab(){var fm=location.hash.indexOf("#/fm")===0;document.body.classList.toggle("fs-fm",fm);
+<script src="fs-host.js?v=5fbb0ad821"></script><script src="fs-app.js?v=5fbb0ad821"></script><script src="fs-cloud.js?v=5fbb0ad821"></script>
+<script>window.ArgusFMVer="754be069b1";(function(){var FMV="754be069b1";function tab(){var fm=location.hash.indexOf("#/fm")===0;document.body.classList.toggle("fs-fm",fm);
 document.getElementById("fst-su").classList.toggle("on",!fm);document.getElementById("fst-fm").classList.toggle("on",fm);
 var f=document.getElementById("fmf");if(fm&&!f.getAttribute("src"))f.setAttribute("src","fm-app.html?v="+FMV);}
 document.getElementById("fst-su").onclick=function(){if(location.hash.indexOf("#/fm")===0)location.hash="#/input/business-overview";};

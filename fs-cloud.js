@@ -71,12 +71,12 @@
   function remember() { try { localStorage.setItem("argus.fs.current", JSON.stringify({ id: DOC.su.id, name: DOC.su.name })); localStorage.setItem("argus.fm.current", JSON.stringify({ id: DOC.fm.id, name: DOC.fm.name })); } catch (e) {} }
   function paint() {
     var a = A(), d = D(), fm = mode() === "fm", pv = a.preview();
-    $("#fsc-name").innerHTML = pv ? '<span class="fsc-pv">' + (pv === "file" ? "조회 중인 파일" : "샘플") + " — 계정 저장 불가</span>"
+    $("#fsc-name").innerHTML = pv ? '<span class="fsc-pv">' + (pv === "file" ? "조회 중인 파일" : "샘플") + " — 저장하면 내 검토로 복사</span>"
       : d.id ? esc(d.name || "이름 없는 검토") + (d.dirty ? ' <span class="fsc-dirty">● 저장 안 됨</span>' : ' <span class="fsc-ok">계정에 저장됨</span>')
       : '<span class="fsc-tmp">브라우저 임시저장</span>' + (fm || (a.sig() && store.getState().hasStartedProject) ? ' <span class="fsc-dirty">계정에 아직 저장 안 됨</span>' : "");
-    ["#fsc-save", "#fsc-saveas"].forEach(function (s) { $(s).disabled = !!pv; });
+    ["#fsc-save", "#fsc-saveas"].forEach(function (s) { $(s).disabled = false; });
     $("#fsc-del").style.display = d.id && !pv && d.own ? "" : "none";
-    $("#fsc-ws").style.display = pv ? "none" : "";
+    $("#fsc-ws").style.display = "";
     $("#fsc-fmenu").innerHTML = fm
       ? '<button class="fsc-li" data-f="fmload"><b>파일 불러오기</b><span>Argus 백업 파일(.argus)을 열어 이어서 작업</span></button><button class="fsc-li" data-f="fmexport"><b>파일 내보내기</b><span>지금 입력을 백업 파일(.argus)로 받기</span></button>'
       : '<button class="fsc-li" data-f="load"><b>파일 불러오기</b><span>내보낸 .json 파일을 열어 이어서 작업</span></button><button class="fsc-li" data-f="view"><b>파일 조회</b><span>읽기 전용으로 결과만 보기 (지금 입력값은 그대로)</span></button>';
@@ -90,17 +90,22 @@
 
   async function save(asNew) {
     var a = A(), d = D();
-    if (a.preview()) { toast("샘플·조회 화면은 계정에 저장할 수 없습니다", true); return false; }
     if (mode() === "fm" && !fmReady()) { toast("재무모델링 화면을 불러오는 중입니다", true); return false; }
+    var pv = a.preview();                       // 샘플·조회 중이면: 그 내용을 내 검토로 새로 저장하고 그 검토로 전환
+    if (pv) {
+      asNew = true;
+      if ((!d.id || d.dirty) && !confirm("샘플을 내 검토로 저장하면, 이 브라우저에 임시저장된 사업수지 작업(계정에 저장 안 된 내용)은 샘플 내용으로 바뀝니다. 계속할까요?")) return false;
+    }
     var name = a.name() || d.name || "";
-    if (asNew || !d.id) { name = prompt("저장할 이름", name || "이름 없는 검토"); if (name === null) return false; }
+    if (asNew || !d.id) { name = prompt(pv ? "샘플을 내 검토로 저장합니다. 저장할 이름" : "저장할 이름", name || "이름 없는 검토"); if (name === null) return false; }
     var row = { name: name || "이름 없는 검토", kind: a.kind(), data: a.data(), updated_at: new Date().toISOString() };
     var r = await ((!asNew && d.id) ? sb.from("fs_projects").update(row).eq("id", d.id).select("id,name").single()
       : sb.from("fs_projects").insert(row).select("id,name").single());
     if (r.error) { toast(needTable(r.error), true); return false; }
+    if (pv) { try { await L(56599).exitSampleMode(); } catch (e) {} var pp = file.parseProjectFile(JSON.stringify(row.data)); if (pp.ok) store.getState().loadProject(pp.data); }
     if (asNew || !d.id) d.own = true;
     d.id = r.data.id; d.name = r.data.name; d.saved = a.sig(); d.dirty = false; remember(); paint();
-    toast("계정에 저장했습니다");
+    toast(pv ? "샘플을 '" + d.name + "'(으)로 계정에 저장했습니다 — 이제 내 검토로 수정할 수 있습니다" : "계정에 저장했습니다");
     return true;
   }
 
