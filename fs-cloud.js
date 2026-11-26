@@ -11,7 +11,7 @@
 
   function pick(st) { return { businessOverview: st.businessOverview, saleTypes: st.saleTypes, salePlans: st.salePlans, expenseInput: st.expenseInput, otherIncomeItems: st.otherIncomeItems }; }
   function sig() { try { return JSON.stringify(pick(store.getState())); } catch (e) { return ""; } }
-  function preview() { try { return file.getPreviewKind(); } catch (e) { return null; } }
+  function preview() { try { return L(2101).getActiveSlot() === "sample-preview" ? file.getPreviewKind() : null; } catch (e) { return null; } }
   function toast(msg, bad) {
     var t = $("#fsc-toast"); t.textContent = msg; t.className = "fsc-toast on" + (bad ? " bad" : "");
     clearTimeout(t._t); t._t = setTimeout(function () { t.className = "fsc-toast"; }, 2600);
@@ -89,6 +89,7 @@
     try { var c = JSON.parse(localStorage.getItem(KEY) || "{}"); curId = c.id || null; curName = c.name || ""; } catch (e) {}
     savedSig = curId ? sig() : "";
     store.subscribe(function () { if (curId && !preview()) dirty = sig() !== savedSig; paint(); });
+    try { L(2101).useSlotStore.subscribe(function () { paint(); }); } catch (e) {}
     window.addEventListener("hashchange", paint);
     $("#fsc-open").onclick = function () { sb ? list() : toast("로그인 후 사용할 수 있습니다", true); };
     $("#fsc-save").onclick = function () { sb ? save(false) : toast("로그인 후 사용할 수 있습니다", true); };
