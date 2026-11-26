@@ -83,6 +83,47 @@
     curId = null; curName = ""; remember(); paint();
   }
 
+  // ── 원본 첫 화면에 있던 기능 (새로 만들기 · 파일 불러오기/조회 · 샘플 보기)
+  function S() { return L(56599); }
+  function started() { return !preview() && store.getState().hasStartedProject; }
+  function newProject() {
+    if (started() && !confirm("입력한 모든 값을 지우고 새로 시작할까요?" + (curId && !dirty ? "" : " 저장하지 않았다면 되돌릴 수 없습니다."))) return;
+    Promise.resolve(preview() ? S().exitSampleMode() : null).then(function () {
+      store.getState().resetProject(); curId = null; curName = ""; remember(); paint();
+      window.ArgusFSHost.push("/input/business-overview"); toast("새 검토를 시작했습니다");
+    });
+  }
+  function pickFile(cb) {
+    var f = document.createElement("input"); f.type = "file"; f.accept = ".json,application/json";
+    f.onchange = function () { var x = f.files && f.files[0]; if (x) x.text().then(cb); };
+    f.click();
+  }
+  function loadFile() {
+    pickFile(function (text) {
+      var p = file.parseProjectFile(text);
+      if (!p.ok) return toast("불러오기 실패: " + p.error, true);
+      if (started() && !confirm("지금 화면의 입력값을 불러온 파일로 바꿀까요? 되돌릴 수 없습니다.")) return;
+      Promise.resolve(preview() ? S().exitSampleMode() : null).then(function () {
+        store.getState().loadProject(p.data); curId = null; curName = ""; remember(); paint();
+        window.ArgusFSHost.push("/input/business-overview"); toast("파일을 불러왔습니다 — 계정에 저장하려면 [계정에 저장]");
+      });
+    });
+  }
+  function viewFile() {
+    pickFile(function (text) {
+      S().enterFilePreviewMode(text).then(function (r) {
+        if (!r.ok) return toast("조회 실패: " + r.error, true);
+        paint(); window.ArgusFSHost.push("/output/summary");
+      });
+    });
+  }
+  function sample() {
+    S().enterSampleMode().then(function (r) {
+      if (!r.ok) return toast("샘플을 불러오지 못했습니다: " + r.error, true);
+      paint(); window.ArgusFSHost.push("/output/summary");
+    });
+  }
+
   function init() {
     L = window.ArgusFS.load; store = L(2101).useProjectStore; file = L(4486);
     sb = window.ArgusAuth && window.ArgusAuth.client ? window.ArgusAuth.client() : null;
@@ -95,8 +136,12 @@
     $("#fsc-save").onclick = function () { sb ? save(false) : toast("로그인 후 사용할 수 있습니다", true); };
     $("#fsc-saveas").onclick = function () { sb ? save(true) : toast("로그인 후 사용할 수 있습니다", true); };
     $("#fsc-del").onclick = del;
+    $("#fsc-new").onclick = newProject;
+    $("#fsc-sample").onclick = sample;
+    $("#fsc-file").onclick = function () { $("#fsc-fmenu").classList.toggle("on"); };
+    $("#fsc-fmenu").onclick = function (e) { var b = e.target.closest("[data-f]"); if (!b) return; $("#fsc-fmenu").classList.remove("on"); b.dataset.f === "load" ? loadFile() : viewFile(); };
     $("#fsc-list").onclick = function (e) { var b = e.target.closest("[data-id]"); if (b) open(b.dataset.id); };
-    document.addEventListener("click", function (e) { if (!e.target.closest(".fsc-lw")) $("#fsc-list").classList.remove("on"); });
+    document.addEventListener("click", function (e) { if (!e.target.closest(".fsc-lw")) { $("#fsc-list").classList.remove("on"); $("#fsc-fmenu").classList.remove("on"); } });
     paint();
   }
   window.ArgusFSCloud = { init: init };

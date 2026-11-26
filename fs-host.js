@@ -79,13 +79,20 @@
         return this.props.children;
       }
     }
+    function Start() {
+      React.useEffect(function () {
+        try { if (L(65370).getActiveSlot() === "sample-preview") L(56599).exitSampleMode(); } catch (e) {}
+        location.replace("#/input/business-overview");
+      }, []);
+      return null;
+    }
     function App() {
       var loc = useLoc(), p = loc.path, page;
       document.body.classList.toggle("fs-popup", !!POPUP[p] || (window.opener && /^kennen-/.test(window.name || "")));
       if (INPUT[p]) page = h(comp(24085), null, h(comp(INPUT[p])));
       else if (OUTPUT[p]) page = h(comp(96015), null, h(comp(OUTPUT[p])));
       else if (POPUP[p]) page = h(comp(POPUP[p]));
-      else page = h(comp(31713));
+      else page = h(Start);   // 원본 첫 화면 대신 바로 사업개요로 (새로 만들기·파일·샘플은 위쪽 막대에)
       return h(React.Fragment, null, h(Sync), h(Boundary, { key: p }, page));
     }
     RD.createRoot(el).render(h(App));
