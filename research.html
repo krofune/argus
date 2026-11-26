@@ -452,7 +452,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   </nav>
 
 <section class="work">
-<div class="ph"><h1>리서치 센터</h1><div class="tabs"><a href="#" data-v="cat">카테고리</a><a href="#h" data-v="h">하우스별</a><a href="#f" data-v="f">발간 피드</a><a href="#cov" data-v="cov">커버리지</a><a href="#ms" data-v="ms">마켓 사운딩</a></div><span class="sp"></span><label class="srch"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="리포트 제목 · 하우스 검색"></label></div>
+<div class="ph"><h1>리서치 센터</h1><div class="tabs"><a href="#news" data-v="news">뉴스</a><a href="#" data-v="cat">카테고리</a><a href="#h" data-v="h">하우스별</a><a href="#f" data-v="f">발간 피드</a><a href="#cov" data-v="cov">커버리지</a><a href="#ms" data-v="ms">마켓 사운딩</a></div><span class="sp"></span><label class="srch"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="리포트 제목 · 하우스 검색"></label></div>
 <div id="view"></div>
 </section></div>
 <script>// Argus 워크스페이스 — RedOps식 검토 보드. 로그인하면 Argus 서버(Supabase ws_*)에 저장해 초대한 멤버와 함께 보고 편집한다.
@@ -980,9 +980,9 @@ function drawDetail(){
 document.addEventListener('click',e=>{const p=document.getElementById('psel');if(p&&!p.contains(e.target))p.classList.remove('open')});
 const qi=document.getElementById('q');
 qi.oninput=()=>{S.q=qi.value.trim().toLowerCase();S.page=1;const h=location.hash;if(h==='#f'){feed();return}if(h==='#h'||h.startsWith('#h-')){houses(decodeURIComponent(h.slice(3)));return}if(!h.startsWith('#c-')){if(S.q){location.hash='c-all'}}else drawDetail()};
-function route(){const h=location.hash.slice(1);const v=h==='h'||h.startsWith('h-')?'h':h==='f'?'f':h==='cov'?'cov':h==='ms'?'ms':'cat';
+function route(){const h=location.hash.slice(1);const v=h==='news'?'news':h==='h'||h.startsWith('h-')?'h':h==='f'?'f':h==='cov'?'cov':h==='ms'?'ms':'cat';
   document.querySelectorAll('.ph .tabs a').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
-  if(v==='h')houses(decodeURIComponent(h.slice(2)));else if(v==='f')feed();else if(v==='cov')coverage();else if(v==='ms')sounding();
+  if(v==='news')news();else if(v==='h')houses(decodeURIComponent(h.slice(2)));else if(v==='f')feed();else if(v==='cov')coverage();else if(v==='ms')sounding();
   else if(h.startsWith('c-'))detail(h.slice(2));else{S.cat=null;home()}}
 const SLUG=Object.fromEntries(CATS.map(([a,b])=>[b,a]));
 const ago=x=>x.dk==='d'?(TODAY-new Date(x.d+'T12:00:00+09:00'))/864e5:1e9;
@@ -1023,6 +1023,15 @@ function coverage(){
    <div class="rxcw"><table class="rxct"><thead><tr><th class="l">하우스</th>${cs.map(c=>`<th>${c}</th>`).join('')}<th>합계</th></tr></thead><tbody>${hs.map(o=>`<tr><td class="l"><a href="#h-${encodeURIComponent(o.h)}">${esc(o.h)}</a></td>${cs.map(c=>cell(o,c)).join('')}<td class="t num">${o.a.length}</td></tr>`).join('')}
    <tr class="sum"><td class="l">합계</td>${cs.map(c=>`<td class="num">${D.filter(x=>x.c===c).length}</td>`).join('')}<td class="num">${D.length}</td></tr></tbody></table></div></div>`;
   V.querySelectorAll('td[data-h]').forEach(td=>td.onclick=()=>{const c=td.dataset.c;S.cat=c;S.sub='';S.sel={h:new Set([td.dataset.h])};S.page=1;S.more={};location.hash='c-'+SLUG[c]});
+}
+// ── 뉴스 (매일 아침 뉴스레터 · 수집 준비 중)
+function news(){
+  const sk=(w,h)=>`<div class="sk" style="width:${w};height:${h}px"></div>`;
+  V.innerHTML=`<div class="rxms"><div class="dprev" aria-hidden="true"><div class="dg3">${[0,1,2].map(()=>`<div class="dcard">${sk('35%',10)}${sk('55%',22)}${sk('85%',8)}</div>`).join('')}</div>
+    <div class="dg2"><div class="dpanel">${sk('30%',10)}${[0,1,2,3,4,5].map(()=>`<div class="drow">${sk('60%',9)}${sk('18%',9)}</div>`).join('')}</div><div class="dpanel">${sk('40%',10)}${[0,1,2,3,4,5].map(()=>`<div class="drow">${sk('22%',9)}${sk('46%',9)}${sk('16%',9)}</div>`).join('')}</div></div></div>
+    <div class="dveil"><div class="dmsg"><div class="dic"><span></span><span></span><span></span></div><h2>뉴스를 준비하고 있습니다</h2>
+    <p>매일 아침 받는 부동산 뉴스레터(신영·젠스타메이트·한화·코어비트 등)의<br>헤드라인과 원문 링크를 하우스·섹션별로 모아 보여드릴 예정입니다.</p>
+    <div class="dlinks"><a href="#f">발간 피드 보기</a><a href="#">카테고리별 최신 자료</a></div></div></div></div>`;
 }
 // ── 마켓 사운딩 (준비 중)
 function sounding(){
