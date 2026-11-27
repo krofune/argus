@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<script>(function(){var K="abs",of=window.fetch.bind(window);function rel(u){return typeof u==='string'&&!/^(https?:|data:|blob:|\/\/)/i.test(u)}function path(u){return u.replace(/^\.\//,'').replace(/^\//,'').split('?')[0].split('#')[0]}function opt(o){if(!o)return o;var c={};for(var k in o)c[k]=o[k];delete c.cache;return c}window.fetch=function(u,o){if(!rel(u))return of(u,o);var p=path(u);if(!window.ArgusAuth||!window.ArgusAuth.ready)return of('npf/'+K+'/'+p,o);return new Promise(function(res,rej){window.ArgusAuth.ready(function(r){r.sb.storage.from('private').createSignedUrl('npf/'+K+'/'+p,600).then(function(x){if(x.error)throw x.error;return of(x.data.signedUrl,opt(o))}).then(res,rej)})})};document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a)return;var h=a.getAttribute('href');if(!rel(h)||h.charAt(0)==='#'||!/\.(xlsx?|docx?|hwpx?|pdf|csv|json|geojson|png|zip)(\?|#|$)/i.test(h))return;e.preventDefault();window.fetch(h).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){var u=URL.createObjectURL(b),x=document.createElement('a');x.href=u;x.download=a.getAttribute('download')||path(h).split('/').pop();document.body.appendChild(x);x.click();x.remove();setTimeout(function(){URL.revokeObjectURL(u)},4000)}).catch(function(){alert('파일을 받지 못했습니다. 잠시 뒤 다시 시도해 주세요.')})},true);})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Argus Research · 대시보드 · 유동화 · 금리</title>
+<meta name="description" content="단기 유동화증권(ABSTB · ABCP) 본평가 회차별 발행 현황과 CP · CD 등 단기 시장금리를 모은 대시보드. 영업일 하루 2회 자동 갱신">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 단일 컬럼 대시보드 — 상단 시장금리 3칸 패널, 수집 상태, 필터 바 + 등급공시 표 */
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --line:#dfe2e8; --fg:#1b2230; --muted:#5d6678;
+  --accent:#2747a8; --accent-soft:#e8edf9;
+  --up:#c8302f; --down:#2453c4; --flat:#6b7383;
+  --spark:#2747a8; --spark-fill:rgba(39,71,168,.10);
+  --g-a1:#1f7a4d; --g-a2:#4c7a1f; --g-a3:#a26a00; --g-b:#b3401f;
+  --ok:#1f7a4d; --bad:#b3401f; --pf:#7a3fa8; --pf-bg:#f3ebfa;
+  --f-sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151d; --surface:#181e29; --line:#2a3242; --fg:#e6e9ef; --muted:#97a0b2;
+  --accent:#8ea8ff; --accent-soft:#1f2a45;
+  --up:#ff7a72; --down:#7aa2ff; --flat:#8b93a3;
+  --spark:#8ea8ff; --spark-fill:rgba(142,168,255,.14);
+  --g-a1:#5fd19a; --g-a2:#a6d16a; --g-a3:#f0bb4a; --g-b:#ff8a63;
+  --ok:#5fd19a; --bad:#ff8a63; --pf:#d2a6ff; --pf-bg:#2c2140; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151d; --surface:#181e29; --line:#2a3242; --fg:#e6e9ef; --muted:#97a0b2;
+  --accent:#8ea8ff; --accent-soft:#1f2a45;
+  --up:#ff7a72; --down:#7aa2ff; --flat:#8b93a3;
+  --spark:#8ea8ff; --spark-fill:rgba(142,168,255,.14);
+  --g-a1:#5fd19a; --g-a2:#a6d16a; --g-a3:#f0bb4a; --g-b:#ff8a63;
+  --ok:#5fd19a; --bad:#ff8a63; --pf:#d2a6ff; --pf-bg:#2c2140; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-sans);font-size:14px;line-height:1.5}
+.wrap{max-width:1680px;margin:0 auto;padding-inline:16px;padding-block:24px 40px;display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px}
+h1{font-size:1.45rem;font-weight:700;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);font-size:.85rem;margin:2px 0 0}
+.updated{font-size:.78rem;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;word-break:keep-all}
+.hright{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.sister{font-size:.76rem;font-weight:600;color:var(--accent);text-decoration:none;border:1px solid var(--line);background:var(--surface);border-radius:3px;padding:3px 9px}
+.sister:hover{background:var(--accent-soft)}
+.sister .sl{color:var(--muted);font-weight:500}
+.sister:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+h2{font-size:.78rem;font-weight:600;letter-spacing:.08em;color:var(--muted);margin:0}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.sec-head .note{font-size:.78rem;color:var(--muted)}
+.rhead{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;justify-content:flex-end}
+.seg.sm button{padding:4px 10px;font-size:.78rem}
+.rrange{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;color:var(--muted)}
+.rrange input{font:inherit;font-family:var(--f-mono);font-size:.76rem;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:3px 6px;color-scheme:light dark}
+.rrange input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.pchg{font-family:var(--f-mono);font-size:.74rem;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.rates{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--surface);border:1px solid var(--line);border-radius:3px}
+.rate{padding:16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.rate + .rate{border-left:1px solid var(--line)}
+.rate .name{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.rate .name b{font-weight:600;font-size:.95rem}
+.rate .name span{font-size:.72rem;color:var(--muted)}
+.rate .val{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.rate .num{font-family:var(--f-mono);font-size:1.9rem;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.rate .num small{font-size:.9rem;color:var(--muted);margin-left:2px}
+.chg{font-family:var(--f-mono);font-size:.85rem;font-variant-numeric:tabular-nums}
+.chg.up{color:var(--up)} .chg.down{color:var(--down)} .chg.flat{color:var(--flat)}
+.chg i{font-style:normal;font-size:.74rem;color:var(--muted);margin-right:4px}
+.spark{width:100%;height:96px;display:block}
+.sparkbox{position:relative;touch-action:pan-y;cursor:crosshair;outline:none;border-radius:3px}
+.sparkbox:focus-visible{box-shadow:0 0 0 2px var(--accent)}
+.spark-guide,.spark-dot,.spark-tip{position:absolute;pointer-events:none}
+.spark-guide{top:0;bottom:0;width:1px;background:var(--muted);opacity:.45}
+.spark-dot{width:9px;height:9px;border-radius:50%;background:var(--spark);border:2px solid var(--surface);transform:translate(-50%,-50%)}
+.spark-tip{top:-26px;transform:translateX(-50%);background:var(--fg);color:var(--bg);font-family:var(--f-mono);font-size:.72rem;line-height:1;padding:5px 7px;border-radius:3px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.rate .meta{display:flex;justify-content:space-between;gap:6px;font-size:.72rem;color:var(--muted);font-family:var(--f-mono)}
+.spreads{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:10px;font-size:.8rem;color:var(--muted)}
+.spreads b{font-family:var(--f-mono);font-weight:500;color:var(--fg)}
+.placeholder{padding:22px;color:var(--muted);grid-column:1/-1}
+
+.status{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.76rem;color:var(--muted);align-items:center}
+.status .src{display:inline-flex;align-items:center;gap:5px}
+.status .dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.status .src.bad .dot{background:var(--bad)}
+
+.filters{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:3px;overflow:hidden;background:var(--surface)}
+.seg button{all:unset;cursor:pointer;padding:6px 13px;font-size:.85rem;color:var(--muted)}
+.seg button + button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.seg button:focus-visible,select:focus-visible,input:focus-visible,th button:focus-visible,.info summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label.f{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--muted)}
+select,input[type=search]{font:inherit;font-size:.85rem;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 10px}
+input[type=search]{min-width:0;width:210px}
+input[type=checkbox]{accent-color:var(--accent)}
+.count{font-size:.82rem;color:var(--muted);white-space:nowrap}
+.tail{margin-left:auto;display:flex;align-items:center;gap:10px}
+.dl{font:inherit;font-size:.82rem;font-weight:600;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.dl:hover{background:var(--accent-soft)}
+.dl:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dl:disabled{opacity:.6;cursor:progress}
+.dl svg{width:14px;height:14px}
+
+.table-box{background:var(--surface);border:1px solid var(--line);border-radius:3px;overflow:auto;max-height:78vh}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+th,td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:top}
+/* 남는 폭은 마지막 열(발행주관사)이 흡수 → 나머지 열은 내용 폭에 맞춤 */
+th:last-child,td:last-child{width:100%}
+th:first-child,td:first-child{padding-left:12px}
+td.arr{white-space:normal;word-break:keep-all;min-width:6em}
+/* SPC명·회차, 신용보강 주체는 가로 스크롤해도 고정 */
+.fx1,.fx2{position:sticky;background:var(--surface);z-index:2}
+.fx1{left:0}
+.fx2{left:var(--fx1w,240px);box-shadow:inset -1px 0 0 var(--line),6px 0 8px -6px rgba(0,0,0,.18)}
+th.fx1,th.fx2{z-index:3}
+/* 두 고정열이 화면 폭의 60%를 넘으면(폰 세로 등) SPC명·회차만 고정 */
+.nofx2 .fx2{position:static;box-shadow:none}
+.nofx2 .fx1{box-shadow:inset -1px 0 0 var(--line),6px 0 8px -6px rgba(0,0,0,.18)}
+th{font-size:.74rem;font-weight:600;color:var(--muted);background:var(--surface);position:sticky;top:0;z-index:1}
+th button{all:unset;cursor:pointer}
+th button::after{content:"";margin-left:4px}
+th[aria-sort="ascending"] button::after{content:"▲"}
+th[aria-sort="descending"] button::after{content:"▼"}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:var(--accent-soft)}
+td.num,th.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+td.date{font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--muted)}
+td.spc{font-weight:600}
+td.spc small{font-weight:400;color:var(--muted);font-family:var(--f-mono);font-size:.74rem;margin-left:6px}
+td.mat small{color:var(--muted);margin-left:5px;font-size:.74rem}
+td.asset{white-space:normal;color:var(--muted);font-size:.8rem;min-width:180px;max-width:260px}
+td.asset span{display:block}
+td.sup{min-width:0}
+.sp{display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:2px;align-items:baseline}
+.sp b{font-weight:600;white-space:nowrap}
+.sp span{color:var(--muted);font-size:.76rem;white-space:nowrap}
+.pfc{font-size:.72rem;font-weight:600;padding:2px 7px;border-radius:3px;border:1px solid var(--line);color:var(--muted)}
+td.rep{white-space:nowrap}
+td.rep a{display:inline-block;margin:1px 4px 1px 0;font-size:.74rem;font-weight:600;color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:3px;padding:2px 7px}
+td.rep a:hover{background:var(--accent-soft)}
+td.rep i{font-style:normal;font-family:var(--f-mono);font-weight:500;margin-left:2px}
+td.rep .noreport{display:inline-block;margin:1px 4px 1px 0;font-size:.74rem;color:var(--muted);padding:2px 7px;border:1px dashed var(--line);border-radius:3px}
+td.rep a:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.pfc.on{color:var(--pf);background:var(--pf-bg);border-color:transparent}
+.kind{font-family:var(--f-mono);font-size:.72rem;font-weight:500;padding:2px 7px;border-radius:3px;border:1px solid var(--line)}
+.pf{display:inline-block;margin-left:6px;font-size:.68rem;font-weight:600;color:var(--pf);background:var(--pf-bg);padding:1px 6px;border-radius:3px;vertical-align:1px}
+.grade{font-family:var(--f-mono);font-weight:600;font-size:.82rem}
+.g-a1{color:var(--g-a1)} .g-a2{color:var(--g-a2)} .g-a3{color:var(--g-a3)} .g-b{color:var(--g-b)}
+.ag{font-size:.8rem;display:block}
+.ag i{font-style:normal;color:var(--muted);font-family:var(--f-mono);font-size:.74rem;margin-left:4px}
+.inf{color:var(--muted);font-size:.7rem;margin-left:3px}
+.dim{color:var(--muted)}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+
+.info{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:12px 16px;font-size:.84rem}
+.info summary{cursor:pointer;font-weight:600}
+.info p{margin:8px 0 0;color:var(--muted);max-width:78ch}
+footer{font-size:.76rem;color:var(--muted);line-height:1.65}
+footer p{margin:0 0 6px}
+footer .contact{margin-top:10px}
+footer a{color:var(--accent);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+/* 4열(넓은 화면): 숫자 줄이 한 줄에 들어가도록 조금 줄인다 */
+@media (min-width:1260px){
+  .rate{padding:14px 14px}
+  .rate .num{font-size:1.6rem}
+  .rate .val{gap:7px}
+}
+@media (min-width:761px) and (max-width:1259px){
+  .rates{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rate + .rate{border-left:0}
+  .rate:nth-child(even){border-left:1px solid var(--line)}
+  .rate:nth-child(n+3){border-top:1px solid var(--line)}
+}
+@media (max-width:760px){
+  .rates{grid-template-columns:1fr}
+  .rate + .rate{border-left:0;border-top:1px solid var(--line)}
+  .tail{margin-left:0;width:100%;justify-content:space-between}
+  input[type=search]{width:100%}
+  label.f.search{flex:1 1 100%}
+  .updated{text-align:left}
+  .hright{align-items:flex-start}
+  .spark{height:80px}
+  .rhead{justify-content:flex-start}
+  /* 폰: SPC명은 줄바꿈, 회차는 아랫줄 → 고정열 폭을 좁게 */
+  td.spc.fx1{white-space:normal;min-width:7em;max-width:8.5em;word-break:break-all}
+  td.spc small{display:block;margin:2px 0 0}
+}
+footer .ct{white-space:nowrap}
+@media (max-width:760px){footer .ct{display:block;margin-top:6px}footer .contact .sister{margin:4px 0 0 !important}}
+.sisters{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+@media (max-width:760px){.sisters{justify-content:flex-start}}
+</style>
+<style id="argus-skin">
+:root,:root[data-theme]{--bg:#eef1f5;--surface:#ffffff;--line:#dbe0e7;--fg:#1d2733;--muted:#5b6675;--accent:#2463a8;--accent-soft:#e8f0fa;
+ --f-mono:'IBM Plex Sans KR',system-ui,sans-serif;color-scheme:light}
+html,body{background:var(--bg)}
+body{font-family:'IBM Plex Sans KR',system-ui,sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.sisters{display:none!important}
+</style>
+<meta name="ag-base" content="">
+<style>
+body.ag-locked>:not(#ag-gate):not(script){display:none!important}
+#ag-gate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#f3f5f8;font-family:'IBM Plex Sans KR','Pretendard','Apple SD Gothic Neo',sans-serif;color:#1d2733}
+#ag-gate .box{width:380px;background:#fff;border:1px solid #dfe3e9;border-top:3px solid #14243b;padding:34px 34px 26px;box-shadow:0 18px 50px rgba(20,36,59,.08)}
+#ag-gate .br{display:flex;align-items:center;gap:10px;font-weight:600;font-size:18px;letter-spacing:.2px}
+#ag-gate .br small{font-weight:400;color:#5b6675;font-size:13px}
+#ag-gate h1{font-size:19px;font-weight:600;margin:26px 0 6px;color:#1d2733;letter-spacing:0}
+#ag-gate p{font-size:13px;line-height:1.65;color:#5b6675;margin:0}
+#ag-gate .gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:44px;margin-top:22px;border:1px solid #c9d0d9;background:#fff;font:500 14px inherit;font-family:inherit;color:#1d2733;cursor:pointer}
+#ag-gate .gbtn:hover{border-color:#14243b;background:#f8fafc}
+#ag-gate form{margin-top:18px}#ag-gate label{display:block;font-size:12px;color:#5b6675;margin-top:10px}
+#ag-gate input{display:block;width:100%;box-sizing:border-box;height:40px;margin-top:4px;border:1px solid #c9d0d9;padding:0 11px;font:inherit;font-size:14px;color:#1d2733;background:#fff;color-scheme:light;-webkit-appearance:none;appearance:none;border-radius:0;outline:0}
+#ag-gate input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px #fff inset;-webkit-text-fill-color:#1d2733}
+#ag-gate input:focus{border-color:#14243b}
+#ag-gate .pbtn{width:100%;height:42px;margin-top:16px;background:#14243b;color:#fff;border:0;font:inherit;font-size:14px;font-weight:500;cursor:pointer}#ag-gate .pbtn:disabled{opacity:.6}
+#ag-gate .err{color:#b3364a;font-size:12.5px;margin-top:10px;min-height:0}
+#ag-gate .sw{font-size:12.5px;color:#5b6675;margin-top:14px}#ag-gate .sw button{background:none;border:0;color:#2463a8;font:inherit;cursor:pointer;padding:0}
+#ag-gate .lnk{background:none;border:0;color:#2463a8;font:inherit;font-size:12.5px;cursor:pointer;padding:0;margin-top:16px}
+#ag-gate .ft{margin-top:24px;padding-top:14px;border-top:1px solid #eef1f4;font-size:11.5px;color:#8b95a3;line-height:1.6}
+#ag-gate .who{display:flex;align-items:center;gap:10px;margin-top:18px;padding:10px 12px;background:#f6f8fa;font-size:13px}
+#ag-gate .who img,#ag-gate .who i{width:28px;height:28px;border-radius:50%;background:#dfe7f2;display:grid;place-items:center;font-style:normal;font-weight:600;color:#14243b}
+#ag-gate .badge{display:inline-block;font-size:11px;padding:2px 8px;margin-top:20px;font-weight:600}
+#ag-gate .badge.p{background:#fbf3e3;color:#8a5a00}#ag-gate .badge.r{background:#fcedef;color:#b3364a}#ag-gate .badge.e{background:#eef1f5;color:#5b6675}
+#ag-gate .spin{width:22px;height:22px;border:2px solid #dfe3e9;border-top-color:#14243b;border-radius:50%;animation:agspin .8s linear infinite;margin:20px auto 0}
+@keyframes agspin{to{transform:rotate(360deg)}}
+.ag-user{display:flex;align-items:center;gap:8px;margin-left:14px;font-size:12px;white-space:nowrap}
+.ag-user img,.ag-user i{width:24px;height:24px;border-radius:50%;background:#dfe7f2;color:#14243b;display:grid;place-items:center;font-style:normal;font-weight:600;font-size:11px}
+.ag-user a,.ag-user button{background:none;border:0;color:inherit;opacity:.8;font:inherit;cursor:pointer;text-decoration:none;padding:0}
+.ag-user a:hover,.ag-user button:hover{opacity:1;text-decoration:underline}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body class="ag-locked">
+<div id="ag-gate" role="dialog" aria-modal="true" aria-label="로그인"></div>
+<script>
+(function(){
+const U="https://rxrpwwjibvjetlgdpjod.supabase.co",K="sb_publishable_Q6gikKDsSKSJjCf5Qe5WWA_iR2FVX5p",G=document.getElementById('ag-gate');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const BRAND=`<div class="br"><svg viewBox="0 0 20 20" width="30" height="30" aria-hidden="true"><g fill="none" stroke="#8fa3bd" stroke-width="1.2"><circle cx="4" cy="4" r="2"/><circle cx="10" cy="4" r="2"/><circle cx="16" cy="4" r="2"/><circle cx="4" cy="10" r="2"/><circle cx="16" cy="10" r="2"/><circle cx="4" cy="16" r="2"/><circle cx="10" cy="16" r="2"/><circle cx="16" cy="16" r="2"/></g><circle cx="10" cy="10" r="2.6" fill="#6ea6dd"/></svg><span>Argus <small>Research</small></span></div>`;
+const FT='<div class="ft">승인된 회원만 이용할 수 있는 비공개 리서치 사이트입니다. 서비스 운영과 보안을 위해 접속·열람·다운로드 기록이 저장되며 관리자가 확인할 수 있습니다.</div>';
+const av=p=>p&&p.avatar?`<img src="${esc(p.avatar)}" alt="" referrerpolicy="no-referrer">`:`<i>${esc(((p&&(p.name||p.email))||'?').slice(0,1))}</i>`;
+let sb=null;
+function view(state,p,msg){
+  if(!G)return;
+  const who=p?`<div class="who">${av(p)}<div><div>${esc(p.name||'')}</div><div style="color:#8b95a3;font-size:12px">${esc(p.email||'')}</div></div></div>`:'';
+  const out='<button class="lnk" id="ag-out">다른 계정으로 로그인</button>';
+  G.innerHTML=`<div class="box">${BRAND}${
+    state==='loading'?'<div class="spin" aria-label="확인 중"></div>':
+    state==='login'?`<h1>로그인</h1><form id="ag-f"><label>이메일<input name="email" type="email" autocomplete="username" required></label><label>비밀번호<input name="pw" type="password" autocomplete="current-password" required minlength="8"></label><div class="err" id="ag-err"></div><button class="pbtn">로그인</button></form><div class="sw">처음이신가요? <button id="ag-to-up">회원가입</button> · <button id="ag-forgot">비밀번호를 잊으셨나요?</button></div>`:
+    state==='signup'?`<h1>회원가입</h1><p>가입 후 관리자가 승인하면 이용할 수 있습니다.</p><form id="ag-f"><label>이름<input name="name" required maxlength="40" autocomplete="name"></label><label>소속 (회사·팀)<input name="org" maxlength="60" autocomplete="organization"></label><label>이메일<input name="email" type="email" autocomplete="username" required></label><label>비밀번호 (8자 이상)<input name="pw" type="password" autocomplete="new-password" required minlength="8"></label><div class="err" id="ag-err"></div><button class="pbtn">가입 신청</button></form><div class="sw">이미 계정이 있나요? <button id="ag-to-in">로그인</button></div>`:
+    state==='forgot'?`<h1>비밀번호 재설정</h1><p>비밀번호를 잊으셨다면 관리자에게 연락해 주세요. 관리자가 임시 비밀번호를 정해 드리면, 로그인한 뒤 화면 오른쪽 위 「비밀번호 변경」에서 새 비밀번호로 바꿀 수 있습니다.</p><div class="sw"><button id="ag-to-in">로그인으로 돌아가기</button></div>`:
+    state==='pending'?`<span class="badge p">승인 대기</span><h1>가입 신청이 접수되었습니다</h1><p>관리자가 승인하면 바로 이용할 수 있습니다. 승인 후 이 페이지를 새로고침하세요.</p>${who}${out}`:
+    state==='rejected'?`<span class="badge r">이용 불가</span><h1>이용 승인이 되지 않은 계정입니다</h1><p>다른 계정으로 로그인하거나 관리자에게 문의해 주세요.</p>${who}${out}`:
+    `<span class="badge e">연결 오류</span><h1>잠시 후 다시 시도해 주세요</h1><p>${esc(msg||'데이터를 불러오지 못했습니다.')}</p><button class="lnk" id="ag-re">다시 시도</button>`
+  }${FT}</div>`;
+  const on=(id,f)=>{const e=document.getElementById(id);if(e)e.onclick=f};
+  on('ag-to-up',()=>view('signup'));on('ag-to-in',()=>view('login'));on('ag-forgot',()=>view('forgot'));
+  const f=document.getElementById('ag-f');
+  if(f)f.onsubmit=async ev=>{ev.preventDefault();const d=Object.fromEntries(new FormData(f));const btn=f.querySelector('button');const er=document.getElementById('ag-err');er.textContent='';btn.disabled=true;
+    const KO={'Invalid login credentials':'이메일 또는 비밀번호가 맞지 않습니다.','User already registered':'이미 가입된 이메일입니다. 로그인해 주세요.','Email not confirmed':'이메일 확인이 필요한 설정으로 되어 있습니다. 관리자에게 알려 주세요.','Email address not authorized':'가입 메일을 보낼 수 없는 설정입니다. 관리자에게 알려 주세요.'};
+    const msg=e=>KO[e.message]||(/rate limit/i.test(e.message)?'잠시 후 다시 시도해 주세요.':/Password should be/i.test(e.message)?'비밀번호는 8자 이상으로 정해 주세요.':e.message);
+    try{
+      if(state==='signup'){
+        const {data,error}=await sb.auth.signUp({email:d.email.trim(),password:d.pw,options:{data:{full_name:d.name.trim(),org:(d.org||'').trim()}}});
+        if(error)throw error;
+        if(!data.session){view('error',null,'가입은 접수되었지만 로그인하지 못했습니다. 관리자에게 \'가입 확인 메일 끄기\' 설정을 확인해 달라고 알려 주세요.');return}
+      }else{
+        const {error}=await sb.auth.signInWithPassword({email:d.email.trim(),password:d.pw});if(error)throw error;
+      }
+      boot();
+    }catch(e){er.textContent=msg(e);btn.disabled=false}};
+  const first=G.querySelector('input');if(first)first.focus();
+  const o=document.getElementById('ag-out');if(o)o.onclick=async()=>{await sb.auth.signOut();view('login')};
+  const r=document.getElementById('ag-re');if(r)r.onclick=()=>location.reload();
+}
+function chip(p){
+  const host=document.querySelector('[data-ag-user]')||document.querySelector('.topnav .navr')||document.querySelector('.topnav .wrap')||document.querySelector('header');
+  if(!host||document.querySelector('.ag-user'))return;
+  const base=document.querySelector('meta[name=ag-base]');const b=base?base.content:'';
+  host.insertAdjacentHTML('beforeend',`<div class="ag-user">${av(p)}<span>${esc(p.name||p.email)}</span>${p.role==='admin'?`<a href="${b}admin.html">회원 관리</a>`:''}<button id="ag-pw">비밀번호 변경</button><button id="ag-logout">로그아웃</button></div>`);
+  document.getElementById('ag-pw').onclick=async()=>{const a=prompt('새 비밀번호 (8자 이상)');if(!a)return;if(a.length<8){alert('8자 이상으로 정해 주세요.');return}if(prompt('새 비밀번호를 한 번 더 입력하세요')!==a){alert('두 번 입력한 비밀번호가 다릅니다.');return}
+    const {error}=await sb.auth.updateUser({password:a});alert(error?'변경하지 못했습니다: '+error.message:'비밀번호를 바꿨습니다.')};
+  document.getElementById('ag-logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
+}
+let ready=null;const waiters=[];
+window.ArgusAuth={ready(cb){ready?cb(ready):waiters.push(cb)},client:()=>sb,
+  async file(name){const {data,error}=await sb.storage.from('private').createSignedUrl(name,120,{download:name});if(error)throw error;window.ArgusAuth.log&&window.ArgusAuth.log('download',name);return data.signedUrl}};
+async function boot(){
+  view('loading');ready=null;
+  if(!window.supabase){view('error',null,'로그인 모듈을 불러오지 못했습니다. 네트워크를 확인해 주세요.');return}
+  sb=sb||window.supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'pkce'}});
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){view('login');return}
+  const {data:p,error}=await sb.rpc('touch_me');
+  if(error||!p){view('error',null,error?error.message:'회원 정보를 찾지 못했습니다.');return}
+  if(p.status!=='approved'){view(p.status==='rejected'?'rejected':'pending',p);return}
+  if(/[?&](code|error)=/.test(location.search))history.replaceState(null,'',location.pathname);
+  ready={sb,profile:p};
+  const log=(a,t,m)=>sb.rpc('log_event',{p_action:a,p_target:t||null,p_meta:m||null}).then(()=>{},()=>{});
+  window.ArgusAuth.log=log;
+  try{if(!sessionStorage.getItem('ag-login')){sessionStorage.setItem('ag-login','1');log('login',location.pathname)}}catch(_){}
+  log('view',location.pathname+location.hash);
+  document.addEventListener('click',e=>{const a=e.target.closest('a[href^="http"]');if(a&&a.host!==location.host)log('open',a.href,{text:(a.textContent||'').trim().slice(0,120)})},true);
+  try{for(const w of waiters)await w(ready)}catch(e){view('error',null,e.message);return}
+  G&&G.remove();document.body.classList.remove('ag-locked');chip(p);
+  sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT')location.reload()});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>유동화시장 등급 · 금리 현황 대시보드</h1>
+      <p class="sub">단기 유동화증권(ABSTB·ABCP) 본평가 회차별 발행 현황과 단기 시장금리 · 영업일 기준 하루 2회(12:20·18:20) 자동 갱신</p>
+    </div>
+    <div class="hright">
+      
+      <div class="updated" id="updated">데이터 불러오는 중…</div>
+    </div>
+  </header>
+
+  <section aria-labelledby="h-rates">
+    <div class="sec-head">
+      <h2 id="h-rates">시장금리 · 일별</h2>
+      <div class="rhead">
+        <span class="note" id="rates-note">한국은행(ECOS) 시장금리(일별)</span>
+        <div class="seg sm" role="group" aria-label="금리 조회기간" id="seg-rp">
+          <button type="button" data-v="1" aria-pressed="false">1개월</button>
+          <button type="button" data-v="3" aria-pressed="false">3개월</button>
+          <button type="button" data-v="6" aria-pressed="false">6개월</button>
+          <button type="button" data-v="12" aria-pressed="true">1년</button>
+          <button type="button" data-v="36" aria-pressed="false">3년</button>
+          <button type="button" data-v="60" aria-pressed="false">5년</button>
+          <button type="button" data-v="120" aria-pressed="false">10년</button>
+        </div>
+        <div class="rrange" role="group" aria-label="금리 조회기간 직접 지정">
+          <input type="date" id="rp-from" aria-label="시작일"><span>~</span><input type="date" id="rp-to" aria-label="종료일">
+        </div>
+      </div>
+    </div>
+    <div class="rates" id="rates"><div class="placeholder">금리 불러오는 중…</div></div>
+    <div class="spreads" id="spreads"></div>
+  </section>
+
+  <section aria-labelledby="h-abs">
+    <div class="sec-head">
+      <h2 id="h-abs">유동화증권 발행 회차 · 본평가 기준</h2>
+      <div class="status" id="status"></div>
+    </div>
+    <div class="filters">
+      <div class="seg" role="group" aria-label="종류" id="seg-kind">
+        <button type="button" data-v="all" aria-pressed="true">전체</button>
+        <button type="button" data-v="ABSTB" aria-pressed="false">ABSTB</button>
+        <button type="button" data-v="ABCP" aria-pressed="false">ABCP</button>
+      </div>
+      <div class="seg" role="group" aria-label="기간" id="seg-days">
+        <button type="button" data-v="7" aria-pressed="false">1주</button>
+        <button type="button" data-v="14" aria-pressed="false">2주</button>
+        <button type="button" data-v="all" aria-pressed="true">전체</button>
+      </div>
+      <label class="f" for="f-grade">현재등급 <select id="f-grade"><option value="all">전체</option></select></label>
+      <label class="f" for="f-agency">평가사
+        <select id="f-agency"><option value="all">전체</option><option>NICE</option><option>한신평</option><option>한기평</option></select>
+      </label>
+      <div class="seg" role="group" aria-label="PF구분" id="seg-pf">
+        <button type="button" data-v="all" aria-pressed="true">전체</button>
+        <button type="button" data-v="PF" aria-pressed="false">PF</button>
+        <button type="button" data-v="일반" aria-pressed="false">일반</button>
+      </div>
+      <label class="f search" for="f-q"><input type="search" id="f-q" placeholder="SPC·신용보강 주체 등 검색"></label>
+      <div class="tail"><span class="count" id="count"></span>
+      <button type="button" class="dl" id="dl" title="지금 표에 보이는 필터·정렬 그대로 엑셀 파일로 받습니다"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11"/></svg>엑셀 다운로드</button></div>
+    </div>
+    <div class="table-box">
+      <table>
+        <thead><tr id="thead">
+          <th class="fx1" data-k="spc"><button type="button">SPC명 · 회차</button></th>
+          <th class="fx2">신용보강 주체</th>
+          <th data-k="grade"><button type="button">등급</button></th>
+          <th class="num" data-k="rate"><button type="button">거래금리</button></th>
+          <th class="num" data-k="amount"><button type="button">발행액(억)</button></th>
+          <th data-k="issue_date" aria-sort="descending"><button type="button">발행일</button></th>
+          <th data-k="maturity"><button type="button">만기 (기간)</button></th>
+          <th>평가서 다운로드</th>
+          <th data-k="pf"><button type="button">PF구분</button></th>
+          <th data-k="kind"><button type="button">종류</button></th>
+          <th data-k="arranger"><button type="button">발행주관사</button></th>
+        </tr></thead>
+        <tbody id="tbody"><tr><td colspan="11" class="empty">불러오는 중…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+
+  <footer>
+    <p>이 화면은 신용평가사 공시, 금융투자협회 채권정보센터, 한국은행 경제통계시스템에 공개된 자료를 자동으로 모아 정리한 개인 참고용 자료입니다. 수집과 가공 과정에서 누락·오기가 생길 수 있고 원문과 다를 수 있습니다.</p>
+    <p>거래금리는 장외 거래 공시값일 뿐 실제 발행조건이나 조달비용을 뜻하지 않습니다. 이 화면의 어떤 내용도 투자 권유나 의사결정의 근거가 아니며, 이를 이용해 생긴 결과에 대해 작성자는 책임지지 않습니다. 정확한 내용은 각 기관의 원문 공시에서 확인하시기 바랍니다.</p>
+      </footer>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const getJSON = async p => { try { const r = await fetch(p, {cache:"no-store"}); return r.ok ? r.json() : null; } catch { return null; } };
+
+// ---------------- 시장금리 ----------------
+const SER={};
+// 금리 조회기간: 버튼(RP개월, 기본 1년) 또는 시작·종료일 직접 지정(RP=null, RS~RE)
+let RP=12, RS=null, RE=null, RDATA=null;
+document.querySelectorAll("#seg-rp button").forEach(b=>b.addEventListener("click",()=>{
+  RP=+b.dataset.v; RS=RE=null; if(RDATA) renderRates(RDATA);
+}));
+["rp-from","rp-to"].forEach(id=>$("#"+id).addEventListener("change",()=>{
+  let a=$("#rp-from").value, b=$("#rp-to").value; if(!a||!b) return;
+  if(a>b) [a,b]=[b,a];
+  RP=null; RS=a; RE=b; if(RDATA) renderRates(RDATA);
+}));
+const isoShift=(d,m)=>{ const x=new Date(d+"T00:00:00Z"); x.setUTCMonth(x.getUTCMonth()-m); return x.toISOString().slice(0,10); };
+const SW=240, SH=96, SP=5;  // spark()의 W·H·p와 같게
+function sparkAt(box, i){
+  const s=SER[box.dataset.k]; if(!s) return;
+  const n=s.vals.length; i=Math.max(0,Math.min(n-1,i)); box.dataset.i=i;
+  const mn=Math.min(...s.vals), mx=Math.max(...s.vals), rg=(mx-mn)||1;
+  const w=box.clientWidth, h=box.querySelector("svg").clientHeight;
+  const px=(SP+i*(SW-2*SP)/Math.max(1,n-1))/SW*w, py=(SH-SP-(s.vals[i]-mn)/rg*(SH-2*SP))/SH*h;
+  const [g,dot,tip]=[".spark-guide",".spark-dot",".spark-tip"].map(c=>box.querySelector(c));
+  g.style.left=px+"px"; dot.style.left=px+"px"; dot.style.top=py+"px";
+  tip.textContent=`'${s.pts[i].d.slice(2).replace(/-/g,".")}  ${s.vals[i].toFixed(s.dp)}%`;
+  g.hidden=dot.hidden=tip.hidden=false;
+  const tw=tip.offsetWidth/2; tip.style.left=Math.max(tw,Math.min(w-tw,px))+"px";
+}
+function sparkHide(box){ box.querySelectorAll(".spark-guide,.spark-dot,.spark-tip").forEach(e=>e.hidden=true); delete box.dataset.i; }
+function sparkIdx(box, clientX){
+  const s=SER[box.dataset.k], r=box.getBoundingClientRect(), n=s.vals.length;
+  const x=(clientX-r.left)/r.width*SW;
+  return Math.round((x-SP)/(SW-2*SP)*(n-1));
+}
+document.addEventListener("pointermove",e=>{ const b=e.target.closest&&e.target.closest(".sparkbox"); if(b) sparkAt(b,sparkIdx(b,e.clientX)); });
+document.addEventListener("pointerdown",e=>{
+  const b=e.target.closest&&e.target.closest(".sparkbox");
+  document.querySelectorAll(".sparkbox").forEach(x=>{ if(x!==b) sparkHide(x); });
+  if(b) sparkAt(b,sparkIdx(b,e.clientX));
+});
+document.addEventListener("pointerout",e=>{ const b=e.target.closest&&e.target.closest(".sparkbox"); if(b&&e.pointerType==="mouse"&&!b.contains(e.relatedTarget)) sparkHide(b); });
+document.addEventListener("keydown",e=>{
+  const b=document.activeElement; if(!b||!b.classList||!b.classList.contains("sparkbox")) return;
+  const n=SER[b.dataset.k].vals.length, cur=b.dataset.i!=null?+b.dataset.i:n-1;
+  if(e.key==="ArrowLeft"){ sparkAt(b,cur-1); e.preventDefault(); }
+  else if(e.key==="ArrowRight"){ sparkAt(b,cur+1); e.preventDefault(); }
+  else if(e.key==="Escape"){ sparkHide(b); }
+});
+document.addEventListener("focusout",e=>{ if(e.target.classList&&e.target.classList.contains("sparkbox")) sparkHide(e.target); });
+function spark(vals){
+  const W=SW,H=SH,p=SP, mn=Math.min(...vals), mx=Math.max(...vals), rg=(mx-mn)||1;
+  const x=i=>p+i*(W-2*p)/Math.max(1,vals.length-1), y=v=>H-p-(v-mn)/rg*(H-2*p);
+  const pts=vals.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  const lx=x(vals.length-1), ly=y(vals[vals.length-1]);
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+    <polygon points="${p},${H} ${pts} ${lx},${H}" fill="var(--spark-fill)"/>
+    <polyline points="${pts}" fill="none" stroke="var(--spark)" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+    <line x1="${lx}" y1="${ly}" x2="${lx}" y2="${ly}" stroke="var(--spark)" stroke-width="5.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>`;
+}
+function renderRates(R){
+  const el=$("#rates");
+  if(!R||!R.series){ el.innerHTML='<div class="placeholder">금리 데이터를 불러오지 못했습니다. 다음 수집 때 다시 표시됩니다.</div>'; return; }
+  // 당일분이 ECOS보다 먼저 금융투자협회 최종호가로 채워졌으면 출처를 함께 적는다
+  $("#rates-note").textContent=R.prelim&&R.prelim.date===R.asof
+    ?"한국은행(ECOS) 시장금리(일별) · 당일분은 금융투자협회 최종호가(15:30)"
+    :"한국은행(ECOS) 시장금리(일별)";
+  // 조회 구간 [from, to]: 버튼이면 마지막 자료일 기준 RP개월, 직접 지정이면 RS~RE
+  const allD=Object.values(R.series).flatMap(s=>s.points.length?[s.points[0].d,s.points[s.points.length-1].d]:[]);
+  const minD=allD.reduce((a,b)=>a<b?a:b), maxD=allD.reduce((a,b)=>a>b?a:b);
+  const from=RP?isoShift(maxD,RP):RS, to=RP?maxD:RE;
+  const RPL=RP?({1:"1개월",3:"3개월",6:"6개월",12:"1년",36:"3년",60:"5년",120:"10년"}[RP]||`${RP}개월`):"기간";
+  document.querySelectorAll("#seg-rp button").forEach(x=>x.setAttribute("aria-pressed",String(+x.dataset.v===RP)));
+  const fi=$("#rp-from"), ti=$("#rp-to");
+  fi.min=ti.min=minD; fi.max=ti.max=maxD; fi.value=from<minD?minD:from; ti.value=to;
+  const order=["CP91","CD91","KTB3","AA3"], dp={CP91:2,CD91:2,KTB3:3,AA3:3}, last={};
+  el.innerHTML="";
+  for(const k of order){
+    const s=R.series[k]; if(!s||!s.points.length) continue;
+    let pts=s.points.filter(p=>p.d>=from&&p.d<=to);
+    if(pts.length<2){ // 구간 안에 자료가 거의 없으면 종료일 직전 2개라도 보여준다
+      const upto=s.points.filter(p=>p.d<=to); pts=upto.slice(-2); if(!pts.length) pts=s.points.slice(0,2);
+    }
+    const vals=pts.map(p=>p.v), n=vals.length;
+    const pbp=Math.round((vals[n-1]-vals[0])*1000)/10;
+    const cur=vals[n-1], prev=n>1?vals[n-2]:cur, bp=Math.round((cur-prev)*1000)/10;
+    last[k]=cur; SER[k]={pts,vals,dp:dp[k]};
+    const cls=bp>0?"up":bp<0?"down":"flat", sign=bp>0?"▲ +":bp<0?"▼ ":"– ";
+    const md=d=>RP&&RP<12?d.slice(5).replace("-","/"):"'"+d.slice(2).replace(/-/g,".");  // 직접 지정은 연도까지
+    el.insertAdjacentHTML("beforeend",`<div class="rate">
+      <div class="name"><b>${esc(s.name)}</b><span>${esc(s.tag)}</span></div>
+      <div class="val"><span class="num">${cur.toFixed(dp[k])}<small>%</small></span>
+        <span class="chg ${cls}"><i>전일</i>${sign}${Math.abs(bp).toFixed(1)}bp</span>
+        <span class="pchg" title="${esc(pts[0].d)} 대비">${RPL} ${pbp>0?"+":pbp<0?"−":"±"}${Math.abs(pbp).toFixed(1)}bp</span></div>
+      <div class="sparkbox" data-k="${k}" tabindex="0" aria-label="${esc(s.name)} 추이: 마우스를 올리거나 터치하면 일자별 금리가 보입니다">${spark(vals)}
+        <div class="spark-guide" hidden></div><div class="spark-dot" hidden></div><div class="spark-tip" hidden></div></div>
+      <div class="meta"><span>${md(pts[0].d)}</span><span>${md(pts[n-1].d)}</span></div>
+    </div>`);
+  }
+  // 스프레드는 두 금리가 모두 있는 가장 최근 날짜로 계산(당일분이 한쪽만 먼저 붙은 경우 대비)
+  const sprd=(a,b)=>{
+    const am=Object.fromEntries((R.series[a]?.points||[]).map(p=>[p.d,p.v])), bp_=R.series[b]?.points||[];
+    const sd=[...bp_].reverse().find(p=>p.d in am);
+    if(!sd) return "<b>-</b>";
+    const dl=sd.d!==R.asof?` <small>('${sd.d.slice(2).replace(/-/g,".")} 기준)</small>`:"";
+    return `<b>${((am[sd.d]-sd.v)*100).toFixed(1)}bp</b>${dl}`;
+  };
+  $("#spreads").innerHTML=`<span>CP–CD(단기 신용·유동성 스프레드) ${sprd("CP91","CD91")}</span>
+    ${R.series.AA3?`<span>회사채 AA-–국고3년(크레딧 스프레드) ${sprd("AA3","KTB3")}</span>`:""}
+    <span>기준일 <b>${esc(R.asof||"-")}</b></span>`;
+}
+
+// ---------------- 수집 상태 ----------------
+function renderStatus(S){
+  if(!S||!S.sources){ $("#status").innerHTML=""; return; }
+  const names={ECOS:"한국은행(ECOS)",NICE:"NICE",한신평:"한신평",한기평:"한기평",KOFIA:"KOFIA",평가의견서:"평가서"};
+  $("#status").innerHTML=Object.entries(S.sources).map(([k,v])=>
+    `<span class="src ${v.ok?"":"bad"}" title="${v.ok?"정상":v.missing?`${v.missing}건 다음 수집 때 이어서 받음`:"직전 값 표시"}"><span class="dot"></span>${esc(names[k]||k)}</span>`).join("");
+}
+
+// ---------------- 등급공시 표 ----------------
+let VIEW=[], STAT=null, EV=[], state={kind:"all",days:"all",grade:"all",agency:"all",pf:"all",q:"",sort:"issue_date",dir:-1}, ASOF=null;
+const gcls=g=>/^A1/.test(g)?"g-a1":/^A2/.test(g)?"g-a2":/^A3/.test(g)?"g-a3":"g-b";
+const rateOf=e=>e.kofia&&e.kofia.rate!=null?e.kofia.rate:null;
+const GRADE_ORDER=["A1","A2+","A2","A2-","A3+","A3","A3-","B+","B","B-","C","D"];
+
+const ymd=d=>d?"'"+d.slice(2).replace(/-/g,"."):"-";
+function rowHTML(e){
+  const same=new Set(e.ratings.map(r=>r.grade)).size<=1;
+  const url=Object.fromEntries((e.reports||[]).map(r=>[r.agency,r.url]));
+  const ag=e.ratings.map(r=>{
+    const label=esc(r.agency)+(same?"":` <i>${esc(r.grade)}</i>`), tip=`${r.agency} ${r.grade} · 평가일 ${r.eval_date}`;
+    return url[r.agency]
+      ? `<a href="${esc(url[r.agency])}" target="_blank" rel="noopener" title="${esc(tip)} · 평가서 PDF 열기">${label}</a>`
+      : `<span class="noreport" title="${esc(tip)}">${label}</span>`;
+  }).join("");
+  const sup=e.supports&&e.supports.length
+    ? `<div class="sp">${e.supports.map(x=>`<b title="${esc(x.detail)}">${esc(x.company)}</b><span title="${esc(x.detail)}">${esc(x.summary||"")}</span>`).join("")}</div>`
+    : '<span class="dim">-</span>';
+  let rate;
+  if(rateOf(e)!=null) rate=`<span title="${esc(e.kofia.source)} · 거래일 ${esc(e.kofia.trade_date)}">${rateOf(e).toFixed(2)}%</span>`;
+  else rate=e.kofia&&e.kofia.status==="pending"?'<span class="dim">대기</span>':"-";
+  const series=(e.series||"").replace(/^제/,"");
+  return `<tr>
+    <td class="spc fx1" title="${esc([e.deal_type,e.asset].filter(Boolean).join(" · "))}">${esc(e.spc)}<small>${esc(series)}</small></td>
+    <td class="sup fx2">${sup}</td>
+    <td><span class="grade ${gcls(e.grade)}">${esc(e.grade)}</span></td>
+    <td class="num">${rate}</td>
+    <td class="num">${e.amount?Number(e.amount).toLocaleString("ko-KR",{maximumFractionDigits:1}):"-"}</td>
+    <td class="date">${ymd(e.issue_date)}</td>
+    <td class="date mat">${ymd(e.maturity)}${e.days!=null?`<small>(${e.days}일)</small>`:""}</td>
+    <td class="rep">${ag||'<span class="dim">-</span>'}</td>
+    <td><span class="pfc ${e.pf==="PF"?"on":""}">${esc(e.pf)}</span></td>
+    <td><span class="kind">${esc(e.kind)}</span></td>
+    <td class="arr">${esc(e.arranger||"-")}</td></tr>`;
+}
+function cmp(a,b){
+  const k=state.sort; let va,vb;
+  if(k==="rate"){va=rateOf(a);vb=rateOf(b);}
+  else if(k==="grade"){va=GRADE_ORDER.indexOf(a.grade.replace(/[↑↓]/g,"").split("/")[0]);vb=GRADE_ORDER.indexOf(b.grade.replace(/[↑↓]/g,"").split("/")[0]);}
+  else if(k==="mgr"){va=a.asset_manager||a.arranger;vb=b.asset_manager||b.arranger;}
+  else {va=a[k];vb=b[k];}
+  if(va==null&&vb==null) return 0; if(va==null) return 1; if(vb==null) return -1;
+  return (va>vb?1:va<vb?-1:0)*state.dir;
+}
+function render(){
+  const q=state.q.trim().toLowerCase();
+  let cut=null;
+  if(state.days!=="all"&&ASOF){ const d=new Date(ASOF); d.setDate(d.getDate()-Number(state.days)); cut=d.toISOString().slice(0,10); }
+  const rows=EV.filter(e=>(state.kind==="all"||e.kind===state.kind)
+    &&(!cut||e.issue_date>=cut)
+    &&(state.grade==="all"||e.grade===state.grade)
+    &&(state.agency==="all"||e.agencies.includes(state.agency))
+    &&(state.pf==="all"||e.pf===state.pf)
+    &&(!q||[e.spc,e.asset,e.asset_manager,e.arranger,e.deal_type,...(e.supports||[]).map(x=>x.company+" "+x.detail+" "+(x.summary||""))].join(" ").toLowerCase().includes(q))).sort(cmp);
+  VIEW=rows;
+  $("#count").textContent=`${rows.length}건 / 전체 ${EV.length}건`;
+  $("#tbody").innerHTML=rows.length?rows.map(rowHTML).join(""):'<tr><td colspan="11" class="empty">조건에 맞는 SPC가 없습니다. 필터를 바꿔 보세요.</td></tr>';
+  fixCols();
+  document.querySelectorAll("#thead th[data-k]").forEach(th=>th.setAttribute("aria-sort",th.dataset.k===state.sort?(state.dir>0?"ascending":"descending"):"none"));
+}
+// 고정 열: 둘째 열의 left를 첫째 열 실제 폭으로 맞춤
+function fixCols(){
+  const box=document.querySelector(".table-box"), t=box&&box.querySelector("table");
+  const f=document.querySelector("#thead th.fx1"), g=document.querySelector("#thead th.fx2");
+  if(!t||!f) return;
+  const w1=f.getBoundingClientRect().width, w2=g?g.getBoundingClientRect().width:0;
+  t.style.setProperty("--fx1w", w1+"px");
+  t.classList.toggle("nofx2", w1+w2 > box.clientWidth*0.6);
+}
+if(window.ResizeObserver){ const ro=new ResizeObserver(fixCols); ro.observe(document.querySelector(".table-box")); const f0=document.querySelector("#thead th.fx1"); if(f0) ro.observe(f0); }
+window.addEventListener("resize", fixCols);
+document.fonts&&document.fonts.ready.then(fixCols);
+// ---------------- 엑셀 다운로드 ----------------
+function loadXLSX(){
+  if(window.XLSX) return Promise.resolve();
+  return new Promise((ok,fail)=>{ const s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"; s.onload=ok; s.onerror=fail; document.head.appendChild(s); });
+}
+function filterText(){
+  const f=[], seg=id=>document.querySelector(`#${id} button[aria-pressed="true"]`)?.innerText;
+  if(state.kind!=="all") f.push(`종류 ${state.kind}`);
+  if(state.days!=="all") f.push(`기간 ${seg("seg-days")}`);
+  if(state.grade!=="all") f.push(`현재등급 ${state.grade}`);
+  if(state.agency!=="all") f.push(`평가사 ${state.agency}`);
+  if(state.pf!=="all") f.push(`PF구분 ${state.pf}`);
+  if(state.q.trim()) f.push(`검색어 "${state.q.trim()}"`);
+  return f.length?f.join(" · "):"전체(필터 없음)";
+}
+async function downloadXLSX(){
+  const btn=$("#dl"), label=btn.lastChild.textContent;
+  btn.disabled=true; btn.lastChild.textContent="만드는 중…";
+  try{
+    await loadXLSX();
+    const AG=["NICE","한신평","한기평"];
+    const head=["SPC명","회차","신용보강 주체","신용보강 내용","등급",...AG.map(a=>`${a} 등급`),"거래금리(%)","금리 기준","금리 거래일","발행액(억원)","발행일","만기일","기간(일)",...AG.map(a=>`${a} 평가서`),"PF구분","종류","발행주관사","거래유형","기초자산"];
+    const sup=e=>e.supports||[];
+    const links=[];
+    const body=VIEW.map((e,i)=>{
+      const rt=Object.fromEntries(e.ratings.map(r=>[r.agency,r])), url=Object.fromEntries((e.reports||[]).map(r=>[r.agency,r.url]));
+      const k=e.kofia||{};
+      AG.forEach((a,j)=>{ if(url[a]) links.push([i+1,head.indexOf(`${a} 평가서`),url[a]]); });
+      return [e.spc,(e.series||"").replace(/^제/,""),sup(e).map(x=>x.company).join(" / "),sup(e).map(x=>x.summary||x.detail||"").join(" / "),e.grade,
+        ...AG.map(a=>rt[a]?rt[a].grade:""),
+        k.rate!=null?k.rate:(k.status==="pending"?"대기":""), k.rate!=null?(k.source||""):"", k.rate!=null?(k.trade_date||""):"",
+        e.amount!=null&&e.amount!==""?Number(e.amount):null, e.issue_date||"", e.maturity||"", e.days??null,
+        ...AG.map(a=>url[a]?`${a} 평가서`:""),
+        e.pf||"",e.kind||"",e.arranger||"",e.deal_type||"",e.asset||""];
+    });
+    const ws=XLSX.utils.aoa_to_sheet([head,...body]);
+    const W={"SPC명":18,"회차":10,"신용보강 주체":22,"신용보강 내용":30,"금리 기준":14,"금리 거래일":11,"발행일":11,"만기일":11,"발행주관사":14,"거래유형":22,"기초자산":28};
+    ws["!cols"]=head.map(h=>({wch:W[h]||(/평가서/.test(h)?11:/등급/.test(h)?8:10)}));
+    ws["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:body.length,c:head.length-1}})};
+    const cR=head.indexOf("거래금리(%)"), cA=head.indexOf("발행액(억원)");
+    for(let i=1;i<=body.length;i++){
+      const a=ws[XLSX.utils.encode_cell({r:i,c:cR})]; if(a&&typeof a.v==="number") a.z="0.00";
+      const b=ws[XLSX.utils.encode_cell({r:i,c:cA})]; if(b&&typeof b.v==="number") b.z="#,##0.0";
+    }
+    for(const [r,c,u] of links){ const cell=ws[XLSX.utils.encode_cell({r,c})]; if(cell) cell.l={Target:u,Tooltip:"평가서 PDF 열기"}; }
+    const info=[
+      ["유동화시장 등급 · 금리 현황"],[],
+      ["대상","단기 유동화증권(ABSTB·ABCP) 본평가 회차별 발행 현황"],
+      ["최종 수집", STAT?.generated?`${STAT.generated} KST`:""],
+      ["내려받은 시각", new Date().toLocaleString("ko-KR",{timeZone:"Asia/Seoul"})],
+      ["적용된 화면 조건", filterText()],
+      ["행 수", `${VIEW.length}건 / 전체 ${EV.length}건`],[],
+      ["등급","평가사별 등급이 다르면 '/'로 함께 표시합니다. 평가사별 등급 열에서 각각 확인할 수 있습니다."],
+      ["거래금리","ABCP는 발행일 직접매입(할인) 최고금리, ABSTB는 발행일~2영업일 매출 최고금리(금융투자협회). '대기'는 아직 거래 확인 기간 중"],
+      ["평가서","평가서 열을 누르면 각 평가사의 평가의견서 PDF가 열립니다."],
+      ["출처","나이스신용평가(NICE), 한국신용평가(한신평), 한국기업평가(한기평), 금융투자협회 채권정보센터, 한국은행(ECOS)"],
+      ["사이트", location.origin+location.pathname],
+      ["제작","한국투자증권 PF그룹 부동산금융1부 최이름"],
+      ["유의사항","공개 자료를 모아 정리한 참고용 자료이며 원문과 다를 수 있습니다. 투자 권유나 의사결정의 근거가 아닙니다."]
+    ];
+    const ws2=XLSX.utils.aoa_to_sheet(info); ws2["!cols"]=[{wch:18},{wch:90}];
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"발행 회차");
+    XLSX.utils.book_append_sheet(wb,ws2,"정보");
+    const d=new Date(Date.now()+9*3600e3).toISOString().slice(0,10).replace(/-/g,"");
+    XLSX.writeFile(wb,`daily-ratings_${d}.xlsx`);
+  }catch(e){
+    console.error(e); btn.lastChild.textContent="다시 시도해 주세요"; setTimeout(()=>{btn.lastChild.textContent=label;},2500); btn.disabled=false; return;
+  }
+  btn.disabled=false; btn.lastChild.textContent=label;
+}
+$("#dl").addEventListener("click",downloadXLSX);
+function bindSeg(id,key){
+  document.querySelectorAll(`#${id} button`).forEach(b=>b.addEventListener("click",()=>{
+    document.querySelectorAll(`#${id} button`).forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+    state[key]=b.dataset.v; render();
+  }));
+}
+bindSeg("seg-kind","kind"); bindSeg("seg-days","days"); bindSeg("seg-pf","pf");
+$("#f-grade").addEventListener("change",e=>{state.grade=e.target.value;render()});
+$("#f-agency").addEventListener("change",e=>{state.agency=e.target.value;render()});
+$("#f-q").addEventListener("input",e=>{state.q=e.target.value;render()});
+document.querySelectorAll("#thead th[data-k] button").forEach(b=>b.addEventListener("click",()=>{
+  const k=b.parentElement.dataset.k;
+  if(state.sort===k) state.dir*=-1; else {state.sort=k; state.dir=["spc","kind","grade","pf","arranger"].includes(k)?1:-1;}
+  render();
+}));
+
+(async()=>{
+  const [R,A,S]=await Promise.all([getJSON("data/rates.json"),getJSON("data/abs.json"),getJSON("data/status.json")]);
+  RDATA=R; renderRates(R); renderStatus(S); STAT=S;
+  $("#updated").textContent=S?.generated?`최종 수집 ${S.generated} KST`:"수집 정보 없음";
+  if(!A||!A.rows){ $("#tbody").innerHTML='<tr><td colspan="11" class="empty">등급공시 데이터를 불러오지 못했습니다.</td></tr>'; return; }
+  EV=A.rows; ASOF=A.issue_window?.[1]||null;
+  const grades=[...new Set(EV.map(e=>e.grade))].sort((a,b)=>{
+    const ia=GRADE_ORDER.indexOf(a), ib=GRADE_ORDER.indexOf(b); return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b);});
+  $("#f-grade").insertAdjacentHTML("beforeend",grades.map(g=>`<option>${esc(g)}</option>`).join(""));
+  render();
+})();
+</script>
+</body>
+</html>

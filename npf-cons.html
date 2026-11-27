@@ -1,0 +1,1685 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<script>(function(){var K="cons",of=window.fetch.bind(window);function rel(u){return typeof u==='string'&&!/^(https?:|data:|blob:|\/\/)/i.test(u)}function path(u){return u.replace(/^\.\//,'').replace(/^\//,'').split('?')[0].split('#')[0]}function opt(o){if(!o)return o;var c={};for(var k in o)c[k]=o[k];delete c.cache;return c}window.fetch=function(u,o){if(!rel(u))return of(u,o);var p=path(u);if(!window.ArgusAuth||!window.ArgusAuth.ready)return of('npf/'+K+'/'+p,o);return new Promise(function(res,rej){window.ArgusAuth.ready(function(r){r.sb.storage.from('private').createSignedUrl('npf/'+K+'/'+p,600).then(function(x){if(x.error)throw x.error;return of(x.data.signedUrl,opt(o))}).then(res,rej)})})};document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a)return;var h=a.getAttribute('href');if(!rel(h)||h.charAt(0)==='#'||!/\.(xlsx?|docx?|hwpx?|pdf|csv|json|geojson|png|zip)(\?|#|$)/i.test(h))return;e.preventDefault();window.fetch(h).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){var u=URL.createObjectURL(b),x=document.createElement('a');x.href=u;x.download=a.getAttribute('download')||path(h).split('/').pop();document.body.appendChild(x);x.click();x.remove();setTimeout(function(){URL.revokeObjectURL(u)},4000)}).catch(function(){alert('파일을 받지 못했습니다. 잠시 뒤 다시 시도해 주세요.')})},true);})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Argus Research · 대시보드 · 시공사 · 신용등급</title>
+<meta name="description" content="대한건설협회 시공능력평가(도급순위) 상위 100개사와 신용평가 3사 회사채 신용등급을 모은 대시보드. 매일 오전(08:00) 자동 갱신">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 단일 컬럼 대시보드 — 상단 요약 3칸 패널(평가액·등급 분포·순위 변동), 필터 바 + 시평 순위·등급 표
+   토큰은 '유동화시장 등급 · 금리 현황 대시보드'(daily-ratings)와 동일하게 유지 */
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --line:#dfe2e8; --fg:#1b2230; --muted:#5d6678;
+  --accent:#2747a8; --accent-soft:#e8edf9;
+  --up:#c8302f; --down:#2453c4; --flat:#6b7383;
+  --spark:#2747a8; --spark-fill:rgba(39,71,168,.10);
+  --g-a1:#1f7a4d; --g-a2:#4c7a1f; --g-a3:#a26a00; --g-b:#b3401f;
+  --ok:#1f7a4d; --bad:#b3401f; --pf:#7a3fa8; --pf-bg:#f3ebfa;
+  --seg1:#2747a8; --seg2:#5f78c4; --seg3:#9aabdc; --seg4:#cdd6ee;
+  --f-sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151d; --surface:#181e29; --line:#2a3242; --fg:#e6e9ef; --muted:#97a0b2;
+  --accent:#8ea8ff; --accent-soft:#1f2a45;
+  --up:#ff7a72; --down:#7aa2ff; --flat:#8b93a3;
+  --spark:#8ea8ff; --spark-fill:rgba(142,168,255,.14);
+  --g-a1:#5fd19a; --g-a2:#a6d16a; --g-a3:#f0bb4a; --g-b:#ff8a63;
+  --ok:#5fd19a; --bad:#ff8a63; --pf:#d2a6ff; --pf-bg:#2c2140;
+  --seg1:#8ea8ff; --seg2:#6680cc; --seg3:#46599a; --seg4:#2e3a5e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151d; --surface:#181e29; --line:#2a3242; --fg:#e6e9ef; --muted:#97a0b2;
+  --accent:#8ea8ff; --accent-soft:#1f2a45;
+  --up:#ff7a72; --down:#7aa2ff; --flat:#8b93a3;
+  --spark:#8ea8ff; --spark-fill:rgba(142,168,255,.14);
+  --g-a1:#5fd19a; --g-a2:#a6d16a; --g-a3:#f0bb4a; --g-b:#ff8a63;
+  --ok:#5fd19a; --bad:#ff8a63; --pf:#d2a6ff; --pf-bg:#2c2140;
+  --seg1:#8ea8ff; --seg2:#6680cc; --seg3:#46599a; --seg4:#2e3a5e; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-sans);font-size:14px;line-height:1.5}
+.wrap{max-width:1680px;margin:0 auto;padding-inline:16px;padding-block:24px 40px;display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px}
+h1{font-size:1.45rem;font-weight:700;margin:0;letter-spacing:-.01em;text-wrap:balance;word-break:keep-all}
+.sub{color:var(--muted);font-size:.85rem;margin:2px 0 0}
+.hright{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.updated{font-size:.78rem;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;word-break:keep-all}
+.sister{font-size:.76rem;font-weight:600;color:var(--accent);text-decoration:none;border:1px solid var(--line);background:var(--surface);border-radius:3px;padding:3px 9px}
+.sister:hover{background:var(--accent-soft)}
+.sister .sl{color:var(--muted);font-weight:500}
+.sister:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+h2{font-size:.78rem;font-weight:600;letter-spacing:.08em;color:var(--muted);margin:0}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.sec-head .note{font-size:.78rem;color:var(--muted)}
+
+/* 요약 패널 — daily-ratings의 시장금리 3칸 패널과 같은 골격 */
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--surface);border:1px solid var(--line);border-radius:3px}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.kpi + .kpi{border-left:1px solid var(--line)}
+.kpi .name{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.kpi .name b{font-weight:600;font-size:.95rem}
+.kpi .name span{font-size:.72rem;color:var(--muted)}
+.kpi .val{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.kpi .num{font-family:var(--f-mono);font-size:1.9rem;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi .num small{font-family:var(--f-sans);font-size:.9rem;color:var(--muted);margin-left:2px;letter-spacing:0}
+.chg{font-family:var(--f-mono);font-size:.85rem;font-variant-numeric:tabular-nums}
+.chg .lb{font-family:var(--f-sans);font-size:.8rem;margin-right:3px}
+.chg .lb.r{margin:0 0 0 1px}
+.chg.up{color:var(--up)} .chg.down{color:var(--down)} .chg.flat{color:var(--flat)}
+.stack{display:flex;height:14px;border-radius:3px;overflow:hidden;background:var(--line);gap:1px}
+.stack span{display:block;height:100%;min-width:2px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.74rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+.mvsum{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px;padding-block:6px 4px}
+.mvsum .chg{font-family:var(--f-sans);font-size:1rem;font-weight:500}
+.mvsum .chg b{font-family:var(--f-mono);font-size:1.6rem;font-weight:500;letter-spacing:-.02em;margin:0 2px 0 4px;font-variant-numeric:tabular-nums}
+.movers{display:grid;grid-template-columns:auto 1fr auto;column-gap:10px;row-gap:3px;font-size:.8rem;align-items:baseline}
+.movers .lb{color:var(--muted);font-size:.72rem;white-space:nowrap}
+.movers b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.movers .mv{font-family:var(--f-mono);font-size:.78rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.spreads{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:10px;font-size:.8rem;color:var(--muted)}
+.spreads b{font-family:var(--f-mono);font-weight:500;color:var(--fg)}
+.placeholder{padding:22px;color:var(--muted);grid-column:1/-1}
+
+.status{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.76rem;color:var(--muted);align-items:center}
+.status .src{display:inline-flex;align-items:center;gap:5px}
+.status .dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.status .src.bad .dot{background:var(--bad)}
+
+.filters{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:center;margin-bottom:10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:3px;overflow:hidden;background:var(--surface)}
+.seg button{all:unset;cursor:pointer;padding:6px 9px;font-size:.85rem;color:var(--muted)}
+.seg button + button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.seg button:focus-visible,select:focus-visible,input:focus-visible,th button:focus-visible,.info summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label.f{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--muted)}
+select,input[type=search]{font:inherit;font-size:.85rem;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 10px}
+input[type=search]{min-width:0;width:128px}
+input[type=checkbox]{accent-color:var(--accent)}
+.tail{margin-left:auto;display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;justify-content:flex-end}
+.tail .dl{white-space:nowrap}
+.count{font-size:.82rem;color:var(--muted);white-space:nowrap}
+.dl{font:inherit;font-size:.82rem;font-weight:600;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.dl:hover{background:var(--accent-soft)}
+.dl:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dl:disabled{opacity:.6;cursor:progress}
+.dl svg{width:14px;height:14px}
+
+.table-box{background:var(--surface);border:1px solid var(--line);border-radius:3px;overflow:auto;max-height:78vh}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:.84rem}
+th,td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:middle}
+/* 남는 폭은 마지막 열(NICE)이 흡수 → 나머지 열은 내용 폭에 맞춤 */
+th:last-child,td:last-child{width:100%}
+#thead th:nth-last-child(2),#tbody td:nth-last-child(2){width:100%}
+#thead th.docc,#tbody td.docc{width:1%;text-align:center;padding-right:12px}
+th:first-child,td:first-child{padding-left:12px}
+th{font-size:.74rem;font-weight:600;color:var(--muted);background:var(--surface);position:sticky;top:0;z-index:1}
+th button{all:unset;cursor:pointer}
+th button::after{content:"";margin-left:4px}
+th[aria-sort="ascending"] button::after{content:"▲"}
+th[aria-sort="descending"] button::after{content:"▼"}
+th.grp{text-align:left;border-left:1px solid var(--line)}
+td.ag1,th.ag1{border-left:1px solid var(--line)}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:var(--accent-soft)}
+td.num,th.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+td.rank{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
+/* 순위·전년 대비·회사명 열 고정: 표를 옆으로 밀어도 왼쪽에 남는다 */
+.s1,.s2,.s3{position:sticky;background:var(--surface);z-index:1}
+th.s1,th.s2,th.s3{z-index:3}
+.s1{left:0;width:56px;min-width:56px;max-width:56px}
+.s2{left:56px;width:84px;min-width:84px;max-width:84px}
+.s3{left:140px;box-shadow:inset -1px 0 0 var(--line)}
+.table-box.scrolled .s3{box-shadow:inset -1px 0 0 var(--line),6px 0 8px -6px rgba(0,0,0,.18)}
+td.mv{font-family:var(--f-mono);font-size:.8rem;font-variant-numeric:tabular-nums}
+td.mv.up{color:var(--up)} td.mv.down{color:var(--down)} td.mv.flat{color:var(--flat)}
+td.co{font-weight:600}
+td.co small{font-weight:400;color:var(--muted);font-size:.74rem;margin-left:6px}
+.ol{font-size:.68rem;font-weight:600;padding:1px 5px;border-radius:3px;border:1px solid currentColor;line-height:1.3}
+.kd{font-family:var(--f-mono);font-size:.66rem;font-weight:500;color:var(--muted);border:1px solid var(--line);border-radius:3px;padding:0 4px;line-height:1.4;margin-left:4px}
+.ol.neg{color:var(--g-b)} .ol.pos{color:var(--g-a1)} .ol.watch{color:var(--g-a3)}
+td.amt .aw{display:flex;align-items:center;justify-content:flex-end;gap:10px}
+td.amt .bar{width:90px;height:6px;background:var(--line);border-radius:3px;overflow:hidden;flex:none}
+td.amt .bar i{display:block;height:100%;background:var(--spark);opacity:.75;min-width:1px}
+.grade{font-family:var(--f-mono);font-weight:600;font-size:.82rem}
+.g-a1{color:var(--g-a1)} .g-a2{color:var(--g-a2)} .g-a3{color:var(--g-a3)} .g-b{color:var(--g-b)}
+.best{font-family:var(--f-mono);font-size:.78rem;font-weight:600;padding:2px 7px;border-radius:3px;border:1px solid var(--line)}
+a.rt{display:inline-flex;align-items:baseline;gap:6px;text-decoration:none;color:inherit;border-radius:3px;padding:1px 4px;margin-left:-4px}
+a.rt:hover{background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+a.rt:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+a.rt i{font-style:normal;font-family:var(--f-mono);font-size:.74rem;color:var(--muted);font-variant-numeric:tabular-nums}
+a.rt i.old{color:var(--g-a3)}
+a.rt.none{color:var(--muted)}
+a.rt.none .grade{font-weight:400;color:var(--muted)}
+.dim{color:var(--muted)}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.key{display:inline-flex;gap:12px;flex-wrap:wrap;font-size:.76rem;color:var(--muted)}
+.key i{font-style:normal;font-family:var(--f-mono)}
+.key .o{color:var(--g-a3)}
+
+.info{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:12px 16px;font-size:.84rem}
+.info summary{cursor:pointer;font-weight:600}
+.info p{margin:8px 0 0;color:var(--muted);max-width:78ch}
+footer{font-size:.76rem;color:var(--muted);line-height:1.65}
+footer p{margin:0 0 6px}
+footer .contact{margin-top:10px}
+footer a{color:var(--accent);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+@media (max-width:760px){
+  .kpis{grid-template-columns:1fr}
+  .kpi + .kpi{border-left:0;border-top:1px solid var(--line)}
+  .tail{margin-left:0;width:100%;justify-content:flex-end}
+  .tail .count{margin-right:auto}
+  input[type=search]{width:100%}
+  label.f.search{flex:1 1 100%}
+  .hright{align-items:flex-start}
+  .updated{text-align:left}
+  td.amt .bar{width:48px}
+  td.co{white-space:normal;word-break:keep-all;min-width:7.5em;max-width:9em}
+  td.co small{display:block;margin-left:0}
+  .s1{width:44px;min-width:44px;max-width:44px;padding-inline:6px 8px}
+  .s2{left:44px;width:62px;min-width:62px;max-width:62px;padding-inline:6px}
+  .s3{left:106px}
+  th.s1,td.s1{padding-left:6px}
+}
+footer .ct{white-space:nowrap}
+@media (max-width:760px){footer .ct{display:block;margin-top:6px}footer .contact .sister{margin:4px 0 0 !important}}
+.sisters{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+@media (max-width:760px){.sisters{justify-content:flex-start}}
+/* ---------- 최근 변동 피드 ---------- */
+:root{--c1:#2747a8;--c2:#00897b;--c3:#c4621a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--c1:#6f8ae8;--c2:#21a397;--c3:#d07232}}
+:root[data-theme="dark"]{--c1:#6f8ae8;--c2:#21a397;--c3:#d07232}
+.feed{background:var(--surface);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.fbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+.fbar .seg button{padding:5px 9px;font-size:.8rem}
+.fbar .ftail{margin-left:auto;font-size:.78rem;color:var(--muted)}
+.fbar .ftail b{font-family:var(--f-mono);color:var(--fg);font-weight:500}
+.fday{font-size:.72rem;font-weight:600;color:var(--muted);padding:9px 14px 3px;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.fday:first-child{padding-top:10px}
+.fd{display:grid;grid-template-columns:76px minmax(0,10em) minmax(0,1fr) auto;column-gap:12px;align-items:baseline;padding:6px 14px;font-size:.84rem}
+.fd + .fd{border-top:1px dashed var(--line)}
+.fd:hover{background:var(--accent-soft)}
+.tag{font-size:.68rem;font-weight:600;padding:1px 6px;border-radius:3px;white-space:nowrap;justify-self:start;border:1px solid transparent;line-height:1.5}
+.tag.t-rating{background:var(--accent-soft);color:var(--accent)}
+.tag.t-disc{background:var(--pf-bg);color:var(--pf)}
+.tag.t-news{color:var(--muted);border-color:var(--line)}
+.tag.t-cost{color:var(--c2);border-color:currentColor}
+.tag.t-sys{color:var(--muted);border-color:var(--line)}
+.cob{all:unset;cursor:pointer;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.cob:hover{color:var(--accent);text-decoration:underline}
+.cob:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+.fd .tt{color:inherit;text-decoration:none;min-width:0}
+.fd a.tt:hover{color:var(--accent);text-decoration:underline}
+.fd .tt .sm{color:var(--muted);font-size:.76rem;margin-left:6px}
+.fd .mt{font-size:.74rem;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.dir{font-family:var(--f-mono);font-size:.78rem;font-weight:600}
+.dir.up{color:var(--up)} .dir.down{color:var(--down)}
+.fmore{all:unset;display:block;width:100%;box-sizing:border-box;text-align:center;padding:9px;font-size:.8rem;color:var(--accent);cursor:pointer;border-top:1px solid var(--line);font-weight:600}
+.fmore:hover{background:var(--accent-soft)}
+.fmore:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.fempty{padding:22px 14px;color:var(--muted);font-size:.84rem;text-align:center}
+.star{all:unset;cursor:pointer;color:var(--muted);font-size:1rem;line-height:1;padding:2px 4px;border-radius:3px}
+.star[aria-pressed="true"]{color:var(--g-a3)}
+.star:focus-visible{outline:2px solid var(--accent)}
+label.f.watch[aria-disabled="true"]{opacity:.5}
+td.co .cob{overflow:visible;max-width:none;text-overflow:clip;text-decoration:underline;text-decoration-style:dotted;text-decoration-color:var(--muted);text-underline-offset:3px}
+td.co .cob::after{content:"›";margin-left:4px;color:var(--accent);font-weight:700}
+td.co .cob:hover{text-decoration-style:solid;text-decoration-color:var(--accent)}
+.co-hint{display:flex;align-items:center;gap:8px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--line);border-radius:3px;padding:7px 12px;font-size:.82rem;font-weight:600;margin-bottom:10px}
+.co-hint svg{width:16px;height:16px;flex:none}
+.co-hint span{font-weight:400;color:var(--muted)}
+th.s3 .sub2{font-weight:400;color:var(--accent);margin-left:4px;font-size:.7rem}
+@media (max-width:760px){td.co .cob{white-space:normal}.co-hint{flex-wrap:wrap;row-gap:2px}.co-hint span{flex-basis:100%;margin-left:24px}th.s3 .sub2{display:block;margin-left:0}}
+td.co .wst{color:var(--g-a3);font-size:.8rem;margin-right:3px}
+
+/* ---------- 회사 상세 패널 ---------- */
+.ov{position:fixed;inset:0;background:rgba(10,14,22,.38);z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(600px,100vw);background:var(--bg);border-left:1px solid var(--line);z-index:21;overflow:auto;box-shadow:-10px 0 28px rgba(0,0,0,.16);display:flex;flex-direction:column}
+.drawer[hidden],.ov[hidden]{display:none}
+.dr-h{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--line);padding:14px 18px 12px;display:flex;gap:10px;align-items:flex-start;z-index:2}
+.dr-h .ttl{flex:1;min-width:0}
+.dr-h h2{all:unset;display:block;font-size:1.15rem;font-weight:700;letter-spacing:-.01em;color:var(--fg)}
+.dr-h .meta{font-size:.78rem;color:var(--muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:2px 10px}
+.dr-h .meta b{font-family:var(--f-mono);font-weight:500;color:var(--fg)}
+.xbtn{all:unset;cursor:pointer;font-size:1.3rem;line-height:1;color:var(--muted);padding:4px 6px;border-radius:3px}
+.xbtn:hover{background:var(--accent-soft);color:var(--fg)}
+.xbtn:focus-visible{outline:2px solid var(--accent)}
+.dr-b{padding:14px 18px 32px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:12px 14px}
+.card h3{font-size:.74rem;font-weight:600;letter-spacing:.08em;color:var(--muted);margin:0 0 8px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.card h3 a,.card h3 span{letter-spacing:0;font-weight:500}
+.card h3 a{color:var(--accent);text-decoration:none} .card h3 a:hover{text-decoration:underline}
+.card h3 .h3r{display:inline-flex;gap:12px;align-items:baseline}
+.xlb{font:inherit;font-size:.74rem;font-weight:600;letter-spacing:0;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:3px 8px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;align-self:center}
+.xlb svg{width:12px;height:12px} .xlb:hover{background:var(--accent-soft)} .xlb:focus-visible{outline:2px solid var(--accent);outline-offset:2px} .xlb:disabled{opacity:.6;cursor:wait}
+.acts{display:flex;flex-wrap:wrap;gap:6px}
+.acts .dl{font-size:.78rem;padding:5px 10px}
+.parts{display:grid;grid-template-columns:auto 1fr auto;gap:5px 10px;align-items:center;font-size:.8rem}
+.parts .pb{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.parts .pb i{display:block;height:100%;background:var(--spark);opacity:.75}
+.parts .pv{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right}
+.rnow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.rnow > div{border:1px solid var(--line);border-radius:3px;padding:8px 10px;min-width:0}
+.rnow .ag{font-size:.72rem;color:var(--muted)}
+.rnow .gv{display:flex;align-items:baseline;gap:4px;flex-wrap:wrap;margin-top:2px}
+.rnow .gv .grade{font-size:1.05rem}
+.rnow .dt{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+table.mini{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:10px}
+table.mini th,table.mini td{padding:5px 6px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:left;position:static;width:auto}
+table.mini th{font-size:.7rem;color:var(--muted);font-weight:600;background:none}
+table.mini td.n,table.mini th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+table.mini tr:last-child td{border-bottom:0}
+.fin-box{overflow-x:auto}
+.fin-box table.mini tr.gs td{border-top:1.5px solid var(--muted)}
+.card h3 .finb{align-self:center}
+.card h3 .finb button{padding:2px 9px;font-size:.74rem;letter-spacing:0;font-weight:500}
+/* 상세 화면: 어떤 표도 화면 밖으로 밀어내지 않게 — 넓은 표는 카드 안에서만 가로 스크롤 */
+.drawer{overflow-x:hidden}
+.dr-b,.dr-b .card{min-width:0;max-width:100%}
+.dr-b .card{overflow-wrap:anywhere}
+.tb-scroll{overflow-x:auto;max-width:100%}
+table.mini.hist td{white-space:normal;word-break:keep-all;vertical-align:top}
+table.mini.hist td:first-child,table.mini.hist td:last-child{white-space:nowrap}
+table.mini.hist td.grade{min-width:44px}
+table.mini.hist .gsub{display:block;font-size:.68rem;font-weight:400;color:var(--muted);line-height:1.3;margin-top:1px}
+@media (max-width:480px){table.mini.hist{font-size:.74rem} table.mini.hist th,table.mini.hist td{padding:5px 4px}}
+.bl-sum{width:100%;border-collapse:collapse;font-size:.8rem;margin:2px 0 4px}
+.bl-sum th,.bl-sum td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:baseline;white-space:normal;line-height:1.5;position:static}
+.bl-sum th{width:30%;font-weight:600;color:var(--muted);background:var(--accent-soft);font-size:.76rem}
+.bl-sum td b{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:600}
+.bl-sub{font-size:.76rem;font-weight:600;color:var(--muted);margin:14px 0 4px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.bl-sub input{font:inherit;font-weight:400;font-size:.76rem;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:3px 8px;width:150px}
+.bl-box{max-height:440px;overflow:auto;border:1px solid var(--line);border-radius:3px}
+.bl-box table.mini{margin-top:0}
+.bl-box table.mini th{position:sticky;top:0;background:var(--surface);z-index:1;box-shadow:inset 0 -1px 0 var(--line);cursor:default}
+.bl-box table.mini th[data-k]{cursor:pointer} .bl-box table.mini th[data-k]:hover{color:var(--accent)}
+.bl-box table.mini th[aria-sort="descending"]::after{content:" ▾"} .bl-box table.mini th[aria-sort="ascending"]::after{content:" ▴"}
+.bl-box table.mini td.w{white-space:normal;min-width:170px;max-width:290px;line-height:1.35}
+.bl-box table.mini td.w small{display:block;color:var(--muted);font-size:.7rem;margin-top:1px}
+.bl-box table.mini td.w .gt{display:inline-block;font-size:.66rem;color:var(--muted);border:1px solid var(--line);border-radius:3px;padding:0 4px;margin-right:4px;vertical-align:1px}
+.bl-box table.mini tfoot td{position:sticky;bottom:0;background:var(--surface);box-shadow:inset 0 1px 0 var(--line);font-weight:600}
+.bl-box table.mini tr.hide{display:none}
+.bl-cap{font-size:.74rem;color:var(--muted);margin:12px 0 4px;line-height:1.4}
+table.kv2{width:100%;border-collapse:collapse;font-size:.82rem}
+table.kv2 th,table.kv2 td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;position:static;width:auto;white-space:normal;word-break:keep-all}
+table.kv2 th{width:72px;font-size:.74rem;font-weight:600;color:var(--muted);background:var(--accent-soft);white-space:nowrap}
+table.kv2 tr:last-child th,table.kv2 tr:last-child td{border-bottom:0}
+table.mini td.sum{font-weight:600}
+@media (max-width:760px){table.kv2,table.kv2 tbody{display:block}table.kv2 tr{display:grid;grid-template-columns:76px 1fr}table.kv2 th{width:auto}table.kv2 td[colspan]{grid-column:auto}}
+.fin-box table.mini th:first-child,.fin-box table.mini td:first-child{position:sticky;left:0;background:var(--surface);z-index:1;box-shadow:inset -1px 0 0 var(--line)}
+.fin-box table.mini th.n{white-space:normal;line-height:1.25}
+@media (max-width:760px){.fin-box table.mini{font-size:.74rem}.fin-box table.mini th,.fin-box table.mini td{padding:5px 5px}}
+.lst{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.lst li{display:grid;grid-template-columns:52px auto minmax(0,1fr);gap:8px;align-items:baseline;padding:5px 0;font-size:.8rem;border-top:1px dashed var(--line)}
+.lst li:first-child{border-top:0}
+.lst .d{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.lst a{color:inherit;text-decoration:none} .lst a:hover{color:var(--accent);text-decoration:underline}
+.lst .src{color:var(--muted);font-size:.72rem;margin-left:4px}
+.hint{font-size:.76rem;color:var(--muted);margin:0}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--fg);color:var(--bg);font-size:.82rem;padding:8px 14px;border-radius:3px;z-index:30}
+
+/* ---------- 공사비 지표 ---------- */
+.cfold{background:var(--surface);border:1px solid var(--line);border-radius:3px}
+.cfold > summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px;padding:12px 16px}
+.cfold > summary::-webkit-details-marker{display:none}
+.cfold > summary:hover{background:var(--accent-soft);border-radius:3px}
+.cfold > summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+.cf-t{font-weight:600;font-size:.92rem}
+.cf-v{font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.cf-v b{font-family:var(--f-mono);font-weight:500;color:var(--fg)}
+.cf-more{margin-left:auto;font-size:.8rem;font-weight:600;color:var(--accent);white-space:nowrap}
+.cf-more i{font-style:normal;display:inline-block;transition:transform .15s}
+.cfold[open] .cf-more i{transform:rotate(180deg)}
+.cfold .c,.cfold[open] .o{display:none}.cfold[open] .c{display:inline}
+.cfold[open] > summary{border-bottom:1px solid var(--line);border-radius:3px 10px 0 0}
+.cfold .cost{border:0;border-radius:0 0 10px 10px}
+.cost{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:3px}
+.cost .ck{padding:16px 18px;display:flex;flex-direction:column;gap:12px;border-right:1px solid var(--line)}
+.cost .ck .num{font-family:var(--f-mono);font-size:1.9rem;font-weight:500;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.cost .ck .num small{font-family:var(--f-sans);font-size:.8rem;color:var(--muted);margin-left:4px;letter-spacing:0}
+.cost .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.8rem;align-items:baseline}
+.cost .kv span{color:var(--muted)}
+.cost .kv b{font-family:var(--f-mono);font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+.cost .cc{padding:12px 16px 10px;min-width:0;display:flex;flex-direction:column;gap:8px}
+.cbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
+.clegend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.76rem;color:var(--muted)}
+.clegend span{display:inline-flex;align-items:center;gap:5px}
+.clegend i{width:14px;height:2px;border-radius:1px;display:inline-block}
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.chart .ax{font-size:11px;fill:var(--muted);font-family:var(--f-mono)}
+.chart .ln{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.chart .ref{stroke:var(--muted);stroke-dasharray:3 3;stroke-width:1}
+.chart .xh{stroke:var(--muted);stroke-width:1}
+.chart .lab{font-size:11px;font-family:var(--f-sans);fill:var(--fg)}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:3px;box-shadow:0 4px 14px rgba(0,0,0,.12);padding:7px 10px;font-size:.76rem;white-space:nowrap;z-index:3}
+.tip b{font-family:var(--f-mono);font-weight:500}
+.tip .r{display:flex;align-items:center;gap:6px}
+.tip i{width:10px;height:2px;display:inline-block}
+.cnote{font-size:.74rem;color:var(--muted);margin:0}
+.cnote a{color:var(--accent);text-decoration:none}
+details.tbl summary{cursor:pointer;font-size:.76rem;color:var(--muted)}
+@media (max-width:760px){
+  .fd{grid-template-columns:auto minmax(0,1fr) auto;row-gap:2px;padding:8px 12px}
+  .fd .tt{grid-column:1/-1}
+  .fd .mt{grid-row:1;grid-column:3}
+  .fd .tag{grid-column:1}
+  .fbar .ftail{margin-left:0;width:100%}
+  .cost{grid-template-columns:1fr}
+  .cost .ck{border-right:0;border-bottom:1px solid var(--line)}
+  .rnow{gap:6px}
+  .rnow > div{padding:7px 8px}
+  .rnow .ag{font-size:.68rem}
+  .rnow .dt{font-size:.66rem}
+  .dr-b{padding:12px 12px 32px}
+}
+</style>
+<style id="argus-skin">
+:root,:root[data-theme]{--bg:#eef1f5;--surface:#ffffff;--line:#dbe0e7;--fg:#1d2733;--muted:#5b6675;--accent:#2463a8;--accent-soft:#e8f0fa;
+ --f-mono:'IBM Plex Sans KR',system-ui,sans-serif;color-scheme:light}
+html,body{background:var(--bg)}
+body{font-family:'IBM Plex Sans KR',system-ui,sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.sisters{display:none!important}
+</style>
+<meta name="ag-base" content="">
+<style>
+body.ag-locked>:not(#ag-gate):not(script){display:none!important}
+#ag-gate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#f3f5f8;font-family:'IBM Plex Sans KR','Pretendard','Apple SD Gothic Neo',sans-serif;color:#1d2733}
+#ag-gate .box{width:380px;background:#fff;border:1px solid #dfe3e9;border-top:3px solid #14243b;padding:34px 34px 26px;box-shadow:0 18px 50px rgba(20,36,59,.08)}
+#ag-gate .br{display:flex;align-items:center;gap:10px;font-weight:600;font-size:18px;letter-spacing:.2px}
+#ag-gate .br small{font-weight:400;color:#5b6675;font-size:13px}
+#ag-gate h1{font-size:19px;font-weight:600;margin:26px 0 6px;color:#1d2733;letter-spacing:0}
+#ag-gate p{font-size:13px;line-height:1.65;color:#5b6675;margin:0}
+#ag-gate .gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:44px;margin-top:22px;border:1px solid #c9d0d9;background:#fff;font:500 14px inherit;font-family:inherit;color:#1d2733;cursor:pointer}
+#ag-gate .gbtn:hover{border-color:#14243b;background:#f8fafc}
+#ag-gate form{margin-top:18px}#ag-gate label{display:block;font-size:12px;color:#5b6675;margin-top:10px}
+#ag-gate input{display:block;width:100%;box-sizing:border-box;height:40px;margin-top:4px;border:1px solid #c9d0d9;padding:0 11px;font:inherit;font-size:14px;color:#1d2733;background:#fff;color-scheme:light;-webkit-appearance:none;appearance:none;border-radius:0;outline:0}
+#ag-gate input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px #fff inset;-webkit-text-fill-color:#1d2733}
+#ag-gate input:focus{border-color:#14243b}
+#ag-gate .pbtn{width:100%;height:42px;margin-top:16px;background:#14243b;color:#fff;border:0;font:inherit;font-size:14px;font-weight:500;cursor:pointer}#ag-gate .pbtn:disabled{opacity:.6}
+#ag-gate .err{color:#b3364a;font-size:12.5px;margin-top:10px;min-height:0}
+#ag-gate .sw{font-size:12.5px;color:#5b6675;margin-top:14px}#ag-gate .sw button{background:none;border:0;color:#2463a8;font:inherit;cursor:pointer;padding:0}
+#ag-gate .lnk{background:none;border:0;color:#2463a8;font:inherit;font-size:12.5px;cursor:pointer;padding:0;margin-top:16px}
+#ag-gate .ft{margin-top:24px;padding-top:14px;border-top:1px solid #eef1f4;font-size:11.5px;color:#8b95a3;line-height:1.6}
+#ag-gate .who{display:flex;align-items:center;gap:10px;margin-top:18px;padding:10px 12px;background:#f6f8fa;font-size:13px}
+#ag-gate .who img,#ag-gate .who i{width:28px;height:28px;border-radius:50%;background:#dfe7f2;display:grid;place-items:center;font-style:normal;font-weight:600;color:#14243b}
+#ag-gate .badge{display:inline-block;font-size:11px;padding:2px 8px;margin-top:20px;font-weight:600}
+#ag-gate .badge.p{background:#fbf3e3;color:#8a5a00}#ag-gate .badge.r{background:#fcedef;color:#b3364a}#ag-gate .badge.e{background:#eef1f5;color:#5b6675}
+#ag-gate .spin{width:22px;height:22px;border:2px solid #dfe3e9;border-top-color:#14243b;border-radius:50%;animation:agspin .8s linear infinite;margin:20px auto 0}
+@keyframes agspin{to{transform:rotate(360deg)}}
+.ag-user{display:flex;align-items:center;gap:8px;margin-left:14px;font-size:12px;white-space:nowrap}
+.ag-user img,.ag-user i{width:24px;height:24px;border-radius:50%;background:#dfe7f2;color:#14243b;display:grid;place-items:center;font-style:normal;font-weight:600;font-size:11px}
+.ag-user a,.ag-user button{background:none;border:0;color:inherit;opacity:.8;font:inherit;cursor:pointer;text-decoration:none;padding:0}
+.ag-user a:hover,.ag-user button:hover{opacity:1;text-decoration:underline}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body class="ag-locked">
+<div id="ag-gate" role="dialog" aria-modal="true" aria-label="로그인"></div>
+<script>
+(function(){
+const U="https://rxrpwwjibvjetlgdpjod.supabase.co",K="sb_publishable_Q6gikKDsSKSJjCf5Qe5WWA_iR2FVX5p",G=document.getElementById('ag-gate');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const BRAND=`<div class="br"><svg viewBox="0 0 20 20" width="30" height="30" aria-hidden="true"><g fill="none" stroke="#8fa3bd" stroke-width="1.2"><circle cx="4" cy="4" r="2"/><circle cx="10" cy="4" r="2"/><circle cx="16" cy="4" r="2"/><circle cx="4" cy="10" r="2"/><circle cx="16" cy="10" r="2"/><circle cx="4" cy="16" r="2"/><circle cx="10" cy="16" r="2"/><circle cx="16" cy="16" r="2"/></g><circle cx="10" cy="10" r="2.6" fill="#6ea6dd"/></svg><span>Argus <small>Research</small></span></div>`;
+const FT='<div class="ft">승인된 회원만 이용할 수 있는 비공개 리서치 사이트입니다. 서비스 운영과 보안을 위해 접속·열람·다운로드 기록이 저장되며 관리자가 확인할 수 있습니다.</div>';
+const av=p=>p&&p.avatar?`<img src="${esc(p.avatar)}" alt="" referrerpolicy="no-referrer">`:`<i>${esc(((p&&(p.name||p.email))||'?').slice(0,1))}</i>`;
+let sb=null;
+function view(state,p,msg){
+  if(!G)return;
+  const who=p?`<div class="who">${av(p)}<div><div>${esc(p.name||'')}</div><div style="color:#8b95a3;font-size:12px">${esc(p.email||'')}</div></div></div>`:'';
+  const out='<button class="lnk" id="ag-out">다른 계정으로 로그인</button>';
+  G.innerHTML=`<div class="box">${BRAND}${
+    state==='loading'?'<div class="spin" aria-label="확인 중"></div>':
+    state==='login'?`<h1>로그인</h1><form id="ag-f"><label>이메일<input name="email" type="email" autocomplete="username" required></label><label>비밀번호<input name="pw" type="password" autocomplete="current-password" required minlength="8"></label><div class="err" id="ag-err"></div><button class="pbtn">로그인</button></form><div class="sw">처음이신가요? <button id="ag-to-up">회원가입</button> · <button id="ag-forgot">비밀번호를 잊으셨나요?</button></div>`:
+    state==='signup'?`<h1>회원가입</h1><p>가입 후 관리자가 승인하면 이용할 수 있습니다.</p><form id="ag-f"><label>이름<input name="name" required maxlength="40" autocomplete="name"></label><label>소속 (회사·팀)<input name="org" maxlength="60" autocomplete="organization"></label><label>이메일<input name="email" type="email" autocomplete="username" required></label><label>비밀번호 (8자 이상)<input name="pw" type="password" autocomplete="new-password" required minlength="8"></label><div class="err" id="ag-err"></div><button class="pbtn">가입 신청</button></form><div class="sw">이미 계정이 있나요? <button id="ag-to-in">로그인</button></div>`:
+    state==='forgot'?`<h1>비밀번호 재설정</h1><p>비밀번호를 잊으셨다면 관리자에게 연락해 주세요. 관리자가 임시 비밀번호를 정해 드리면, 로그인한 뒤 화면 오른쪽 위 「비밀번호 변경」에서 새 비밀번호로 바꿀 수 있습니다.</p><div class="sw"><button id="ag-to-in">로그인으로 돌아가기</button></div>`:
+    state==='pending'?`<span class="badge p">승인 대기</span><h1>가입 신청이 접수되었습니다</h1><p>관리자가 승인하면 바로 이용할 수 있습니다. 승인 후 이 페이지를 새로고침하세요.</p>${who}${out}`:
+    state==='rejected'?`<span class="badge r">이용 불가</span><h1>이용 승인이 되지 않은 계정입니다</h1><p>다른 계정으로 로그인하거나 관리자에게 문의해 주세요.</p>${who}${out}`:
+    `<span class="badge e">연결 오류</span><h1>잠시 후 다시 시도해 주세요</h1><p>${esc(msg||'데이터를 불러오지 못했습니다.')}</p><button class="lnk" id="ag-re">다시 시도</button>`
+  }${FT}</div>`;
+  const on=(id,f)=>{const e=document.getElementById(id);if(e)e.onclick=f};
+  on('ag-to-up',()=>view('signup'));on('ag-to-in',()=>view('login'));on('ag-forgot',()=>view('forgot'));
+  const f=document.getElementById('ag-f');
+  if(f)f.onsubmit=async ev=>{ev.preventDefault();const d=Object.fromEntries(new FormData(f));const btn=f.querySelector('button');const er=document.getElementById('ag-err');er.textContent='';btn.disabled=true;
+    const KO={'Invalid login credentials':'이메일 또는 비밀번호가 맞지 않습니다.','User already registered':'이미 가입된 이메일입니다. 로그인해 주세요.','Email not confirmed':'이메일 확인이 필요한 설정으로 되어 있습니다. 관리자에게 알려 주세요.','Email address not authorized':'가입 메일을 보낼 수 없는 설정입니다. 관리자에게 알려 주세요.'};
+    const msg=e=>KO[e.message]||(/rate limit/i.test(e.message)?'잠시 후 다시 시도해 주세요.':/Password should be/i.test(e.message)?'비밀번호는 8자 이상으로 정해 주세요.':e.message);
+    try{
+      if(state==='signup'){
+        const {data,error}=await sb.auth.signUp({email:d.email.trim(),password:d.pw,options:{data:{full_name:d.name.trim(),org:(d.org||'').trim()}}});
+        if(error)throw error;
+        if(!data.session){view('error',null,'가입은 접수되었지만 로그인하지 못했습니다. 관리자에게 \'가입 확인 메일 끄기\' 설정을 확인해 달라고 알려 주세요.');return}
+      }else{
+        const {error}=await sb.auth.signInWithPassword({email:d.email.trim(),password:d.pw});if(error)throw error;
+      }
+      boot();
+    }catch(e){er.textContent=msg(e);btn.disabled=false}};
+  const first=G.querySelector('input');if(first)first.focus();
+  const o=document.getElementById('ag-out');if(o)o.onclick=async()=>{await sb.auth.signOut();view('login')};
+  const r=document.getElementById('ag-re');if(r)r.onclick=()=>location.reload();
+}
+function chip(p){
+  const host=document.querySelector('[data-ag-user]')||document.querySelector('.topnav .navr')||document.querySelector('.topnav .wrap')||document.querySelector('header');
+  if(!host||document.querySelector('.ag-user'))return;
+  const base=document.querySelector('meta[name=ag-base]');const b=base?base.content:'';
+  host.insertAdjacentHTML('beforeend',`<div class="ag-user">${av(p)}<span>${esc(p.name||p.email)}</span>${p.role==='admin'?`<a href="${b}admin.html">회원 관리</a>`:''}<button id="ag-pw">비밀번호 변경</button><button id="ag-logout">로그아웃</button></div>`);
+  document.getElementById('ag-pw').onclick=async()=>{const a=prompt('새 비밀번호 (8자 이상)');if(!a)return;if(a.length<8){alert('8자 이상으로 정해 주세요.');return}if(prompt('새 비밀번호를 한 번 더 입력하세요')!==a){alert('두 번 입력한 비밀번호가 다릅니다.');return}
+    const {error}=await sb.auth.updateUser({password:a});alert(error?'변경하지 못했습니다: '+error.message:'비밀번호를 바꿨습니다.')};
+  document.getElementById('ag-logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
+}
+let ready=null;const waiters=[];
+window.ArgusAuth={ready(cb){ready?cb(ready):waiters.push(cb)},client:()=>sb,
+  async file(name){const {data,error}=await sb.storage.from('private').createSignedUrl(name,120,{download:name});if(error)throw error;window.ArgusAuth.log&&window.ArgusAuth.log('download',name);return data.signedUrl}};
+async function boot(){
+  view('loading');ready=null;
+  if(!window.supabase){view('error',null,'로그인 모듈을 불러오지 못했습니다. 네트워크를 확인해 주세요.');return}
+  sb=sb||window.supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'pkce'}});
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){view('login');return}
+  const {data:p,error}=await sb.rpc('touch_me');
+  if(error||!p){view('error',null,error?error.message:'회원 정보를 찾지 못했습니다.');return}
+  if(p.status!=='approved'){view(p.status==='rejected'?'rejected':'pending',p);return}
+  if(/[?&](code|error)=/.test(location.search))history.replaceState(null,'',location.pathname);
+  ready={sb,profile:p};
+  const log=(a,t,m)=>sb.rpc('log_event',{p_action:a,p_target:t||null,p_meta:m||null}).then(()=>{},()=>{});
+  window.ArgusAuth.log=log;
+  try{if(!sessionStorage.getItem('ag-login')){sessionStorage.setItem('ag-login','1');log('login',location.pathname)}}catch(_){}
+  log('view',location.pathname+location.hash);
+  document.addEventListener('click',e=>{const a=e.target.closest('a[href^="http"]');if(a&&a.host!==location.host)log('open',a.href,{text:(a.textContent||'').trim().slice(0,120)})},true);
+  try{for(const w of waiters)await w(ready)}catch(e){view('error',null,e.message);return}
+  G&&G.remove();document.body.classList.remove('ag-locked');chip(p);
+  sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT')location.reload()});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>시공사 시공능력평가 · 신용등급 현황 대시보드</h1>
+      <p class="sub">대한건설협회 시공능력평가(도급순위) 상위 100개사와 신용평가 3사 회사채 신용등급 · 등급 변동 · DART 공시 · 기사 · 공사비지수 · 매일 오전(08:00) 자동 갱신</p>
+    </div>
+    <div class="hright">
+      
+      <div class="updated" id="updated">데이터 불러오는 중…</div>
+    </div>
+  </header>
+
+  <section aria-labelledby="h-sum">
+    <div class="sec-head">
+      <h2 id="h-sum">요약 · 상위 100개사</h2>
+      <span class="note" id="sum-note">시공능력평가액 기준 · 등급은 3사 중 최고등급(회사채 → ICR → CP)</span>
+    </div>
+    <div class="kpis" id="kpis"><div class="placeholder">요약 불러오는 중…</div></div>
+    <div class="spreads" id="spreads"></div>
+  </section>
+
+  <section aria-labelledby="h-feed">
+    <div class="sec-head">
+      <h2 id="h-feed">최근 변동 · 상위 100개사</h2>
+      <span class="note">신용등급 평가 · DART 주요 공시 · 관련 기사 · 공사비지수 발표를 날짜순으로 모았습니다. 회사명을 누르면 상세가 열립니다</span>
+    </div>
+    <div class="feed">
+      <div class="fbar">
+        <div class="seg" role="group" aria-label="기간" id="fseg-win">
+          <button type="button" data-v="1" aria-pressed="false">오늘</button>
+          <button type="button" data-v="7" aria-pressed="true">7일</button>
+          <button type="button" data-v="30" aria-pressed="false">30일</button>
+          <button type="button" data-v="90" aria-pressed="false">90일</button>
+        </div>
+        <div class="seg" role="group" aria-label="종류" id="fseg-type">
+          <button type="button" data-v="all" aria-pressed="true">전체</button>
+          <button type="button" data-v="rating" aria-pressed="false">신용등급</button>
+          <button type="button" data-v="disc" aria-pressed="false">공시</button>
+          <button type="button" data-v="news" aria-pressed="false">기사</button>
+        </div>
+        <label class="f watch" for="f-watch" title="회사 상세에서 ☆를 눌러 관심 회사를 정하면 그 회사만 볼 수 있습니다(이 브라우저에만 저장)"><input type="checkbox" id="f-watch"> 관심 회사만</label>
+        <span class="ftail" id="feed-tail"></span>
+      </div>
+      <div id="feed-list"><div class="fempty">불러오는 중…</div></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-tbl">
+    <div class="sec-head">
+      <h2 id="h-tbl">시공능력평가 순위 · 회사채 등급</h2>
+      <div class="status" id="status"></div>
+    </div>
+    <div class="sec-head">
+      <span class="key"><span>등급 옆 날짜는 최근 평가일</span><span class="o"><i>'24.05.23</i> 평가 후 1년 경과</span><span><span class="kd" style="margin:0">ICR</span> <span class="kd" style="margin:0">CP</span> 회사채 등급이 없을 때 대신 표시</span><span><span class="ol pos">긍정적</span> <span class="ol neg">부정적</span> Outlook(안정적은 생략)</span><span>등급을 누르면 평가사 기업 페이지가 열립니다</span></span>
+    </div>
+    <div class="co-hint" role="note"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 7.2v4M8 4.9v.1"/></svg>회사명을 누르면 시공사별 상세 화면이 열립니다<span>회사 개요 · 주주 현황 · 주요 재무지표(5개년) · 수주 현황 · 보증·약정 · 신용등급 이력 · 최근 공시 · 기사 · 심의서 Appendix(워드)</span></div>
+    <div class="filters">
+      <div class="seg" role="group" aria-label="순위 구간" id="seg-band">
+        <button type="button" data-v="all" aria-pressed="true">전체</button>
+        <button type="button" data-v="1-10" aria-pressed="false">1–10</button>
+        <button type="button" data-v="11-30" aria-pressed="false">11–30</button>
+        <button type="button" data-v="31-50" aria-pressed="false">31–50</button>
+        <button type="button" data-v="51-100" aria-pressed="false">51–100</button>
+      </div>
+      <div class="seg" role="group" aria-label="순위 변동" id="seg-mv">
+        <button type="button" data-v="all" aria-pressed="true">전체</button>
+        <button type="button" data-v="up" aria-pressed="false">상승</button>
+        <button type="button" data-v="down" aria-pressed="false">하락</button>
+        <button type="button" data-v="flat" aria-pressed="false">유지</button>
+      </div>
+      <div class="seg" role="group" aria-label="등급 기준" id="seg-scope">
+        <button type="button" data-v="all" aria-pressed="true" title="회사채 등급이 없으면 ICR, 그다음 CP 등급을 표시">회사채+ICR·CP</button>
+        <button type="button" data-v="bond" aria-pressed="false">회사채만</button>
+      </div>
+      <label class="f" for="f-grade">최고등급
+        <select id="f-grade">
+          <option value="all">전체</option><option value="rated">등급 보유</option>
+          <option value="AA">AA급</option><option value="A">A급</option><option value="BBB">BBB급</option><option value="BB">BB급 이하</option><option value="CP">CP만</option>
+          <option value="none">미보유</option>
+        </select>
+      </label>
+      <label class="f" for="f-agency">평가사
+        <select id="f-agency"><option value="all">전체</option><option value="KIS">KIS</option><option value="KR">KR</option><option value="NICE">NICE</option></select>
+      </label>
+      <label class="f" for="f-fresh"><input type="checkbox" id="f-fresh"> 1년 내 평가만</label>
+      <label class="f" for="f-wonly" title="회사 상세에서 ☆를 눌러 정한 관심 회사만 봅니다(이 브라우저에만 저장)"><input type="checkbox" id="f-wonly"> 관심 회사만</label>
+      <label class="f search" for="f-q"><input type="search" id="f-q" placeholder="회사명 검색"></label>
+      <div class="tail"><span class="count" id="count"></span>
+      <button type="button" class="dl" id="dl" title="지금 표에 보이는 필터·정렬 그대로 엑셀 파일로 받습니다"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11"/></svg>엑셀 다운로드</button></div>
+    </div>
+    <div class="table-box">
+      <table>
+        <thead><tr id="thead">
+          <th class="s1" data-k="rank" aria-sort="ascending"><button type="button">순위</button></th>
+          <th class="s2" data-k="mv"><button type="button">전년 대비</button></th>
+          <th class="s3" data-k="name"><button type="button">회사명</button><span class="sub2">누르면 상세 ›</span></th>
+          <th class="num" data-k="amount"><button type="button">시공능력 평가액(억원)</button></th>
+          <th data-k="best"><button type="button">최고등급</button></th>
+          <th class="ag1" data-k="KIS" title="한국신용평가"><button type="button">KIS 한신평</button></th>
+          <th data-k="KR" title="한국기업평가"><button type="button">KR 한기평</button></th>
+          <th data-k="NICE" title="나이스신용평가"><button type="button">NICE</button></th>
+          <th class="docc" title="회사별 심의서 Appendix(회사 개요 · 주주 · 주요 재무지표 · 수주 · 보증·약정) 워드 파일">심의서 Appendix</th>
+        </tr></thead>
+        <tbody id="tbody"><tr><td colspan="9" class="empty">불러오는 중…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-cost" id="cost-sec">
+    <div class="sec-head">
+      <h2 id="h-cost">공사비 지표</h2>
+      <span class="note">한국건설기술연구원 건설공사비지수(2020년 = 100) · 매월 갱신</span>
+    </div>
+    <details class="cfold" id="cost-fold">
+    <summary><span class="cf-t">건설공사비지수</span><span class="cf-v" id="cost-sum">불러오는 중…</span><span class="cf-more"><span class="o">펼쳐 보기</span><span class="c">접기</span> <i aria-hidden="true">▾</i></span></summary>
+    <div class="cost" id="cost">
+      <div class="ck" id="cost-k"><div class="placeholder" style="padding:0">불러오는 중…</div></div>
+      <div class="cc">
+        <div class="cbar">
+          <div class="clegend"><span><i style="background:var(--c1)"></i>건설 전체</span><span><i style="background:var(--c2)"></i>건축</span><span><i style="background:var(--c3)"></i>토목</span></div>
+          <div class="seg" role="group" aria-label="기간" id="cseg">
+            <button type="button" data-v="12" aria-pressed="false">1년</button>
+            <button type="button" data-v="36" aria-pressed="false">3년</button>
+            <button type="button" data-v="60" aria-pressed="true">5년</button>
+            <button type="button" data-v="120" aria-pressed="false">10년</button>
+          </div>
+        </div>
+        <div class="chart" id="cost-chart"></div>
+        <details class="tbl"><summary>표로 보기 · 최근 13개월</summary><div id="cost-tbl"></div></details>
+      </div>
+    </div>
+    </details>
+  </section>
+
+  <details class="info">
+    <summary>시공능력평가와 이 표를 읽는 법</summary>
+    <p>시공능력평가는 대한건설협회가 매년 7월 말 공시하는 건설사별 1건 공사 수행 능력의 금액 평가입니다. 공사실적평가액, 경영평가액, 기술능력평가액, 신인도평가액을 합산하며 발주처의 입찰참가 자격 제한과 업계 순위(도급순위)의 기준으로 쓰입니다.</p>
+    <p>순위와 평가액은 대한건설협회가 공시한 엑셀의 토목건축공사업(토건) 기준이며, 평가액에 마우스를 올리면 항목별 평가액이 보입니다. 전년 순위는 건설업 등록번호로 맞추므로 사명이 바뀐 회사도 이어집니다.</p>
+    <p>등급은 각 평가사 기업 페이지의 현재 회사채 신용등급과 Outlook, 평가일입니다. 회사채 등급이 없는 회사는 기업신용등급(ICR)을, 그것도 없으면 기업어음(CP) 등급을 표시하고 ICR · CP 표시를 붙입니다. 회사채만 보려면 필터의 '회사채만'을 누르세요. 평가사가 등급을 내지 않았거나 유효기간이 끝난 경우 – 로 표시합니다. 최고등급은 3사 중 가장 높은 등급이며, 평가일이 1년을 넘은 등급은 날짜를 주황색으로 표시하니 평가사 원문에서 한 번 더 확인하시기 바랍니다.</p>
+    <p>최근 변동은 평가사 3사의 등급 평가(상향·하향·전망 변경·유지), DART 주요 공시(수주·채무보증·자금조달·지배구조·주요사항, 정기보고서), 회사 이름이 제목에 나온 기사 중 신용·자금·실적·수주·지배구조 주제만 골라(시공사에 부정적인 기사는 제외) 보여 줍니다. 기사는 구글 뉴스 검색 결과의 제목·출처·링크만 싣고, 같은 내용을 여러 매체가 쓴 경우 하나로 묶습니다. 회사명을 누르면 등급 이력, DART 주요 재무지표(매출액 · EBIT · EBITDA · 차입금 · 커버리지 등, 최근 5개 사업연도와 올해 최신 분기 — 연결재무제표가 있는 회사는 연결이 기본이고 연결이 없던 연도는 빼며, 상세 화면에서 별도로 바꿔 볼 수 있습니다), 수주 현황, 보증·약정 현황, 최근 공시·기사를 한 화면에서 볼 수 있습니다.</p>
+    <p>수주 현황과 보증·약정 현황은 DART 원문에서 읽습니다. 사업·반기·분기보고서를 내는 회사는 '매출 및 수주상황'의 현장별 표 전체와 '우발부채 등에 관한 사항'의 부동산 PF 보증(현장별) · 책임준공 · 중도금대출 · SOC 보증 · 유동화증권 신용보강을, 감사보고서만 내는 회사는 주석의 공사계약 잔액 변동 표와 남에게 제공한 보증 · 약정 표를 싣습니다(연 1회 갱신). 소송 · 담보 · 제공받은 보증은 싣지 않습니다. 금액은 억원으로 바꿔 표시합니다. ☆ 관심 회사는 이 브라우저에만 저장됩니다.</p>
+    <p>공사비 지표는 한국건설기술연구원이 매월 말 발표하는 건설공사비지수(2020년 = 100)입니다. 발표 엑셀에 2000년부터의 전 기간이 들어 있어 과거 수정치도 함께 반영됩니다.</p>
+    <p>매일 오전(08:00)에 원 출처에서 시공능력평가와 등급을 다시 받아 갱신합니다. 시공능력평가는 매년 7월 말 새 공시가 올라오면 다음 날 아침에 반영됩니다.</p>
+  </details>
+
+  <footer>
+    <p>출처: 대한건설협회 시공능력평가, 한국신용평가(KIS), 한국기업평가(KR), 나이스신용평가(NICE), 금융감독원 전자공시시스템(DART), 한국건설기술연구원 건설공사비지수, 구글 뉴스(기사 제목·링크). 이 화면은 공개된 자료를 모아 정리한 개인 참고용 자료이며, 정리 과정에서 누락·오기가 생길 수 있고 원문과 다를 수 있습니다.</p>
+    <p>이 화면의 어떤 내용도 투자 권유나 여신·의사결정의 근거가 아니며, 이를 이용해 생긴 결과에 대해 작성자는 책임지지 않습니다. 정확한 내용은 각 기관의 원문 공시에서 확인하시기 바랍니다.</p>
+    </footer>
+</div>
+<div class="ov" id="ov" hidden></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-title" hidden></aside>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+// 시공사에 부정적인 뉘앙스의 기사는 화면에 올리지 않는다(수집 단계에서도 거르지만 한 번 더)
+const NEG_FALLBACK=/워크아웃|법정관리|회생|부도|유동성|부실|중대재해|사망|사고|붕괴|위기|우려|논란|의혹|소송|적자|손실|부진|하락|급감|악화|무산|좌초|철수|지연|차질|탈락|아웃|헛발질|하향|강등|미분양|리스크|부담|불확실/;
+function newsNeg(Nw){ try { if (Nw&&Nw.neg) return new RegExp(Nw.neg); } catch(e){} return NEG_FALLBACK; }
+const getJSON = async p => { try { const r = await fetch(p, {cache:"no-store"}); return r.ok ? await r.json() : null; } catch { return null; } };
+
+const AG=["KIS","KR","NICE"], AGN={KIS:"한국신용평가",KR:"한국기업평가",NICE:"나이스신용평가"};
+const KINDN={bond:"회사채 신용등급",icr:"기업신용등급(ICR)",cp:"기업어음(CP)"};
+const LT=["AAA","AA+","AA","AA-","A+","A","A-","BBB+","BBB","BBB-","BB+","BB","BB-","B+","B","B-","CCC","CC","C","D"];
+const ST=["A1","A2+","A2","A2-","A3+","A3","A3-","B+","B","B-","C","D"];
+const clean=g=>String(g||"").replace(/[↑↓]|\(.*?\)/g,"").trim();
+// 정렬용 순서: 장기등급(회사채·ICR) 전부가 단기등급(CP)보다 앞
+const gi=x=>{ if(!x) return 999; const g=clean(x.grade);
+  if(x.kind==="cp"){ const i=ST.indexOf(g); return 100+(i<0?99:i); }
+  const i=LT.indexOf(g); return i<0?99:i; };
+const bucket=x=>{ if(!x) return null; const i=gi(x);
+  return i>=100?"CP":i<=3?"AA":i<=6?"A":i<=9?"BBB":i<99?"BB":null; };
+const gcls=x=>{ const g=clean(x.grade);
+  if(x.kind==="cp") return /^A1/.test(g)?"g-a1":/^A2/.test(g)?"g-a2":/^A3/.test(g)?"g-a3":"g-b";
+  return ({AA:"g-a1",A:"g-a2",BBB:"g-a3",BB:"g-b"})[bucket(x)]||""; };
+const olTag=o=>{ if(!o||o==="안정적") return ""; const c=/부정|하향/.test(o)?"neg":/긍정|상향/.test(o)?"pos":"watch"; return `<span class="ol ${c}">${esc(o)}</span>`; };
+const kdTag=k=>k&&k!=="bond"?`<span class="kd" title="${KINDN[k]}">${k==="icr"?"ICR":"CP"}</span>`:"";
+const ymd=d=>d?"'"+d.slice(2).replace(/-/g,"."):"";
+const CUT=new Date(); CUT.setFullYear(CUT.getFullYear()-1);
+const CUTS=CUT.toISOString().slice(0,10);
+const isOld=d=>d&&d<CUTS;
+const fmtAmt=v=>Math.round(v).toLocaleString("ko-KR");
+const jo=v=>(v/10000).toLocaleString("ko-KR",{minimumFractionDigits:1,maximumFractionDigits:1});
+
+let ROWS=[], MAX=1, state={band:"all",mv:"all",scope:"all",grade:"all",agency:"all",fresh:false,q:"",sort:"rank",dir:1};
+
+// 현재 필터 기준으로 화면에 쓰는 등급(회사채만 보기·1년 내 평가만 반영)
+function eff(r,a){
+  const x=r.ratings[a]; if(!x||!x.grade) return null;
+  const kind=x.kind||"bond";
+  if(state.scope==="bond"&&kind!=="bond") return null;
+  if(state.fresh&&isOld(x.date)) return null;
+  return {...x,kind};
+}
+const effAll=r=>AG.map(a=>eff(r,a)).filter(Boolean);
+const bestOf=r=>effAll(r).sort((x,y)=>gi(x)-gi(y))[0]||null;
+
+// ---------------- 요약 ----------------
+function renderSummary(D){
+  const R=ROWS, tot=R.reduce((s,r)=>s+r.amount,0);
+  const band=(a,b)=>R.filter(r=>r.rank>=a&&r.rank<=b).reduce((s,r)=>s+r.amount,0);
+  const bands=[["1–10위",band(1,10),"--seg1"],["11–30위",band(11,30),"--seg2"],["31–50위",band(31,50),"--seg3"],["51–100위",band(51,100),"--seg4"]];
+  const pct=v=>(v/tot*100);
+  // 요약은 필터와 무관하게 전체 등급 기준
+  const all=r=>AG.map(a=>r.ratings[a]).filter(x=>x&&x.grade).map(x=>({...x,kind:x.kind||"bond"}));
+  const best=r=>all(r).sort((x,y)=>gi(x)-gi(y))[0];
+  const rated=R.filter(r=>all(r).length);
+  const nBond=R.filter(r=>all(r).some(x=>x.kind==="bond")).length;
+  const bk={AA:0,A:0,BBB:0,BB:0,CP:0}; rated.forEach(r=>bk[bucket(best(r))]++);
+  const bkDef=[["AA급","AA","--g-a1"],["A급","A","--g-a2"],["BBB급","BBB","--g-a3"],["BB급↓","BB","--g-b"],["CP만","CP","--flat"]];
+  const up=R.filter(r=>r.mv>0), dn=R.filter(r=>r.mv<0), fl=R.filter(r=>r.mv===0);
+  const topUp=[...up].sort((a,b)=>b.mv-a.mv||a.rank-b.rank).slice(0,2);
+  const topDn=[...dn].sort((a,b)=>a.mv-b.mv||a.rank-b.rank).slice(0,2);
+  const mvRow=(lb,r,cls)=>`<span class="lb">${lb}</span><b title="${esc(r.name)}">${esc(r.name)}</b><span class="mv"><span class="dim">${r.prev}→${r.rank}위</span> <span class="chg ${cls}">${cls==="up"?"▲":"▼"}${Math.abs(r.mv)}</span></span>`;
+  $("#kpis").innerHTML=`
+    <div class="kpi">
+      <div class="name"><b>시공능력평가액 합계</b><span>상위 100개사</span></div>
+      <div class="val"><span class="num">${jo(tot)}<small>조원</small></span>
+        <span class="chg flat"><span class="lb">상위 10개사</span>${pct(bands[0][1]).toFixed(1)}%</span></div>
+      <div class="stack" role="img" aria-label="순위 구간별 평가액 비중">${bands.map(b=>`<span style="width:${pct(b[1])}%;background:var(${b[2]})" title="${b[0]} ${jo(b[1])}조원 · ${pct(b[1]).toFixed(1)}%"></span>`).join("")}</div>
+      <div class="legend">${bands.map(b=>`<span><i style="background:var(${b[2]})"></i>${b[0]} ${pct(b[1]).toFixed(0)}%</span>`).join("")}</div>
+    </div>
+    <div class="kpi">
+      <div class="name"><b>신용등급 보유</b><span>3사 중 1곳 이상 · 최고등급 분포</span></div>
+      <div class="val"><span class="num">${rated.length}<small>/ 100개사</small></span>
+        <span class="chg flat"><span class="lb">회사채 등급</span>${nBond}<span class="lb r">개사</span></span></div>
+      <div class="stack" role="img" aria-label="최고등급 분포">${bkDef.filter(b=>bk[b[1]]).map(b=>`<span style="width:${bk[b[1]]/rated.length*100}%;background:var(${b[2]})" title="${b[0]} ${bk[b[1]]}개사"></span>`).join("")}</div>
+      <div class="legend">${bkDef.map(b=>`<span><i style="background:var(${b[2]})"></i>${b[0]} ${bk[b[1]]}</span>`).join("")}</div>
+    </div>
+    <div class="kpi">
+      <div class="name"><b>전년 대비 순위 변동</b><span>${D.year-1}년 → ${D.year}년</span></div>
+      <div class="mvsum"><span class="chg up">▲ 상승 <b>${up.length}</b>개사</span><span class="chg down">▼ 하락 <b>${dn.length}</b>개사</span><span class="chg flat">– 유지 <b>${fl.length}</b>개사</span></div>
+      <div class="movers">${topUp.map((r,i)=>mvRow(`상승 ${i+1}위`,r,"up")).join("")}${topDn.map((r,i)=>mvRow(`하락 ${i+1}위`,r,"down")).join("")}</div>
+    </div>`;
+  const first=R.find(r=>r.rank===1), last=R.reduce((a,b)=>a.rank>b.rank?a:b);
+  const neg=R.filter(r=>all(r).some(x=>/부정|하향/.test(x.outlook||""))).length;
+  const pos=R.filter(r=>all(r).some(x=>/긍정|상향/.test(x.outlook||""))).length;
+  $("#spreads").innerHTML=`<span>1위 평가액 <b>${jo(first.amount)}조원</b></span>
+    <span>100위 컷 <b>${fmtAmt(last.amount)}억원</b></span>
+    <span>1위 / 100위 <b>${(first.amount/last.amount).toFixed(0)}배</b></span>
+    <span>Outlook 긍정적 <b>${pos}개사</b> · 부정적 <b>${neg}개사</b></span>
+    <span>등급 최근 평가일 <b>${ymd(D.rating_latest)}</b></span>`;
+}
+
+// ---------------- 수집 상태 ----------------
+function renderStatus(S){
+  if(!S||!S.sources){ $("#status").innerHTML=""; return; }
+  $("#status").innerHTML=Object.entries(S.sources).map(([k,v])=>
+    `<span class="src ${v.ok?"":"bad"}" title="${v.ok?"정상":"직전 값 표시"}"><span class="dot"></span>${esc(k)}</span>`).join("")
+    +(S.unmapped&&S.unmapped.length?`<span class="src bad" title="${esc(S.unmapped.join(", "))}"><span class="dot"></span>평가사 코드 미등록 ${S.unmapped.length}개사</span>`:"");
+}
+
+// ---------------- 표 ----------------
+function ratingCell(r,a,first){
+  const raw=r.ratings[a]||{}, x=eff(r,a), cls=first?' class="ag1"':"";
+  if(!x){
+    const why=raw.grade?"현재 필터에서 제외":"공시 등급 없음";
+    return raw.url
+      ? `<td${cls}><a class="rt none" href="${esc(raw.url)}" target="_blank" rel="noopener" title="${AGN[a]} ${why} · 기업 페이지 열기"><span class="grade">–</span></a></td>`
+      : `<td${cls}><span class="dim">–</span></td>`;
+  }
+  const old=isOld(x.date);
+  const tip=`${AGN[a]} ${KINDN[x.kind]} ${x.grade}${x.outlook?` · ${x.outlook}`:""}${x.date?` · 평가일 ${x.date}`:""}${x.cp?` · CP ${x.cp}`:""}${old?" · 평가 후 1년 경과":""}`;
+  const inner=`<span class="grade ${gcls(x)}">${esc(x.grade)}</span>${kdTag(x.kind)}${olTag(x.outlook)}${x.date?`<i${old?' class="old"':""}>${ymd(x.date)}</i>`:""}`;
+  return raw.url
+    ? `<td${cls}><a class="rt" href="${esc(raw.url)}" target="_blank" rel="noopener" title="${esc(tip)} · 평가사 페이지 열기">${inner}</a></td>`
+    : `<td${cls}><span class="rt" title="${esc(tip)}">${inner}</span></td>`;
+}
+function amtTip(r){
+  const L=[`시공능력평가액 ${fmtAmt(r.amount)}억원`];
+  if(r.parts) L.push(...Object.entries(r.parts).filter(([,v])=>v!=null).map(([k,v])=>`· ${k}평가액 ${fmtAmt(v)}억원`));
+  if(r.civil!=null) L.push(`토목분야 ${fmtAmt(r.civil)} / 건축분야 ${fmtAmt(r.arch)}억원`);
+  return L.join("\n");
+}
+function rowHTML(r){
+  const mvc=r.mv==null?"flat":r.mv>0?"up":r.mv<0?"down":"flat";
+  const mvt=r.mv==null?"신규":r.mv>0?`▲${r.mv}`:r.mv<0?`▼${-r.mv}`:"–";
+  const b=bestOf(r);
+  return `<tr>
+    <td class="rank s1">${r.rank}</td>
+    <td class="mv s2 ${mvc}" title="${r.prev!=null?`전년 ${r.prev}위 → 올해 ${r.rank}위`:"전년 순위 없음"}">${mvt}</td>
+    <td class="co s3"><button type="button" class="cob" data-reg="${esc(regOf(r))}" title="${esc(r.name)} 상세 보기 · 등급 이력 · 재무 · 공시 · 기사">${WATCH.has(regOf(r))?'<span class="wst" aria-label="관심">★</span>':""}${esc(r.name)}</button></td>
+    <td class="num amt"><div class="aw"><span title="${esc(amtTip(r))}">${fmtAmt(r.amount)}</span><span class="bar" aria-hidden="true"><i style="width:${(r.amount/MAX*100).toFixed(2)}%"></i></span></div></td>
+    <td>${b?`<span class="best grade ${gcls(b)}">${esc(clean(b.grade))}</span>${kdTag(b.kind)}`:'<span class="dim">–</span>'}</td>
+    ${AG.map((a,i)=>ratingCell(r,a,i===0)).join("")}
+    <td class="docc"><button type="button" class="xlb docb" data-reg="${esc(regOf(r))}" title="${esc(r.name)} 심의서 Appendix 워드 파일 받기"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11"/></svg>워드</button></td></tr>`;
+}
+function val(r,k){
+  if(k==="best"){ const b=bestOf(r); return b?gi(b):null; }
+  if(AG.includes(k)){ const x=eff(r,k); return x?gi(x):null; }
+  return r[k];
+}
+function cmp(a,b){
+  const va=val(a,state.sort), vb=val(b,state.sort);
+  if(va==null&&vb==null) return a.rank-b.rank; if(va==null) return 1; if(vb==null) return -1;
+  const c=typeof va==="string"?va.localeCompare(vb,"ko"):va-vb;
+  return (c*state.dir)||a.rank-b.rank;
+}
+function render(){
+  const q=state.q.trim().toLowerCase();
+  const [lo,hi]=state.band==="all"?[1,1e9]:state.band.split("-").map(Number);
+  const rows=ROWS.filter(r=>{
+    if(r.rank<lo||r.rank>hi) return false;
+    if(state.mv==="up"&&!(r.mv>0)) return false;
+    if(state.mv==="down"&&!(r.mv<0)) return false;
+    if(state.mv==="flat"&&r.mv!==0) return false;
+    const list=AG.filter(a=>eff(r,a)), b=bestOf(r);
+    if(state.agency!=="all"&&!list.includes(state.agency)) return false;
+    if(state.grade==="rated"&&!list.length) return false;
+    if(state.grade==="none"&&list.length) return false;
+    if(["AA","A","BBB","BB","CP"].includes(state.grade)&&bucket(b)!==state.grade) return false;
+    if(q&&!r.name.toLowerCase().includes(q)) return false;
+    if(state.wonly&&!WATCH.has(regOf(r))) return false;
+    return true;
+  }).sort(cmp);
+  VIEW=rows;
+  $("#count").textContent=`${rows.length}개사 / 전체 ${ROWS.length}개사`;
+  $("#tbody").innerHTML=rows.length?rows.map(rowHTML).join(""):'<tr><td colspan="9" class="empty">조건에 맞는 건설사가 없습니다. 필터를 바꿔 보세요.</td></tr>';
+  document.querySelectorAll("#thead th[data-k]").forEach(th=>th.setAttribute("aria-sort",th.dataset.k===state.sort?(state.dir>0?"ascending":"descending"):"none"));
+}
+function bindSeg(id,key){
+  document.querySelectorAll(`#${id} button`).forEach(b=>b.addEventListener("click",()=>{
+    document.querySelectorAll(`#${id} button`).forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+    state[key]=b.dataset.v; render();
+  }));
+}
+(()=>{const tb=document.querySelector(".table-box"); tb.addEventListener("scroll",()=>tb.classList.toggle("scrolled",tb.scrollLeft>0),{passive:true});})();
+// ---------------- 엑셀 다운로드 ----------------
+let VIEW=[], META=null, STAT=null;
+function loadXLSX(){
+  if(window.XLSX) return Promise.resolve();
+  return new Promise((ok,fail)=>{ const s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"; s.onload=ok; s.onerror=fail; document.head.appendChild(s); });
+}
+function filterText(){
+  const f=[];
+  const seg=id=>document.querySelector(`#${id} button[aria-pressed="true"]`)?.innerText;
+  if(state.band!=="all") f.push(`순위 ${seg("seg-band")}`);
+  if(state.mv!=="all") f.push(`순위 변동 ${seg("seg-mv")}`);
+  f.push(`등급 기준 ${seg("seg-scope")}`);
+  if(state.grade!=="all") f.push(`최고등급 ${$("#f-grade").selectedOptions[0].text}`);
+  if(state.agency!=="all") f.push(`평가사 ${state.agency}`);
+  if(state.fresh) f.push("1년 내 평가만");
+  if(state.q.trim()) f.push(`검색어 "${state.q.trim()}"`);
+  if(state.wonly) f.push("관심 회사만");
+  return f.join(" · ");
+}
+async function downloadXLSX(){
+  const btn=$("#dl"), label=btn.lastChild.textContent;
+  btn.disabled=true; btn.lastChild.textContent="만드는 중…";
+  try{
+    await loadXLSX();
+    const KIND={bond:"회사채",icr:"ICR",cp:"CP"};
+    const head=["순위","전년 순위","전년 대비","회사명","소재지","시공능력평가액(억원)","공사실적평가액(억원)","경영평가액(억원)","기술능력평가액(억원)","신인도평가액(억원)","최고등급","최고등급 종류"];
+    for(const a of AG) head.push(`${a} 등급`,`${a} 종류`,`${a} Outlook`,`${a} 평가일`);
+    const num=v=>v==null?null:Math.round(v*10)/10;
+    const body=VIEW.map(r=>{
+      const b=bestOf(r), p=r.parts||{};
+      const row=[r.rank, r.prev??null, r.mv??null, r.name, r.region||"", num(r.amount), num(p["실적"]), num(p["경영"]), num(p["기술"]), num(p["신인도"]), b?clean(b.grade):"", b?KIND[b.kind]:""];
+      for(const a of AG){ const x=eff(r,a); row.push(x?x.grade:"", x?KIND[x.kind]:"", x?(x.outlook||""):"", x?(x.date||""):""); }
+      return row;
+    });
+    const ws=XLSX.utils.aoa_to_sheet([head,...body]);
+    ws["!cols"]=head.map((h,i)=>({wch:i===3?24:i<3?8:/평가액/.test(h)?14:/평가일/.test(h)?11:/Outlook/.test(h)?9:/종류/.test(h)?7:9}));
+    ws["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:body.length,c:head.length-1}})};
+    for(let i=1;i<=body.length;i++) for(let c=5;c<=9;c++){ const cell=ws[XLSX.utils.encode_cell({r:i,c})]; if(cell&&typeof cell.v==="number") cell.z="#,##0"; }
+    const info=[
+      ["시공사 시공능력평가 · 신용등급 현황"],[],
+      ["시공능력평가 기준", `${META?.year??""}년 대한건설협회 시공능력평가(토목건축공사업)`],
+      ["최종 수집", STAT?.generated?`${STAT.generated} KST`:""],
+      ["내려받은 시각", new Date().toLocaleString("ko-KR",{timeZone:"Asia/Seoul"})],
+      ["적용된 화면 조건", filterText()],
+      ["행 수", `${VIEW.length}개사 / 전체 ${ROWS.length}개사`],[],
+      ["전년 대비","양수는 순위 상승, 음수는 하락"],
+      ["등급 종류","회사채: 회사채 신용등급 · ICR: 기업신용등급 · CP: 기업어음(회사채 등급이 없을 때 대신 표시)"],
+      ["출처","대한건설협회 시공능력평가, 한국신용평가(KIS), 한국기업평가(KR), 나이스신용평가(NICE)"],
+      ["사이트", location.origin+location.pathname],
+      ["제작","한국투자증권 PF그룹 최이름"],
+      ["유의사항","공개 자료를 모아 정리한 참고용 자료이며 원문과 다를 수 있습니다. 투자 권유나 의사결정의 근거가 아닙니다."]
+    ];
+    const ws2=XLSX.utils.aoa_to_sheet(info); ws2["!cols"]=[{wch:18},{wch:90}];
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"시평·등급");
+    XLSX.utils.book_append_sheet(wb,ws2,"정보");
+    const d=new Date(Date.now()+9*3600e3).toISOString().slice(0,10).replace(/-/g,"");
+    XLSX.writeFile(wb,`cons-ratings_${d}.xlsx`);
+  }catch(e){
+    console.error(e); btn.lastChild.textContent="다시 시도해 주세요"; setTimeout(()=>{btn.lastChild.textContent=label;},2500); btn.disabled=false; return;
+  }
+  btn.disabled=false; btn.lastChild.textContent=label;
+}
+$("#dl").addEventListener("click",downloadXLSX);
+bindSeg("seg-band","band"); bindSeg("seg-mv","mv"); bindSeg("seg-scope","scope");
+$("#f-grade").addEventListener("change",e=>{state.grade=e.target.value;render()});
+$("#f-agency").addEventListener("change",e=>{state.agency=e.target.value;render()});
+$("#f-fresh").addEventListener("change",e=>{state.fresh=e.target.checked;render()});
+$("#f-wonly").addEventListener("change",e=>{state.wonly=e.target.checked;render()});
+$("#f-q").addEventListener("input",e=>{state.q=e.target.value;render()});
+document.querySelectorAll("#thead th[data-k] button").forEach(b=>b.addEventListener("click",()=>{
+  const k=b.parentElement.dataset.k;
+  if(state.sort===k) state.dir*=-1; else {state.sort=k; state.dir=["amount","mv"].includes(k)?-1:1;}
+  render();
+}));
+
+// ================= 추가 데이터: 등급 이력 · 변동 · 기사 · DART · 공사비 =================
+let HIST={}, EVENTS=[], NEWS=[], DART=null, COST=null, BL=null, BYREG={};
+const AGS={KIS:"KIS",KR:"KR",NICE:"NICE"}, KINDS={bond:"회사채",icr:"ICR",cp:"CP"};
+const DOW="일월화수목금토";
+const kst=()=>new Date(Date.now()+9*3600e3);
+const todayS=()=>kst().toISOString().slice(0,10);
+const addDays=(s,n)=>{const d=new Date(s+"T00:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);};
+const dayLabel=s=>{const d=new Date(s+"T00:00:00Z");const t=todayS();return `${s.slice(5).replace("-",".")} (${DOW[d.getUTCDay()]})${s===t?" · 오늘":s===addDays(t,-1)?" · 어제":""}`;};
+const md=s=>s?s.slice(5,10).replace("-","."):"";
+const won=v=>v==null?"–":Math.round(v).toLocaleString("ko-KR");
+const pctS=v=>v==null?"–":`${v.toFixed(1)}%`;
+const grank=(g,k)=>{g=clean(g);const L=k==="cp"?ST:LT;const i=L.indexOf(g);return i<0?null:i;};
+const dartUrl=no=>`https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${no}`;
+
+// 관심 회사(이 브라우저에만 저장)
+let WATCH=new Set();
+try{ WATCH=new Set(JSON.parse(localStorage.getItem("cons-watch")||"[]")); }catch{}
+const saveWatch=()=>{ try{ localStorage.setItem("cons-watch",JSON.stringify([...WATCH])); }catch{} };
+const regOf=r=>r.reg||r.name;
+
+// ---------- 신용등급 이력 → 평가 이벤트 ----------
+function ratingActions(reg){
+  const h=HIST[reg]||{}, out=[];
+  for(const [ag,arr] of Object.entries(h)){
+    const by={};
+    arr.forEach(e=>{(by[e[3]]=by[e[3]]||[]).push(e);});
+    for(const [kind,list] of Object.entries(by)){
+      list.sort((a,b)=>a[0]<b[0]?1:-1);
+      list.forEach((e,i)=>{
+        const p=list[i+1]; let dir="first";
+        if(p){ const a=grank(e[1],kind), b=grank(p[1],kind);
+          if(a!=null&&b!=null&&a!==b) dir=a<b?"up":"down";
+          else if((e[2]||"")!==(p[2]||"")) dir="ol";
+          else dir="same"; }
+        out.push({d:e[0],ag,kind,grade:e[1],ol:e[2],ev:e[4],prev:p,dir});
+      });
+    }
+  }
+  return out.sort((a,b)=>a.d<b.d?1:-1);
+}
+function actionText(a){
+  const k=KINDS[a.kind]||"", ol=a.ol&&a.ol!=="안정적"?` · ${a.ol}`:"";
+  if(a.dir==="up"||a.dir==="down") return `${a.ag} ${k} ${a.prev[1]} → ${a.grade}${ol}`;
+  if(a.dir==="ol") return `${a.ag} ${k} ${a.grade} · Outlook ${a.prev[2]||"–"} → ${a.ol||"–"}`;
+  if(a.dir==="same") return `${a.ag} ${k} ${a.grade}${ol} 유지`;
+  return `${a.ag} ${k} ${a.grade}${ol}`;
+}
+const dirMark=d=>d==="up"?'<span class="dir up">▲상향</span> ':d==="down"?'<span class="dir down">▼하향</span> ':"";
+
+// ---------- 피드 ----------
+let FEED={win:7,type:"all",watch:false,shown:5};
+function feedItems(){
+  const since=addDays(todayS(),-FEED.win+1), items=[];
+  for(const r of ROWS){
+    const reg=regOf(r);
+    for(const a of ratingActions(reg)){
+      if(a.d<since) break;
+      const url=(r.ratings[a.ag]||{}).url;
+      items.push({d:a.d,t:"rating",reg,co:r.name,pri:a.dir==="up"||a.dir==="down"?0:a.dir==="ol"?1:3,
+        html:`${dirMark(a.dir)}${esc(actionText(a))}${a.ev?`<span class="sm">${esc(a.ev)}평가</span>`:""}`,url,
+        tag:"신용등급",meta:a.ag==="KIS"?"한국신용평가":a.ag==="KR"?"한국기업평가":"나이스신용평가"});
+    }
+  }
+  for(const e of EVENTS){
+    if(e.d<since) continue;
+    if(e.type==="sipyeong") items.push({d:e.d,t:"sys",pri:0,html:esc(e.title),tag:"시공능력평가",meta:"대한건설협회"});
+    else if(e.type==="rating"&&e.dir==="off"){ const r=BYREG[e.reg]; if(r) items.push({d:e.d,t:"rating",reg:e.reg,co:r.name,pri:2,html:esc(e.title),url:e.url,tag:"신용등급",meta:e.ag}); }
+  }
+  if(DART&&DART.co) for(const [reg,c] of Object.entries(DART.co)){
+    const r=BYREG[reg]; if(!r) continue;
+    for(const x of c.disc||[]){ if(x.d<since) continue;
+      items.push({d:x.d,t:"disc",reg,co:r.name,pri:x.cat==="주요사항"?1:x.cat==="정기"?4:1,html:esc(x.nm),url:dartUrl(x.no),tag:`공시 · ${x.cat}`,meta:"DART"}); }
+  }
+  for(const n of NEWS){
+    const d=n.d.slice(0,10); if(d<since) continue;
+    const r=n.reg?BYREG[n.reg]:null;
+    items.push({d,tm:n.d,t:"news",reg:r?n.reg:null,co:r?r.name:null,pri:2,html:esc(n.t),url:n.u,tag:`기사 · ${n.cat}`,meta:`${n.src||""}${n.n>1?` 외 ${n.n-1}건`:""}`});
+  }
+  if(COST&&COST.cci&&COST.cci.posted>=since){
+    const s=COST.cci.series["건설 전체"]||[], L=s[s.length-1], Y=s.find(x=>x[0]===`${+L[0].slice(0,4)-1}${L[0].slice(4)}`);
+    items.push({d:COST.cci.posted,t:"cost",pri:1,html:`${L[0].replace("-","년 ")}월 건설공사비지수 ${L[1].toFixed(2)}${Y?` · 전년 동월 대비 ${((L[1]/Y[1]-1)*100).toFixed(1)}%`:""}${COST.cci.provisional?'<span class="sm">잠정</span>':""}`,url:"#cost",tag:"공사비",meta:"한국건설기술연구원"});
+  }
+  return items.filter(x=>(FEED.type==="all"||x.t===FEED.type||(FEED.type==="rating"&&x.t==="sys")||(FEED.type==="news"&&x.t==="cost"))&&(!FEED.watch||(x.reg&&WATCH.has(x.reg))))
+    .sort((a,b)=>a.d!==b.d?(a.d<b.d?1:-1):a.pri-b.pri||((b.tm||"")>(a.tm||"")?1:-1));
+}
+function renderFeed(){
+  const all=feedItems(), list=all.slice(0,FEED.shown), t=todayS();
+  const nToday=all.filter(x=>x.d===t).length;
+  const cnt={rating:0,disc:0,news:0}; all.forEach(x=>{ if(cnt[x.t]!=null) cnt[x.t]++; });
+  $("#feed-tail").innerHTML=`오늘 <b>${nToday}</b>건 · 최근 ${FEED.win}일 <b>${all.length}</b>건`;
+  const w=$("#f-watch"); w.closest("label").setAttribute("aria-disabled",String(!WATCH.size)); w.disabled=!WATCH.size&&!FEED.watch;
+  if(!list.length){ $("#feed-list").innerHTML=`<div class="fempty">${FEED.watch?"관심 회사에 해당하는 변동이 없습니다. 기간을 늘려 보세요.":"이 기간에 변동이 없습니다. 기간을 늘려 보세요."}</div>`; return; }
+  let html="", last="";
+  for(const x of list){
+    if(x.d!==last){ html+=`<div class="fday">${dayLabel(x.d)}</div>`; last=x.d; }
+    const co=x.co?`<button type="button" class="cob" data-reg="${esc(x.reg)}" title="${esc(x.co)} 상세 보기">${WATCH.has(x.reg)?'<span class="wst" aria-label="관심">★</span>':""}${esc(x.co)}</button>`:'<span class="dim">업계</span>';
+    const tt=x.url?`<a class="tt" href="${esc(x.url)}"${x.url[0]==="#"?"":' target="_blank" rel="noopener"'}>${x.html}</a>`:`<span class="tt">${x.html}</span>`;
+    html+=`<div class="fd"><span class="tag t-${x.t}">${esc(x.tag)}</span>${co}${tt}<span class="mt">${esc(x.meta||"")}</span></div>`;
+  }
+  if(all.length>list.length) html+=`<button type="button" class="fmore" id="feed-more">더 보기 (${all.length-list.length}건 더)</button>`;
+  $("#feed-list").innerHTML=html;
+  $("#feed-more")?.addEventListener("click",()=>{FEED.shown+=30;renderFeed();});
+}
+function bindFeed(){
+  const seg=(id,key,num)=>document.querySelectorAll(`#${id} button`).forEach(b=>b.addEventListener("click",()=>{
+    document.querySelectorAll(`#${id} button`).forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+    FEED[key]=num?+b.dataset.v:b.dataset.v; FEED.shown=5; renderFeed(); }));
+  seg("fseg-win","win",true); seg("fseg-type","type",false);
+  $("#f-watch").addEventListener("change",e=>{FEED.watch=e.target.checked;FEED.shown=5;renderFeed();});
+}
+
+// ---------- 회사 상세 ----------
+let LASTFOCUS=null;
+function openCo(reg,push=true){
+  const r=BYREG[reg]; if(!r) return;
+  LASTFOCUS=document.activeElement;
+  $("#drawer").innerHTML=coHTML(r); $("#drawer").hidden=false; $("#ov").hidden=false;
+  document.body.style.overflow="hidden";
+  if(push) history.replaceState(null,"",`#co=${encodeURIComponent(reg)}`);
+  $("#dr-x").focus();
+  const fb=$("#drawer .fin-box"); if(fb) fb.scrollLeft=fb.scrollWidth; // 좁은 화면에서는 최근 연도부터 보이게
+  $("#dr-x").addEventListener("click",closeCo);
+  $("#dr-star").addEventListener("click",e=>{ WATCH.has(reg)?WATCH.delete(reg):WATCH.add(reg); saveWatch();
+    e.currentTarget.setAttribute("aria-pressed",String(WATCH.has(reg))); e.currentTarget.textContent=WATCH.has(reg)?"★ 관심 회사":"☆ 관심 회사로"; renderFeed(); render(); });
+  $("#xl-sh")?.addEventListener("click",e=>coXLSX(e.currentTarget,r,"sh"));
+  $("#xl-fin")?.addEventListener("click",e=>coXLSX(e.currentTarget,r,"fin"));
+  $("#drawer").querySelectorAll(".finb button").forEach(b=>b.addEventListener("click",()=>{ // 연결 ↔ 별도
+    if(FINB===b.dataset.b) return; FINB=b.dataset.b; const dr=$("#drawer"), y=dr.scrollTop; openCo(reg,false); dr.scrollTop=y; $("#drawer .finb button[aria-pressed=\"true\"]")?.focus({preventScroll:true}); }));
+  $("#xl-ord")?.addEventListener("click",e=>blXLSX(e.currentTarget,r,"ord"));
+  $("#xl-cg")?.addEventListener("click",e=>blXLSX(e.currentTarget,r,"cg"));
+  blBind($("#drawer"));
+  $("#dr-doc").addEventListener("click",e=>appendixDownload(e.currentTarget,r));
+  $("#dr-link").addEventListener("click",()=>copyText(`${location.origin}${location.pathname}#co=${encodeURIComponent(reg)}`,"이 회사 링크를 복사했습니다"));
+}
+// 상세 화면의 주주 현황 · 주요 재무지표 엑셀
+async function coXLSX(btn,r,what){
+  const reg=regOf(r), dc=DART&&DART.co&&DART.co[reg]; if(!dc) return;
+  const lb=btn.lastChild.textContent; btn.disabled=true; btn.lastChild.textContent="만드는 중…";
+  try{
+    await loadXLSX();
+    const nm=(dc.info&&dc.info.nm)||r.name, today=new Date(Date.now()+9*3600e3).toISOString().slice(0,10);
+    const r1=v=>v==null?null:Math.round(v*10)/10;
+    let aoa, cols, title, fmt=[];
+    if(what==="sh"){
+      const sh=dc.sh; title="주주현황";
+      aoa=[[`${nm} 주주 현황`],[`${sh.asof?sh.asof.replace(/-/g,".")+" 기준 · ":""}출처: ${sh.src||""}${sh.no?" ("+dartUrl(sh.no)+")":""}`],[],["주주명","관계","지분율(%)"]];
+      for(const x of sh.list) aoa.push([x.nm,(x.rel||"").replace(/\n/g," "),r1(x.pct)]);
+      if(sh.treasury) aoa.push(["자기주식","",r1(sh.treasury)]);
+      if(sh.etc) aoa.push(["기타","",r1(sh.etc)]);
+      aoa.push(["합계","",100]);
+      aoa.push([],["보통주 기준이며 기타는 표에 없는 주주 합계입니다."]);
+      cols=[{wch:30},{wch:14},{wch:11}];
+      for(let i=4;i<aoa.length-2;i++) fmt.push([i,2,"0.0"]);
+    }else{
+      const f=finSel(dc), ps=finPeriods(f); title=finTitle().replace(" ","");
+      const K=finK().map(([lb,k,t])=>[lb+(t==="pct"?"(%)":t==="x"?"(배)":""),k,t]);
+      aoa=[[`${nm} ${finTitle()}`],[`${f.basis} 기준 · 단위: 억원, %, 배 · 출처: DART ${f.src||"정기보고서(사업·반기·분기보고서)"}${f.audit_no?" ("+dartUrl(f.audit_no)+")":""}`],[],
+        ["구분",...ps.map(p=>p.p)]];
+      for(const [lb2,k] of K) aoa.push([lb2,...ps.map(p=>r1(p[k]))]);
+      aoa.push([],[(ps.some(p=>p.t!=="FY")?qNote():"")+finNote()+"."]);
+      cols=[{wch:16},...ps.map(()=>({wch:12}))];
+      K.forEach(([,k,t],j)=>ps.forEach((_,c)=>fmt.push([4+j,1+c,t==="amt"?"#,##0":"0.0"])));
+    }
+    aoa.push([`내려받은 시각: ${new Date().toLocaleString("ko-KR",{timeZone:"Asia/Seoul"})} · ${location.origin}${location.pathname} · 공개 자료를 모은 참고용 자료이며 원문과 다를 수 있습니다.`]);
+    const ws=XLSX.utils.aoa_to_sheet(aoa); ws["!cols"]=cols;
+    for(const [rr,cc,z] of fmt){ const cell=ws[XLSX.utils.encode_cell({r:rr,c:cc})]; if(cell&&typeof cell.v==="number") cell.z=z; }
+    const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,title);
+    XLSX.writeFile(wb,`${nm.replace(/\(주\)|（주）|주식회사|[㈜()\/\\:*?"<>|]/g,"").trim()}_${title}_${today.replace(/-/g,"")}.xlsx`);
+  }catch(e){ console.error(e); btn.lastChild.textContent="다시 시도해 주세요"; setTimeout(()=>{btn.lastChild.textContent=lb;btn.disabled=false;},2500); return; }
+  btn.disabled=false; btn.lastChild.textContent=lb;
+}
+function closeCo(){
+  $("#drawer").hidden=true; $("#ov").hidden=true; document.body.style.overflow="";
+  if(location.hash.startsWith("#co=")) history.replaceState(null,"",location.pathname+location.search);
+  LASTFOCUS?.focus?.();
+}
+function copyText(t,msg){
+  const done=()=>{ const el=document.createElement("div"); el.className="toast"; el.textContent=msg; document.body.appendChild(el); setTimeout(()=>el.remove(),1800); };
+  if(navigator.clipboard?.writeText) navigator.clipboard.writeText(t).then(done,()=>fallback());
+  else fallback();
+  function fallback(){ const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy");done();}catch{} ta.remove(); }
+}
+// 재무 기준: 연결이 있으면 연결이 기본, 상세 화면의 전환 버튼으로 별도(fin_s)를 볼 수 있다. 엑셀 · 워드도 고른 기준으로 나간다.
+let FINB="연결";
+// 주요 재무지표 행: [이름, 키, 형식(amt 억원 · pct % · x 배), 묶음 시작]
+const FINK_NEW=[["매출액","rev","amt",1],["EBIT","op","amt"],["EBITDA","ebitda","amt"],["당기순이익","ni","amt"],
+  ["총자산","assets","amt",1],["총차입금","debt","amt"],["순차입금","nd","amt"],
+  ["EBIT마진","opm","pct",1],["EBITDA마진","ebitdam","pct"],["EBITDA/금융비용","cov","x"],["순차입금/EBITDA","nde","x"],["부채비율","dr","pct"],["차입금의존도","dep","pct"]];
+const FIN_NOTE_NEW="EBIT = 영업이익, EBITDA = 영업이익 + 감가상각비 · 무형자산상각비(사용권자산 · 투자부동산 포함, 현금흐름표 조정 항목 기준), 총차입금 = 단기 · 장기차입금 + 사채 + 리스부채(유동성 포함), 순차입금 = 총차입금 − (현금및현금성자산 + 단기금융상품 + 유동 당기손익-공정가치 금융자산), 금융비용 = 이자비용 + 매출채권처분손실 + 자본화된 차입원가, 부채비율 = 부채총계 ÷ 자본총계, 차입금의존도 = 총차입금 ÷ 총자산. 차입금 · 현금 · 감가상각비 · 이자비용은 DART 원문의 재무상태표 · 현금흐름표 · 주석에서 읽은 값이며, 찾지 못한 항목은 – 로 표시";
+// 주요 재무지표(차입금 · EBITDA 등) 원문 읽기가 100개사 모두 끝나기 전에는(dart.json metrics_ready) 예전 재무 요약 양식으로 보여 준다
+const FINK_OLD=[["매출액","rev","amt"],["영업이익","op","amt"],["영업이익률","opm","pct"],["당기순이익","ni","amt"],["자산총계","assets","amt"],["부채총계","liab","amt"],["자본총계","equity","amt"],["부채비율","dr","pct"]];
+const METRICS_ON=true; // 원문 숫자 점검이 끝나면 true — 그 전에는 예전 재무 요약 양식
+const MR=()=>METRICS_ON&&!!(DART&&DART.metrics_ready);
+const finK=()=>MR()?FINK_NEW:FINK_OLD;
+const finNote=()=>MR()?FIN_NOTE_NEW:"부채비율 = 부채총계 ÷ 자본총계";
+const finTitle=()=>MR()?"주요 재무지표":"재무 요약";
+const qNote=()=>MR()?"분기 열은 올해 누적 실적과 분기말 재무상태입니다(순차입금/EBITDA는 EBITDA 연환산). ":"분기 열은 올해 누적 실적과 분기말 재무상태입니다. ";
+function finSel(dc){ return dc?(FINB==="별도"&&dc.fin_s?dc.fin_s:dc.fin)||null:null; }
+function finOf(reg){ return finSel(DART&&DART.co&&DART.co[reg]); }
+function finPeriods(f){
+  if(!f||!f.periods) return [];
+  const fy=f.periods.filter(p=>p.t==="FY").sort((a,b)=>a.p<b.p?-1:1).slice(-5);
+  const q=f.periods.filter(p=>p.t!=="FY").sort((a,b)=>a.p<b.p?1:-1)[0];
+  return q?[...fy,q]:fy;
+}
+const KSIC={"41":"종합 건설업","411":"건물 건설업","4111":"주거용 건물 건설업","4112":"비주거용 건물 건설업","412":"토목 건설업","4121":"지반조성 건설업","4122":"토목 시설물 건설업",
+  "42":"전문직별 공사업","68":"부동산업","6812":"부동산 개발 및 공급업","6811":"부동산 임대업","70":"회사 본부 및 경영 컨설팅 서비스업","71":"전문 서비스업",
+  "72":"건축기술·엔지니어링 및 기타 과학기술 서비스업","7211":"건축기술 서비스업","7212":"엔지니어링 서비스업","46":"도매 및 상품 중개업","49":"육상 운송업","50":"수상 운송업",
+  "52":"창고 및 운송관련 서비스업","20":"화학물질 및 화학제품 제조업","23":"비금속 광물제품 제조업","24":"1차 금속 제조업","25":"금속 가공제품 제조업","28":"전기장비 제조업",
+  "29":"기타 기계 및 장비 제조업","35":"전기·가스·증기 공급업","55":"숙박업","64":"금융업","74":"사업시설 관리 및 조경 서비스업","75":"사업 지원 서비스업"};
+const ksic=c=>{c=String(c||""); for(let n=c.length;n>=2;n--){ if(KSIC[c.slice(0,n)]) return KSIC[c.slice(0,n)]; } return c?`업종코드 ${c}`:"–";};
+const AGF={KIS:"한국신용평가",KR:"한국기업평가",NICE:"나이스신용평가"};
+function overviewHTML(r,dc){
+  const i=(dc&&dc.info)||{};
+  const est=i.est&&/^\d{8}$/.test(i.est)?`${i.est.slice(0,4)}년 ${i.est.slice(4,6)}월 ${i.est.slice(6)}일`:"–";
+  const b=AG.map(a=>({a,...(r.ratings[a]||{}),kind:(r.ratings[a]||{}).kind||"bond"})).filter(x=>x.grade).sort((x,y)=>gi(x)-gi(y))[0];
+  const rt=b?`${esc(b.grade)}${b.kind!=="bond"?` <span class="dim">${KINDS[b.kind]}</span>`:""}<span class="dim">(${AGF[b.a]}${b.date?` / ${b.date.replace(/-/g,".")}`:""})</span>`:'<span class="dim">공시 등급 없음</span>';
+  const row=(a,b,c,d)=>`<tr class="two"><th>${a}</th><td>${b}</td><th>${c}</th><td>${d}</td></tr>`;
+  return `<table class="kv2"><tbody>
+    ${row("회사명",esc(i.nm||r.name),"대표이사",esc((i.ceo||"–").replace(/\s*,\s*/g,", ")))}
+    ${row("설립일",est,"업종",esc(ksic(i.ind)))}
+    ${row("신용등급",rt,"도급순위",`${r.rank}위 <span class="dim">(${META.year}년 기준)</span>`)}
+    <tr><th>주소</th><td colspan="3">${esc(i.adres||"–")}</td></tr>
+    ${i.hm?`<tr><th>홈페이지</th><td colspan="3"><a href="${esc(/^https?:/.test(i.hm)?i.hm:"http://"+i.hm)}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">${esc(i.hm)}</a></td></tr>`:""}
+  </tbody></table>`;
+}
+function holdersHTML(dc){
+  const sh=dc&&dc.sh;
+  if(!sh) return `<p class="hint">${DART?"이 회사는 감사보고서와 DART 공시에 주주별 지분 구성을 밝히지 않습니다.":"준비 중입니다."}</p>`;
+  const f=v=>v==null?"–":`${v.toFixed(1)}%`;
+  const hasRel=sh.list.some(x=>x.rel);
+  const rows=sh.list.map(x=>`<tr><td>${esc(x.nm)}</td>${hasRel?`<td class="dim">${esc((x.rel||"").replace(/\n/g," "))}</td>`:""}<td class="n">${f(x.pct)}</td></tr>`).join("");
+  const extra=(sh.treasury?`<tr><td>자기주식</td>${hasRel?"<td></td>":""}<td class="n">${f(sh.treasury)}</td></tr>`:"")+(sh.etc?`<tr><td>기타</td>${hasRel?"<td></td>":""}<td class="n">${f(sh.etc)}</td></tr>`:"");
+  return `<table class="mini" style="margin-top:0"><thead><tr><th>주주명</th>${hasRel?"<th>관계</th>":""}<th class="n">지분율</th></tr></thead><tbody>${rows}${extra}
+    <tr><td class="sum">합계</td>${hasRel?"<td></td>":""}<td class="n sum">100.0%</td></tr></tbody></table>
+    <p class="hint" style="margin-top:6px">${sh.asof?`${sh.asof.replace(/-/g,".")} 기준 · `:""}출처: ${sh.no?`<a href="${dartUrl(sh.no)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(sh.src)}</a>`:esc(sh.src)}. 보통주 기준이며 기타는 표에 없는 주주 합계입니다.</p>`;
+}
+
+// ---------- 수주 현황 · 보증·약정 현황 ----------
+function blOf(reg){ return BL&&BL.co&&BL.co[reg]||null; }
+const eok=v=>v==null?"–":Math.abs(v)<100&&Math.round(v)!==v?v.toLocaleString("ko-KR",{minimumFractionDigits:1,maximumFractionDigits:1}):Math.round(v).toLocaleString("ko-KR");
+const GENERIC=/^(건설|플랜트|토목|건축|주택|인프라|환경|기타|국내|해외)?\s*(사업|공사|부문|용역)?$/;
+const dnorm=s=>String(s||"").replace(/\s+/g,"").replace(/[-/년월]/g,".").replace(/일$/,"").replace(/\.+$/,"");
+function ordRows(o){
+  return o.rows.map(x=>{ const gen=GENERIC.test((x.nm||"").trim())&&x.own;
+    return {...x, main:gen?x.own:(x.nm||x.own||"–"), sub:gen?(x.nm||""):(x.own||""), pr:x.amt&&x.done!=null?x.done/x.amt*100:null}; });
+}
+function blSrc(b){ return `${b.kind==="per"?"":"감사보고서 "}<a href="${dartUrl(b.no)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(b.nm||"원문")}</a>`; }
+// 매출 · 자기자본 대비 비율은 재무가 별도 기준일 때만(연결 재무와 회사 자신의 수주 · 보증을 섞지 않게)
+function lastRev(reg){ const f=finOf(reg); if(!f||!f.periods||f.basis!=="별도") return null; const fy=f.periods.filter(p=>p.t==="FY"&&p.rev).sort((a,b)=>a.p<b.p?-1:1).pop(); return fy?{v:fy.rev,y:fy.p}:null; }
+function lastEq(reg){ const f=finOf(reg); if(!f||!f.periods||f.basis!=="별도") return null; const p=[...f.periods].filter(p=>p.equity).sort((a,b)=>(a.t==="FY"?a.p+"-12":a.p)<(b.t==="FY"?b.p+"-12":b.p)?-1:1).pop(); return p?p.equity:null; }
+const flt=n=>n>12?`<input type="search" placeholder="현장·발주처 검색" aria-label="표 안에서 찾기" data-flt>`:"";
+function ordCard(r){
+  const reg=regOf(r), b=blOf(reg), xl=`<button type="button" class="xlb" id="xl-ord" title="수주 현황 전체를 엑셀 파일로 받습니다"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11"/></svg>엑셀</button>`;
+  const head=`<h3>수주 현황 <span class="h3r"><span>${b&&b.asof?`${b.asof} 기준 · `:""}억원</span>${b&&b.ord?xl:""}</span></h3>`;
+  if(!BL) return `<div class="card">${head}<p class="hint">준비 중입니다.</p></div>`;
+  if(!b||!b.ord) return `<div class="card">${head}<p class="hint">${b?`최근 원문(${blSrc(b)})에 현장별 수주 표가 없습니다.`:"DART에서 이 회사의 수주 자료를 찾지 못했습니다."}</p></div>`;
+  const o=b.ord, rv=lastRev(reg);
+  if(o.kind==="list"){
+    const R=ordRows(o).sort((a,c)=>(c.rem??-1)-(a.rem??-1)), S=o.sum;
+    const ratio=rv&&S.rem?S.rem/rv.v:null;
+    const sum=`<table class="bl-sum"><tbody>
+      <tr><th>현장 수</th><td><b>${R.length.toLocaleString("ko-KR")}</b>개</td></tr>
+      <tr><th>계약잔액 합계</th><td><b>${eok(S.rem)}</b>억원${ratio?` <span class="dim">· ${rv.y}년 매출액의 ${ratio.toFixed(1)}배</span>`:""}</td></tr>
+      ${S.amt?`<tr><th>도급액 합계</th><td><b>${eok(S.amt)}</b>억원${S.done?` <span class="dim">· 기성 ${eok(S.done)}억원</span>`:""}</td></tr>`:""}
+    </tbody></table>`;
+    const rows=R.map(x=>`<tr data-q="${esc((x.main+" "+x.sub+" "+(x.g||"")).toLowerCase())}"><td class="w">${x.g?`<span class="gt">${esc(x.g)}</span>`:""}${esc(x.main)}${x.sub||x.cd||x.ed?`<small>${[x.sub, (x.cd||x.ed)?`${dnorm(x.cd)||"…"} ~ ${dnorm(x.ed)||"…"}`:""].filter(Boolean).map(esc).join(" · ")}</small>`:""}</td><td class="n" data-v="${x.amt??""}">${eok(x.amt)}</td><td class="n" data-v="${x.rem??""}">${eok(x.rem)}</td><td class="n" data-v="${x.pr??""}">${x.pr==null?"–":Math.min(100,x.pr).toFixed(0)+"%"}</td></tr>`).join("");
+    return `<div class="card">${head}${sum}
+      <div class="bl-sub"><span>현장별 수주 (전체 ${R.length}개 · 제목을 누르면 정렬)</span>${flt(R.length)}</div>
+      <div class="bl-box"><table class="mini"><thead><tr><th>현장 · 발주처 · 계약기간</th><th class="n" data-k="1">도급액</th><th class="n" data-k="2" aria-sort="descending">계약잔액</th><th class="n" data-k="3">기성률</th></tr></thead><tbody>${rows}</tbody>
+      <tfoot><tr><td>합계</td><td class="n">${S.amt?eok(S.amt):""}</td><td class="n">${eok(S.rem)}</td><td class="n">${S.amt&&S.done?Math.min(100,S.done/S.amt*100).toFixed(0)+"%":""}</td></tr></tfoot></table></div>
+      <p class="hint" style="margin-top:6px">출처: ${blSrc(b)}의 수주상황 표에 실린 현장을 모두 옮겼습니다. 합계는 표에 실린 현장 기준이며, 기성률 = 기성(완성공사액) ÷ 도급액입니다.</p></div>`;
+  }
+  const S=o.sum, R=o.rows, has=k=>R.some(x=>x[k]!=null);
+  const ks=[["amt","총도급액"],["beg","기초 잔액"],["new","신규·증감"],["rev","수익 인식"],["end","기말 잔액"]].filter(([k])=>has(k));
+  const ratio=rv&&S.end?S.end/rv.v:null;
+  const sum=`<table class="bl-sum"><tbody>
+    <tr><th>공사계약 잔액(기말)</th><td><b>${eok(S.end)}</b>억원${ratio?` <span class="dim">· ${rv.y}년 매출액의 ${ratio.toFixed(1)}배</span>`:""}</td></tr>
+    ${S.new!=null?`<tr><th>당기 신규·증감</th><td><b>${eok(S.new)}</b>억원</td></tr>`:""}
+  </tbody></table>`;
+  const rows=R.map(x=>`<tr data-q="${esc(String(x.nm).toLowerCase())}"><td class="w">${esc(x.nm)}</td>${ks.map(([k])=>`<td class="n" data-v="${x[k]??""}">${eok(x[k])}</td>`).join("")}</tr>`).join("");
+  return `<div class="card">${head}${sum}
+    <div class="bl-sub"><span>공사계약 잔액 변동${R.length>1?` (전체 ${R.length}개)`:""}</span>${flt(R.length)}</div>
+    <div class="bl-box"><table class="mini"><thead><tr><th>구분</th>${ks.map(([k,l],i)=>`<th class="n" data-k="${i+1}"${k==="end"?' aria-sort="descending"':""}>${l}</th>`).join("")}</tr></thead><tbody>${rows}</tbody>
+    ${R.length>1?`<tfoot><tr><td>합계</td>${ks.map(([k])=>`<td class="n">${eok(S[k])}</td>`).join("")}</tr></tfoot>`:""}</table></div>
+    <p class="hint" style="margin-top:6px">출처: ${blSrc(b)} 주석의 공사계약 잔액 표입니다. 감사보고서만 내는 회사라 1년에 한 번 갱신됩니다.</p></div>`;
+}
+function cgCard(r){
+  const reg=regOf(r), b=blOf(reg), xl=`<button type="button" class="xlb" id="xl-cg" title="보증·약정 현황 전체를 엑셀 파일로 받습니다"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11"/></svg>엑셀</button>`;
+  const head=`<h3>보증·약정 현황 <span class="h3r"><span>${b&&b.asof?`${b.asof} 기준 · `:""}억원</span>${b&&b.cg?xl:""}</span></h3>`;
+  if(!BL) return `<div class="card">${head}<p class="hint">준비 중입니다.</p></div>`;
+  if(!b||!b.cg) return `<div class="card">${head}<p class="hint">${b?`최근 원문(${blSrc(b)})에 남에게 제공한 보증·약정 표가 없습니다.`:"DART에서 이 회사의 자료를 찾지 못했습니다."}</p></div>`;
+  const c=b.cg, sm=c.sum||{}, eq=lastEq(reg), L=[];
+  const amtTxt=(o,keys)=>keys.filter(([k])=>o[k]!=null).map(([k,l])=>`${l} <b>${eok(o[k])}</b>`).join(" · ");
+  if(c.pf) L.push(["부동산 PF 보증",`<b>${c.pf.length}</b>개 사업장 · ${amtTxt(c.pf_sum,[["amt","보증금액"],["loan","대출잔액"]])}${eq&&c.pf_sum.amt?` <span class="dim">· 자기자본의 ${(c.pf_sum.amt/eq*100).toFixed(0)}%</span>`:""}`]);
+  if(c.spc) L.push(["유동화증권 신용보강",`<b>${c.spc.length}</b>건 · 미상환잔액 <b>${eok(c.spc_sum)}</b>`]);
+  if(sm.cmpl) L.push(["책임준공 약정",[sm.cmpl.n!=null?`<b>${sm.cmpl.n}</b>건`:"",amtTxt(sm.cmpl,[["contract","도급금액"],["cmplamt","약정금액"],["lim","관련 대출한도"],["loan","관련 대출잔액"],["amt","보증금액"]])].filter(Boolean).join(" · ")]);
+  if(sm.mid) L.push(["중도금대출 보증",amtTxt(sm.mid,[["lim","보증한도"],["amt","보증금액"],["loan","대출잔액"]])]);
+  if(sm.soc) L.push(["SOC 사업 보증",amtTxt(sm.soc,[["lim","보증한도"],["amt","보증금액"],["loan","대출잔액"]])]);
+  let h=L.length?`<table class="bl-sum"><tbody>${L.map(([a,v])=>`<tr><th>${a}</th><td>${v}</td></tr>`).join("")}</tbody></table>`:"";
+  if(c.pf){
+    const R=[...c.pf].sort((a,d)=>(d.amt??d.loan??0)-(a.amt??a.loan??0));
+    h+=`<div class="bl-sub"><span>부동산 PF 보증 사업장별 (전체 ${R.length}개)</span>${flt(R.length)}</div>
+    <div class="bl-box"><table class="mini"><thead><tr><th>사업장 · 보강 유형 · 만기</th><th class="n" data-k="1" aria-sort="descending">보증금액</th><th class="n" data-k="2">대출잔액</th></tr></thead><tbody>${R.map(x=>{
+      const cl=v=>String(v||"").replace(/\(\*+\d*\)|\*+\d*$/g,"").trim(), t=[...new Set([cl(x.region),cl(x.use)].filter(Boolean))].join(" "), s=[cl(x.pf),cl(x.kind),x.debtor?`차주 ${x.debtor}`:"",x.lender?`대주 ${x.lender}`:"",x.share?`부담률 ${x.share}`:"",x.mat?`만기 ${dnorm(x.mat)||x.mat}`:""].filter(Boolean).join(" · ");
+      return `<tr data-q="${esc((t+" "+s+" "+(x.grp||"")).toLowerCase())}"><td class="w">${x.grp?`<span class="gt">${esc(x.grp)}</span>`:""}${esc(t||x.debtor||"사업장")}${s?`<small>${esc(s)}</small>`:""}</td><td class="n" data-v="${x.amt??x.lim??""}">${eok(x.amt??x.lim)}</td><td class="n" data-v="${x.loan??""}">${eok(x.loan)}</td></tr>`;}).join("")}</tbody>
+    <tfoot><tr><td>합계</td><td class="n">${eok(c.pf_sum.amt)}</td><td class="n">${eok(c.pf_sum.loan)}</td></tr></tfoot></table></div>`;
+  }
+  if(c.spc){
+    h+=`<div class="bl-sub"><span>유동화증권 신용보강 (전체 ${c.spc.length}건)</span>${flt(c.spc.length)}</div>
+    <div class="bl-box"><table class="mini"><thead><tr><th>발행회사 · 증권 · 사업장</th><th class="n" data-k="1">발행금액</th><th class="n" data-k="2" aria-sort="descending">미상환잔액</th></tr></thead><tbody>${[...c.spc].sort((a,d)=>(d.bal||0)-(a.bal||0)).map(x=>{
+      const s=[x.sec,x.use,x.kind,x.issued?`발행 ${dnorm(x.issued)||x.issued}`:""].filter(Boolean).join(" · ");
+      return `<tr data-q="${esc(((x.spc||"")+" "+s).toLowerCase())}"><td class="w">${esc(x.spc||"–")}${s?`<small>${esc(s)}</small>`:""}</td><td class="n" data-v="${x.iss??""}">${eok(x.iss)}</td><td class="n" data-v="${x.bal??""}">${eok(x.bal)}</td></tr>`;}).join("")}</tbody>
+    <tfoot><tr><td>합계</td><td class="n"></td><td class="n">${eok(c.spc_sum)}</td></tr></tfoot></table></div>`;
+  }
+  if(c.raw) c.raw.forEach(t=>{
+    const nc=t.cols.length;
+    h+=`<p class="bl-cap">${esc(t.cap||"제공한 보증 · 약정")}${t.unit?` <span class="dim">(원문 단위: ${esc(t.unit)})</span>`:""}</p>
+    <div class="bl-box"><table class="mini"><thead><tr>${t.cols.map(x=>`<th>${esc(x)}</th>`).join("")}</tr></thead><tbody>${t.rows.map(rw=>`<tr>${Array.from({length:nc},(_,j)=>{const v=rw[j]??""; return `<td class="${/^[\d,.()\-△▲%]+$/.test(v.replace(/\s/g,""))&&/\d/.test(v)?"n":j===0?"w":""}">${esc(v)}</td>`;}).join("")}</tr>`).join("")}</tbody></table></div>`;
+  });
+  h+=`<p class="hint" style="margin-top:6px">출처: ${blSrc(b)}${b.kind==="per"?"의 '우발부채 등에 관한 사항'":" 주석의 우발부채와 약정사항"}에서 회사가 남에게 제공한 보증·약정만 옮겼습니다(소송 · 담보 · 제공받은 보증 제외).${c.raw?" 표준 서식이 아닌 표는 원문 그대로 싣고, 숫자는 원문 단위입니다.":""}${b.kind==="aud"?" 감사보고서 기준이라 1년에 한 번 갱신됩니다.":""}</p>`;
+  return `<div class="card">${head}${h}</div>`;
+}
+// 표 안 검색 · 정렬
+function blBind(root){
+  root.querySelectorAll("input[data-flt]").forEach(inp=>{
+    const box=inp.closest(".bl-sub").nextElementSibling;
+    inp.addEventListener("input",()=>{ const q=inp.value.trim().toLowerCase(); box.querySelectorAll("tbody tr").forEach(tr=>tr.classList.toggle("hide",!!q&&!(tr.dataset.q||"").includes(q))); });
+  });
+  root.querySelectorAll(".bl-box th[data-k]").forEach(th=>th.addEventListener("click",()=>{
+    const tb=th.closest("table").tBodies[0], k=+th.dataset.k, desc=th.getAttribute("aria-sort")!=="descending";
+    th.closest("tr").querySelectorAll("th").forEach(x=>x.removeAttribute("aria-sort")); th.setAttribute("aria-sort",desc?"descending":"ascending");
+    const v=tr=>{const x=tr.cells[k]?.dataset.v; return x===""||x==null?-Infinity:+x;};
+    [...tb.rows].sort((a,b)=>desc?v(b)-v(a):v(a)-v(b)).forEach(tr=>tb.appendChild(tr));
+  }));
+}
+// ---------- 심의서 Appendix(워드) ----------
+// 양식 파일(appendix-template.docx)의 본문 자리에 회사 개요 · 주주 · 재무 · 수주 · 보증·약정 표를 채운다
+function loadJSZip(){
+  if(window.JSZip) return Promise.resolve();
+  return new Promise((ok,fail)=>{ const s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"; s.onload=ok; s.onerror=fail; document.head.appendChild(s); });
+}
+const WX={
+  x:s=>String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"),
+  font:'<w:rFonts w:asciiTheme="minorHAnsi" w:eastAsiaTheme="minorHAnsi" w:hAnsiTheme="minorHAnsi"/>',
+  rpr(o={}){ return `<w:rPr>${WX.font}${o.b?"<w:b/><w:bCs/>":""}${o.color?`<w:color w:val="${o.color}"/>`:""}${o.sz?`<w:sz w:val="${o.sz}"/><w:szCs w:val="${o.sz}"/>`:""}</w:rPr>`; },
+  run(t,o={}){ return `<w:r>${WX.rpr(o)}<w:t xml:space="preserve">${WX.x(t)}</w:t></w:r>`; },
+  p(t,o={}){ // 문단 하나(줄바꿈 없음)
+    const sp=o.spacing||"";
+    return `<w:p><w:pPr>${sp}${o.jc?`<w:jc w:val="${o.jc}"/>`:""}${WX.rpr(o)}</w:pPr>${t===""?"":WX.run(t,o)}</w:p>`;
+  },
+  gap(sz=4){ return `<w:p><w:pPr><w:spacing w:after="0" w:line="${sz*10}" w:lineRule="exact"/><w:rPr>${WX.font}<w:sz w:val="${sz}"/></w:rPr></w:pPr></w:p>`; },
+  title(t){ // 양식의 '# Appendix' 제목 띠
+    const b='w:val="single" w:sz="12" w:space="0" w:color="1F497D"';
+    return `<w:tbl><w:tblPr><w:tblW w:w="5016" w:type="pct"/><w:tblBorders><w:bottom ${b}/></w:tblBorders><w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="1" w:lastColumn="0" w:noHBand="0" w:noVBand="1"/></w:tblPr><w:tblGrid><w:gridCol w:w="574"/><w:gridCol w:w="9648"/></w:tblGrid>
+<w:tr><w:trPr><w:trHeight w:val="44"/></w:trPr><w:tc><w:tcPr><w:tcW w:w="281" w:type="pct"/><w:tcBorders><w:top ${b}/><w:left ${b}/><w:bottom ${b}/><w:right ${b}/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="1F497D"/><w:tcMar><w:top w:w="0" w:type="dxa"/><w:left w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="0" w:type="dxa"/></w:tcMar><w:vAlign w:val="center"/></w:tcPr>${WX.p("#",{jc:"center",b:1,color:"FFFFFF",sz:28})}</w:tc>
+<w:tc><w:tcPr><w:tcW w:w="4719" w:type="pct"/><w:tcBorders><w:left ${b}/><w:bottom ${b}/></w:tcBorders><w:vAlign w:val="center"/></w:tcPr><w:p><w:pPr>${WX.rpr({b:1,color:"1F497D",sz:28})}</w:pPr>${WX.run(" "+t,{b:1,color:"1F497D",sz:28})}</w:p></w:tc></w:tr></w:tbl>`;
+  },
+  h(t){ return WX.p(t,{b:1,spacing:'<w:spacing w:before="160" w:after="40"/>'}); },
+  note(t){ return WX.p(t,{jc:"right",sz:16,spacing:'<w:spacing w:after="20"/>'}); },
+  sub(t){ return WX.p("- "+String(t).replace(/^\s*[-–·]\s*/,""),{b:1,sz:18,spacing:'<w:spacing w:before="100" w:after="20"/>'}); },
+  // cells: [{t, kind:'head'|'label'|'sum'|'', jc, span}] · widths(dxa)
+  table(widths, rows, o={}){
+    const W=widths.reduce((a,b)=>a+b,0), sz=o.sz||null, bd='w:val="single" w:sz="4" w:space="0" w:color="auto"';
+    const tr=(cells,ri)=>{
+      let ci=0;
+      const tcs=cells.map(c=>{
+        const span=c.span||1, w=widths.slice(ci,ci+span).reduce((a,b)=>a+b,0), first=ci===0; ci+=span; const last=ci>=widths.length;
+        const fill=c.kind==="head"?"1F497D":(c.kind==="label"||c.kind==="sum")?"DBE5F1":null;
+        const ro={b:c.kind&&c.kind!=="",color:c.kind==="head"?"FFFFFF":"000000",sz:c.sz||sz};
+        const lines=c.vm==="cont"?[""]:String(c.t??"").split("\n");
+        return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${span>1?`<w:gridSpan w:val="${span}"/>`:""}${c.vm==="restart"?'<w:vMerge w:val="restart"/>':c.vm==="cont"?"<w:vMerge/>":""}<w:tcBorders>${c.top?`<w:top w:val="single" w:sz="${c.top}" w:space="0" w:color="auto"/>`:`<w:top ${bd}/>`}${first?'<w:left w:val="nil"/>':`<w:left ${bd}/>`}<w:bottom ${bd}/>${last?'<w:right w:val="nil"/>':`<w:right ${bd}/>`}</w:tcBorders>${fill?`<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/>`:""}<w:vAlign w:val="center"/></w:tcPr>${
+          lines.map(l=>`<w:p><w:pPr><w:spacing w:after="0" w:line="${o.line||260}" w:lineRule="auto"/><w:jc w:val="${c.jc||"center"}"/>${WX.rpr(ro)}</w:pPr>${l===""?"":WX.run(l,ro)}</w:p>`).join("")}</w:tc>`;
+      }).join("");
+      const head=cells.some(c=>c.kind==="head");
+      return `<w:tr><w:trPr>${head?"<w:tblHeader/>":""}<w:cantSplit/><w:trHeight w:val="${o.h||(sz&&sz<20?300:420)}"/></w:trPr>${tcs}</w:tr>`;
+    };
+    return `<w:tbl><w:tblPr><w:tblW w:w="${W}" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="70" w:type="dxa"/><w:right w:w="70" w:type="dxa"/></w:tblCellMar><w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="1" w:lastColumn="0" w:noHBand="0" w:noVBand="1"/></w:tblPr><w:tblGrid>${widths.map(w=>`<w:gridCol w:w="${w}"/>`).join("")}</w:tblGrid>${rows.map(tr).join("")}</w:tbl>`;
+  }
+};
+const W_FULL=10202;
+// 숫자: 천단위 쉼표, 음수는 괄호(양식과 같게)
+const wn=(v,d)=>{ if(v==null||isNaN(v)) return "-"; const dd=d??(Math.abs(v)<100&&Math.round(v)!==v?1:0);
+  const s=Math.abs(v).toLocaleString("ko-KR",{minimumFractionDigits:dd,maximumFractionDigits:dd}); return v<0?`(${s})`:s; };
+const wp=v=>v==null||isNaN(v)?"-":(v<0?`(${Math.abs(v).toFixed(1)})`:v.toFixed(1));
+const wd=s=>String(s||"").replace(/\s+/g,"").replace(/[-/년월]/g,".").replace(/일$/,"").replace(/\.+$/,"").replace(/^(?:19|20)(\d{2}\.\d{1,2})/,"$1"); // 양식처럼 yy.mm(.dd)
+const wclean=s=>String(s||"").replace(/\(\*+\d*\)|\*+\d*$/g,"").replace(/\s+/g," ").trim();
+const H=t=>({t,kind:"head"}), L=t=>({t,kind:"label"}), V=(t,jc)=>({t,jc}), N=v=>({t:v,jc:"right"}), S=(t,jc)=>({t,kind:"sum",jc});
+function wPer(p){ // 재무 열 머리글 2025(12) · 2026(06)
+  if(p.t==="FY") return `${p.p}(12)`;
+  const m=String(p.p).match(/(\d{4})\s*(1Q|1H|3Q|Q1|H1|Q3)/i), mm={"1Q":"03","Q1":"03","1H":"06","H1":"06","3Q":"09","Q3":"09"};
+  return m?`${m[1]}(${mm[m[2].toUpperCase()]})`:String(p.p);
+}
+function appendixXML(r){
+  const reg=regOf(r), dc=DART&&DART.co&&DART.co[reg], i=(dc&&dc.info)||{}, b=blOf(reg), out=[];
+  const nm=i.nm||r.name;
+  out.push(WX.gap(2), WX.title("Appendix. 시공사 개요"), WX.gap(4));
+  // 내용이 없는 항목은 제목째 빼고, 남은 항목만 1부터 차례로 번호를 붙인다
+  let no=0;
+  const sec=(title,parts)=>{ if(parts.length) out.push(WX.h(`${++no}. ${title}`),...parts); };
+  // 1. 회사 개요
+  const est=i.est&&/^\d{8}$/.test(i.est)?`${i.est.slice(0,4)}년 ${i.est.slice(4,6)}월 ${i.est.slice(6)}일`:"-";
+  const bg=AG.map(a=>({a,...(r.ratings[a]||{}),kind:(r.ratings[a]||{}).kind||"bond"})).filter(x=>x.grade).sort((x,y)=>gi(x)-gi(y))[0];
+  const rt=bg?`${bg.grade}${bg.kind!=="bond"?` ${KINDS[bg.kind]}`:""}(${AGF[bg.a]}${bg.date?` / ${bg.date.replace(/-/g,".")}`:""})`:"-";
+  sec("회사 개요",[WX.table([1418,3118,2410,3256],[
+    [H("구 분"),H("내 용"),H("구 분"),H("내 용")],
+    [L("회사명"),V(nm),L("대표이사"),V((i.ceo||"-").replace(/\s*,\s*/g,", "))],
+    [L("설립일"),V(est),L("업종"),V(ksic(i.ind))],
+    [L("신용등급"),V(rt),L("도급순위"),V(`${r.rank}위 (${META.year}년 기준)`)],
+    [L("주소"),{t:i.adres||"-",span:3}],
+  ])]);
+  // 2. 주주 현황
+  const sh=dc&&dc.sh, s2=[];
+  if(sh&&sh.list&&sh.list.length){
+    s2.push(WX.note(`(단위: %, ${sh.asof?`기준일: ${sh.asof.replace(/-/g,".")}, `:""}출처: Dart 공시 ${sh.src||""}, 보통주 기준)`));
+    // 비고 열은 공란(심의서에서 직접 쓰는 칸)
+    const hasRel=sh.list.some(x=>x.rel), w=hasRel?[3300,2900,1600,2402]:[4600,1800,3802];
+    const rows=[hasRel?[H("주주명"),H("관계"),H("지분율"),H("비고")]:[H("주주명"),H("지분율"),H("비고")]];
+    const row=(a,rel,v,k)=>hasRel?[k?S(a):V(a),k?S(""):V(rel||""),k?S(wp(v),"right"):N(wp(v)),k?S(""):V("")]:[k?S(a):V(a),k?S(wp(v),"right"):N(wp(v)),k?S(""):V("")];
+    sh.list.forEach(x=>rows.push(row(x.nm,(x.rel||"").replace(/\n/g," "),x.pct)));
+    if(sh.treasury) rows.push(row("자기주식","",sh.treasury));
+    if(sh.etc) rows.push(row("기타","",sh.etc));
+    rows.push(row("합계","",100,1));
+    s2.push(WX.table(w,rows));
+  }
+  sec("주주 현황",s2);
+  // 3. 주요 재무지표
+  const f=finSel(dc), ps=finPeriods(f), s3=[];
+  if(ps.length){
+    s3.push(WX.note(`(단위: 억원, 배, %, 기준: ${f.basis}, 출처: Dart 공시${f.src&&f.src!=="사업보고서"?` ${f.src}`:""})`));
+    const cw=Math.floor((W_FULL-1418)/ps.length), widths=[1418,...ps.map((_,k)=>k<ps.length-1?cw:W_FULL-1418-cw*(ps.length-1))];
+    const K=finK().map(([lb,k,t,g])=>[lb,k,t==="amt"?wn:wp,g]);
+    // 'EBITDA/금융비용' · '순차입금/EBITDA'는 '/' 뒤에서 줄을 바꾼다(칸 안에서 단어가 잘리지 않게)
+    s3.push(WX.table(widths,[[H("구 분"),...ps.map(p=>H(wPer(p)))],...K.map(([lb,k,fm,g],i)=>[L(lb.replace("/","/\n")),...ps.map(p=>N(fm(p[k])))].map(c=>g&&i?{...c,top:12}:c))]));
+  }
+  sec(MR()?"주요 재무지표":"요약 재무제표",s3);
+  // 4. 수주 현황
+  const src=b?`Dart 공시 ${b.kind==="aud"?"":""}${b.nm||""}`:"Dart 공시";
+  const asof=b&&b.asof?` (${b.asof.replace(".","년 ")}월말 기준)`:"";
+  const o=b&&b.ord, s4=[], push4=(...x)=>s4.push(...x);
+  if(o&&o.kind==="list"&&ordRows(o).length){
+    const R=ordRows(o).sort((a,c)=>(c.rem??-1)-(a.rem??-1)), Sm=o.sum;
+    push4(WX.note(`(단위: 억원, 출처: ${src} 수주상황, 현장 ${R.length}개 전체)`));
+    const w=[900,2550,1900,950,950,1000,1000,952];
+    const rows=[[H("구분"),H("공사명"),H("발주처"),H("계약일"),H("완공예정"),H("도급액"),H("계약잔액"),H("기성률")]];
+    R.forEach(x=>rows.push([V(x.g||""),V(x.nm||x.own||"","left"),V(x.own&&x.own!==x.nm?x.own:"","left"),V(wd(x.cd)),V(wd(x.ed)),N(wn(x.amt)),N(wn(x.rem)),N(x.pr==null?"-":Math.min(100,x.pr).toFixed(0)+"%")]));
+    rows.push([S("합계",undefined),S(""),S(""),S(""),S(""),S(Sm.amt?wn(Sm.amt):"","right"),S(wn(Sm.rem),"right"),S(Sm.amt&&Sm.done?Math.min(100,Sm.done/Sm.amt*100).toFixed(0)+"%":"","right")]);
+    rows[rows.length-1]=[{t:"합계",kind:"sum",span:5},rows[rows.length-1][5],rows[rows.length-1][6],rows[rows.length-1][7]];
+    push4(WX.table(w,rows,{sz:16,line:220}));
+    push4(WX.p("주) 원문 수주상황 표의 현장 전체이며 합계는 표에 실린 현장 기준 / 기성률 = 기성(완성공사액) ÷ 도급액",{sz:16,spacing:'<w:spacing w:before="40"/>'}));
+  } else if(o&&o.kind!=="list"&&o.rows&&o.rows.length){
+    const ks=[["amt","총도급액"],["beg","기초 잔액"],["new","신규·증감"],["rev","수익 인식"],["end","기말 잔액"]].filter(([k])=>o.rows.some(x=>x[k]!=null));
+    push4(WX.note(`(단위: 억원, 출처: Dart 공시 ${b.nm||"감사보고서"} 주석 공사계약 잔액)`));
+    const lw=3400, cw=Math.floor((W_FULL-lw)/ks.length), w=[lw,...ks.map((_,k)=>k<ks.length-1?cw:W_FULL-lw-cw*(ks.length-1))];
+    const rows=[[H("구분"),...ks.map(k=>H(k[1]))],...o.rows.map(x=>[V(x.nm,"left"),...ks.map(([k])=>N(wn(x[k])))])];
+    if(o.rows.length>1) rows.push([S("합계"),...ks.map(([k])=>S(wn(o.sum[k]),"right"))]);
+    push4(WX.table(w,rows,{sz:16,line:220}));
+  }
+  sec("수주 현황"+asof,s4);
+  // 5. 보증·약정 현황 — 아래 표들을 모은 뒤 하나라도 있으면 제목을 붙인다
+  const c0=b&&b.cg, out0=out.length;
+  // 빈 목록(0건)은 없는 것으로 본다
+  const c=c0&&{...c0,pf:c0.pf&&c0.pf.length?c0.pf:null,spc:c0.spc&&c0.spc.length?c0.spc:null,raw:(c0.raw||[]).filter(t=>t.rows&&t.rows.length)};
+  if(c){
+    // 요약표: 유형별 건수 · 금액을 칸마다 따로
+    const sm=c.sum||{}, Ls=[], sum=(xs,k)=>xs.some(x=>x[k]!=null)?xs.reduce((a,x)=>a+(x[k]||0),0):null;
+    if(c.pf) Ls.push(["부동산 PF 보증",{n:c.pf.length,lim:sum(c.pf,"lim"),amt:c.pf.reduce((a,x)=>a+(x.amt??x.lim??0),0),loan:c.pf_sum.loan}]);
+    if(c.spc) Ls.push(["유동화증권 신용보강",{n:c.spc.length,loan:c.spc_sum}]);
+    if(sm.cmpl) Ls.push(["책임준공 약정",sm.cmpl]);
+    if(sm.mid) Ls.push(["중도금대출 보증",sm.mid]);
+    if(sm.soc) Ls.push(["SOC 사업 보증",sm.soc]);
+    if(Ls.length){
+      out.push(WX.note(`(단위: 억원, 건, 출처: ${src} 우발부채 등에 관한 사항)`));
+      const ks=[["n","건수"],["lim","보증한도"],["amt","보증금액"],["loan","대출잔액"],["contract","도급금액"],["cmplamt","약정금액"]];
+      out.push(WX.table([2152,950,1420,1420,1420,1420,1420],[[H("구 분"),...ks.map(([,l])=>H(l))],
+        ...Ls.map(([a,v])=>[L(a),...ks.map(([k])=>N(v[k]==null?"-":k==="n"?Math.round(v[k]).toLocaleString("ko-KR"):wn(v[k])))])]));
+      const fn=[];
+      if(c.spc) fn.push("유동화증권 신용보강의 대출잔액은 증권 미상환잔액");
+      if(sm.cmpl) fn.push("책임준공 약정의 대출잔액은 책임준공 약정 관련 대출잔액, 약정금액은 책임준공 약정금액");
+      if(fn.length) out.push(WX.p("주) "+fn.join(" / "),{sz:16,spacing:'<w:spacing w:before="40"/>'}));
+    }
+    if(c.pf){
+      const R=[...c.pf].sort((a,d)=>(d.amt??d.lim??0)-(a.amt??a.lim??0));
+      out.push(WX.sub(`부동산 PF 보증 사업장별 (${R.length}개)`), WX.note("(단위: 억원)"));
+      const w=[1050,1000,1050,1850,950,1150,1000,1050,1102];
+      const rows=[[H("사업지역"),H("사업장구분"),H("신용보강"),H("차주"),H("대주"),H("만기"),H("보증한도"),H("보증금액"),H("대출잔액")]];
+      R.forEach(x=>rows.push([V(wclean(x.region)||(x.grp||"")),V(wclean(x.use)===wclean(x.region)?"":wclean(x.use)),V([...new Set([wclean(x.pf),wclean(x.kind)].filter(Boolean))].join("\n")),V(x.debtor||"","left"),V(x.lender||""),V(wd(x.mat)||x.mat||""),N(wn(x.lim)),N(wn(x.amt)),N(wn(x.loan))]));
+      rows.push([{t:"합계",kind:"sum",span:6},S(wn(c.pf.reduce((s,x)=>s+(x.lim||0),0)),"right"),S(wn(c.pf_sum.amt||null),"right"),S(wn(c.pf_sum.loan),"right")]);
+      out.push(WX.table(w,rows,{sz:16,line:220}));
+    }
+    if(c.spc){
+      out.push(WX.sub(`유동화증권 신용보강 (${c.spc.length}건)`), WX.note("(단위: 억원)"));
+      const w=[2600,1000,1500,1400,1100,1300,1302];
+      const rows=[[H("발행회사"),H("증권종류"),H("사업장"),H("신용보강"),H("발행일"),H("발행금액"),H("미상환잔액")]];
+      [...c.spc].sort((a,d)=>(d.bal||0)-(a.bal||0)).forEach(x=>rows.push([V(x.spc||"","left"),V(x.sec||""),V(x.use||""),V(x.kind||""),V(wd(x.issued)||x.issued||""),N(wn(x.iss)),N(wn(x.bal))]));
+      rows.push([{t:"합계",kind:"sum",span:6},S(wn(c.spc_sum),"right")]);
+      out.push(WX.table(w,rows,{sz:16,line:220}));
+    }
+    (c.raw||[]).forEach(t=>{
+      // 원문 단위(원 · 천원 · 백만원)의 금액은 억원으로 바꾼다 — 날짜 · 건수 · 비율 열은 그대로
+      const div={"원":1e8,"천원":1e5,"백만원":1e2,"억원":1}[t.unit]||null;
+      // 머리글 '대출잔액/만기구분/3개월이내' → 여러 줄 머리글(위 칸은 묶고, 아래 칸에 세부 기간)
+      const fnote=x=>String(x??"").replace(/\(\s*\*\s*\d*\s*\)|\*\d+$/g,"").trim(); // 원문 각주 표시(*1) 제거 — 각주는 싣지 않으므로
+      let P=t.cols.map(c=>String(c).replace(/\(?\s*단\s*위\s*[:：][^)/]*\)?/g,"").split("/").map(x=>fnote(x)).filter(Boolean)), rows0=t.rows.map(r=>r.map(fnote));
+      const lastP=P.map(p=>p[p.length-1]||"");
+      if(P.every(p=>p.length>=2)&&lastP.filter(x=>/^[-–]$|^[\d,().]+$/.test(x)).length>=P.length/2){ // 첫 데이터 행이 머리글에 붙어 온 경우
+        rows0=[lastP,...rows0]; P=P.map(p=>p.slice(0,-1)); }
+      // 만기 구간 머리글은 짧게: 3개월초과6개월이내 → 3~6개월, 1년초과2년이내 → 1~2년
+      const span_=x=>x.replace(/\s/g,"").replace(/^(\d+)(개월|년)초과(\d+)(개월|년)이내$/,(m,a,u1,c,u2)=>`${a}${u1===u2?"":u1}~${c}${u2}`)
+        .replace(/^(\d+)(개월|년)이내$/,"$1$2 이내").replace(/^(\d+)(개월|년)초과$/,"$1$2 초과");
+      P=P.map(p=>p.length?p.map((x,i)=>i===p.length-1?span_(x):x):[""]);
+      const D=Math.min(3,Math.max(...P.map(p=>p.length)));
+      P=P.map(p=>p.length>D?[...p.slice(0,D-1),p.slice(D-1).join(" ")]:p);
+      const leafOf=p=>p[p.length-1].replace(/\s/g,"");
+      // 금액 열: 맨 아래 머리글이 날짜 · 기간 · 건수 · 비율이 아닌 열(첫 열 제외)
+      const amtCol=P.map((p,j)=>j>0&&!/일자$|일$|기간$|건수|수량|율|%|비고|연도|년도/.test(leafOf(p))&&!/건수|율|%/.test(p.join("")));
+      const conv=(v,j)=>{ if(!div||!amtCol[j]) return v; const s2=String(v).replace(/\s/g,""); if(!/^\(?[-△]?[\d,]+\)?$/.test(s2)||!/\d{3}/.test(s2)) return v;
+        const n=+s2.replace(/[(),△-]/g,""), neg=/^\(|^[-△]/.test(s2); return wn((neg?-1:1)*n/div); };
+      const cap1=String(t.cap||"").replace(/^\s*(?:[가-하]\.|\(?\d+(?:-\d+)?\)|\d+\.|[①-⑳])\s*/,"").trim();
+      // 원문 표 앞 문장(예: '…보증 내역은 없습니다.')이 제목으로 잡힌 경우는 일반 제목으로
+      const cap=!cap1||cap1.length>40||/다\.?$|없음|없습니다/.test(cap1)?"제공한 보증 · 약정":cap1;
+      out.push(WX.sub(cap), WX.note(div?"(단위: 억원)":`(단위: ${t.unit||"원문 단위"})`));
+      const n=P.length, body=rows0.map(rw=>Array.from({length:n},(_,j)=>conv(rw[j]??"",j)));
+      const head=[], leafSpan={}; // 같은 이름이 잇단 맨 아래 머리글(예: 구분 | 구분)은 한 칸으로 합친다
+      for(let L=0;L<D;L++){
+        const row=[]; let j=0;
+        while(j<n){
+          const p=P[j];
+          if(p.length<=L){ const sp=leafSpan[j]||1; row.push({t:"",kind:"head",vm:"cont",span:sp}); j+=sp; continue; }
+          if(p.length===L+1){ let k=j+1; while(k<n&&P[k].length===L+1&&P[k].join("/")===p.join("/")) k++;
+            leafSpan[j]=k-j; row.push({t:p[L],kind:"head",span:k-j,vm:L<D-1?"restart":undefined}); j=k; continue; }
+          let k=j+1; const key=p.slice(0,L+1).join("\u0001");
+          while(k<n&&P[k].length>L+1&&P[k].slice(0,L+1).join("\u0001")===key) k++;
+          row.push({t:p[L],kind:"head",span:k-j}); j=k;
+        }
+        head.push(row);
+      }
+      // 열 너비: 내용 길이에 맞춰 나눔(한글은 넓게)
+      const vis=s=>[...String(s)].reduce((a,ch)=>a+(/[가-힣]/.test(ch)?1.7:1),0);
+      const wt=P.map((p,j)=>Math.min(j===0?26:20,Math.max(7,vis(p[p.length-1])*0.6,...body.map(r=>vis(r[j])))));
+      const tot=wt.reduce((a,b)=>a+b,0);
+      const w=wt.map(x=>Math.floor(x/tot*W_FULL)); w[w.length-1]+=W_FULL-w.reduce((a,b)=>a+b,0);
+      const isNum=v=>/\d/.test(v)&&/^[\d,.()\-△▲%\s]+$/.test(v);
+      out.push(WX.table(w,[...head,...body.map(rw=>rw.map((v,j)=>isNum(v)?N(v):V(v,j===0?"left":"center")))],{sz:16,line:220}));
+    });
+    if(out.length>out0) out.push(WX.p("주) 회사가 타인을 위하여 제공한 보증·약정만 기재(소송·담보·제공받은 보증 제외)",{sz:16,spacing:'<w:spacing w:before="40"/>'}));
+  }
+  if(out.length>out0) out.splice(out0,0,WX.h(`${++no}. 보증·약정 현황${asof}`));
+  return out.join("");
+}
+async function appendixDOCX(r){
+  await loadJSZip();
+  const tpl=await (await fetch("appendix-template.docx",{cache:"no-store"})).arrayBuffer();
+  const z=await JSZip.loadAsync(tpl);
+  const doc=await z.file("word/document.xml").async("string");
+  z.file("word/document.xml",doc.replace("{{BODY}}",appendixXML(r)));
+  const now=new Date().toISOString().replace(/\.\d+Z$/,"Z");
+  const core=await z.file("docProps/core.xml").async("string");
+  z.file("docProps/core.xml",core.replace(/<dc:title>.*?<\/dc:title>/,`<dc:title>${WX.x("Appendix. 시공사 개요 - "+r.name)}</dc:title>`).replace(/(<dcterms:created[^>]*>).*?(<\/dcterms:created>)/,`$1${now}$2`).replace(/(<dcterms:modified[^>]*>).*?(<\/dcterms:modified>)/,`$1${now}$2`));
+  return z.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document",compression:"DEFLATE"});
+}
+async function appendixDownload(btn,r){
+  if(btn.disabled) return;
+  const lb=btn.lastChild.textContent; btn.disabled=true; btn.lastChild.textContent="만드는 중…";
+  try{
+    await new Promise(ok=>setTimeout(ok,30)); // 버튼 글자가 먼저 바뀌게
+    const bl=await appendixDOCX(r), dc=DART&&DART.co&&DART.co[regOf(r)], nm=(dc&&dc.info&&dc.info.nm)||r.name;
+    const today=new Date(Date.now()+9*3600e3).toISOString().slice(0,10).replace(/-/g,"");
+    const a=document.createElement("a"); a.href=URL.createObjectURL(bl);
+    a.download=`${nm.replace(/\(주\)|（주）|주식회사|[㈜()\/\\:*?"<>|]/g,"").trim()}_Appendix_시공사개요_${today}.docx`;
+    document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);
+  }catch(e){ console.error(e); btn.lastChild.textContent="실패 · 다시 시도"; setTimeout(()=>{btn.lastChild.textContent=lb;btn.disabled=false;},2500); return; }
+  btn.disabled=false; btn.lastChild.textContent=lb;
+}
+async function blXLSX(btn,r,what){
+  const reg=regOf(r), b=blOf(reg), dc=DART&&DART.co&&DART.co[reg]; if(!b) return;
+  const lb=btn.lastChild.textContent; btn.disabled=true; btn.lastChild.textContent="만드는 중…";
+  try{
+    await loadXLSX();
+    const nm=(dc&&dc.info&&dc.info.nm)||r.name, today=new Date(Date.now()+9*3600e3).toISOString().slice(0,10).replace(/-/g,"");
+    const src=`출처: DART ${b.kind==="aud"?"감사보고서 ":""}${b.nm||""} (${dartUrl(b.no)})${b.asof?` · ${b.asof} 기준`:""} · 단위: 억원`;
+    const foot=[[],[`내려받은 시각: ${new Date().toLocaleString("ko-KR",{timeZone:"Asia/Seoul"})} · ${location.origin}${location.pathname} · 공개 자료를 모은 참고용 자료이며 원문과 다를 수 있습니다.`]];
+    const wb=XLSX.utils.book_new();
+    const add=(name,title,head,body,widths,numFrom)=>{
+      const aoa=[[title],[src],[],head,...body,...foot], ws=XLSX.utils.aoa_to_sheet(aoa);
+      ws["!cols"]=widths.map(w=>({wch:w}));
+      for(let i=4;i<4+body.length;i++) for(let c=numFrom;c<head.length;c++){ const cell=ws[XLSX.utils.encode_cell({r:i,c})]; if(cell&&typeof cell.v==="number") cell.z=/률|%/.test(head[c])?"0.0":"#,##0.0"; }
+      XLSX.utils.book_append_sheet(wb,ws,name);
+    };
+    const r1=v=>v==null?null:Math.round(v*10)/10;
+    let title;
+    if(what==="ord"){
+      title="수주현황"; const o=b.ord;
+      if(o.kind==="list"){
+        const R=ordRows(o).sort((a,c)=>(c.rem??-1)-(a.rem??-1));
+        add("수주현황",`${nm} 수주 현황 (현장 ${R.length}개)`,["구분","공사명","발주처","계약·착공일","완공예정일","도급액","기성","계약잔액","기성률(%)"],
+          R.map(x=>[x.g||"",x.nm||"",x.own||"",dnorm(x.cd),dnorm(x.ed),r1(x.amt),r1(x.done),r1(x.rem),x.pr==null?null:r1(x.pr)]).concat([["합계","","","","",r1(o.sum.amt),r1(o.sum.done),r1(o.sum.rem),null]]),[12,40,32,12,12,12,12,12,9],5);
+      }else{
+        const ks=[["amt","총도급액"],["beg","기초 잔액"],["new","신규·증감"],["rev","수익 인식"],["end","기말 잔액"]].filter(([k])=>o.rows.some(x=>x[k]!=null));
+        add("수주현황",`${nm} 공사계약 잔액 변동`,["구분",...ks.map(x=>x[1])],o.rows.map(x=>[x.nm,...ks.map(([k])=>r1(x[k]))]).concat(o.rows.length>1?[["합계",...ks.map(([k])=>r1(o.sum[k]))]]:[]),[36,...ks.map(()=>13)],1);
+      }
+    }else{
+      title="보증약정현황"; const c=b.cg, sm=c.sum||{}, S=[];
+      if(c.pf) S.push(["부동산 PF 보증",c.pf.length,r1(c.pf_sum.amt),r1(c.pf_sum.loan),null]);
+      if(c.spc) S.push(["유동화증권 신용보강",c.spc.length,null,r1(c.spc_sum),null]);
+      if(sm.cmpl) S.push(["책임준공 약정",sm.cmpl.n??null,r1(sm.cmpl.amt??sm.cmpl.cmplamt??null),r1(sm.cmpl.loan??null),r1(sm.cmpl.contract??null)]);
+      if(sm.mid) S.push(["중도금대출 보증",null,r1(sm.mid.amt??sm.mid.lim??null),r1(sm.mid.loan??null),null]);
+      if(sm.soc) S.push(["SOC 사업 보증",null,r1(sm.soc.amt??sm.soc.lim??null),r1(sm.soc.loan??null),null]);
+      if(S.length) add("요약",`${nm} 보증·약정 현황 요약`,["구분","건수","보증·약정금액(한도)","대출·미상환잔액","도급금액"],S,[22,8,18,16,12],1);
+      if(c.pf) add("PF보증 사업장별",`${nm} 부동산 PF 보증 사업장별 (${c.pf.length}개)`,["구분","지역","사업장","PF 종류","신용보강 유형","차주","대주","부담률","만기","보증한도","보증금액","대출잔액"],
+        c.pf.map(x=>[x.grp||"",x.region||"",x.use||"",x.pf||"",x.kind||"",x.debtor||"",x.lender||"",x.share||"",x.mat||"",r1(x.lim),r1(x.amt),r1(x.loan)]),[10,10,16,12,16,22,18,8,20,11,11,11],9);
+      if(c.spc) add("유동화증권 신용보강",`${nm} 유동화증권 신용보강 (${c.spc.length}건)`,["발행회사","증권종류","사업장","신용보강","발행일","발행금액","미상환잔액"],
+        c.spc.map(x=>[x.spc||"",x.sec||"",x.use||"",x.kind||"",x.issued||"",r1(x.iss),r1(x.bal)]),[26,12,18,16,12,12,12],5);
+      (c.raw||[]).forEach((t,i)=>{
+        const aoa=[[`${nm} ${t.cap||"제공한 보증 · 약정"}`],[`출처: DART ${b.kind==="aud"?"감사보고서 ":""}${b.nm||""} (${dartUrl(b.no)}) · 원문 표 그대로${t.unit?` · 단위: ${t.unit}`:""}`],[],t.cols,...t.rows,...foot];
+        const ws=XLSX.utils.aoa_to_sheet(aoa); ws["!cols"]=t.cols.map((_,j)=>({wch:j?16:28})); XLSX.utils.book_append_sheet(wb,ws,`원문표${i+1}`);
+      });
+    }
+    XLSX.writeFile(wb,`${nm.replace(/\(주\)|（주）|주식회사|[㈜()\/\\:*?"<>|]/g,"").trim()}_${title}_${today}.xlsx`);
+  }catch(e){ console.error(e); btn.lastChild.textContent="실패 · 다시 시도"; setTimeout(()=>{btn.lastChild.textContent=lb;btn.disabled=false;},2500); return; }
+  btn.disabled=false; btn.lastChild.textContent=lb;
+}
+function coHTML(r){
+  const reg=regOf(r), mvt=r.prev==null?"전년 순위 없음":r.mv>0?`전년 ${r.prev}위 → ▲${r.mv}`:r.mv<0?`전년 ${r.prev}위 → ▼${-r.mv}`:`전년 ${r.prev}위 · 유지`;
+  const dc=DART&&DART.co&&DART.co[reg];
+  const now=AG.map(a=>{const x=r.ratings[a]||{}; const g=x.grade;
+    return `<div><div class="ag">${AGN[a]}</div>${g?`<div class="gv"><span class="grade ${gcls({...x,kind:x.kind||"bond"})}">${esc(g)}</span>${kdTag(x.kind)}${olTag(x.outlook)}</div><div class="dt">${x.date?x.date.replace(/-/g,"."):""}</div>`:'<div class="gv"><span class="dim">공시 등급 없음</span></div>'}${x.url?`<div><a class="dt" href="${esc(x.url)}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">원문 →</a></div>`:""}</div>`;}).join("");
+  const acts=ratingActions(reg).slice(0,14);
+  const gTxt=g=>{ const m=String(g||"").match(/^([^(]+?)\s*(\(.+\))$/); return m?`${esc(m[1])}<small class="gsub">${esc(m[2])}</small>`:esc(g); };
+  const histT=acts.length?`<div class="tb-scroll"><table class="mini hist"><thead><tr><th>평가일</th><th>평가사</th><th>종류</th><th>등급</th><th>Outlook</th><th>변동</th></tr></thead><tbody>${acts.map(a=>`<tr><td class="n" style="text-align:left">${a.d.replace(/-/g,".")}</td><td>${a.ag}</td><td>${KINDS[a.kind]||""}${a.ev?` <span class="dim">${esc(a.ev)}</span>`:""}</td><td class="grade">${gTxt(a.grade)}</td><td>${esc(a.ol||"")}</td><td>${a.dir==="up"?'<span class="dir up">▲상향</span>':a.dir==="down"?'<span class="dir down">▼하향</span>':a.dir==="ol"?"전망 변경":a.dir==="same"?'<span class="dim">유지</span>':""}</td></tr>`).join("")}</tbody></table></div>`:'<p class="hint" style="margin-top:8px">평가사 페이지에 등급 이력이 없습니다.</p>';
+  // 시평 항목
+  const P=r.parts||{}, pm=Math.max(...Object.values(P).filter(v=>v!=null),1);
+  const parts=Object.entries(P).filter(([,v])=>v!=null).map(([k,v])=>`<span>${k}평가액</span><span class="pb"><i style="width:${(v/pm*100).toFixed(1)}%"></i></span><span class="pv">${fmtAmt(v)}</span>`).join("");
+  // 재무
+  const f=finSel(dc), ps=finPeriods(f);
+  let fin;
+  if(ps.length){
+    const xS=v=>v==null?"–":`${v.toFixed(1)}배`, FM={amt:won,pct:pctS,x:xS};
+    const rowsF=finK().map(([lb,k,t,g])=>[lb,k,FM[t],g]);
+    fin=`<div class="fin-box"><table class="mini"><thead><tr><th>${f.basis} · 억원</th>${ps.map(p=>`<th class="n">${p.t==="FY"?p.p:p.p.replace(" ","<br>")}</th>`).join("")}</tr></thead><tbody>${rowsF.map(([lb,k,fm,g],i)=>`<tr${g&&i?' class="gs"':""}><td>${lb}</td>${ps.map(p=>`<td class="n">${fm(p[k])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>${f.src==="감사보고서"||f.src==="사업보고서 원문"
+      ?`<p class="hint" style="margin-top:6px">${f.src==="감사보고서"?"감사보고서":"사업보고서"} 원문의 재무제표에서 읽은 숫자입니다${f.src==="감사보고서"?"(비상장 외부감사 대상 회사라 반기·분기 실적은 공시되지 않습니다)":""}. 최근 원문: <a href="${dartUrl(f.audit_no)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(f.audit_nm||"원문")}</a>. ${finNote()}.${MR()&&ps.some(p=>p.t!=="FY")?" 분기 열의 순차입금/EBITDA는 EBITDA를 연환산했습니다.":""}</p>`
+      :`<p class="hint" style="margin-top:6px">${qNote()}${finNote()}.</p>`}`;
+  } else if(!DART){
+    fin='<p class="hint">재무·공시 데이터는 준비 중입니다.</p>';
+  } else if(dc&&dc.audit){
+    fin=`<p class="hint">정기보고서(사업·분기보고서)를 내지 않는 회사라 DART에 구조화된 재무가 없습니다. 최근 감사보고서 원문: <a href="${dartUrl(dc.audit.no)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(dc.audit.nm)} (${dc.audit.d.replace(/-/g,".")})</a></p>`;
+  } else fin='<p class="hint">DART에서 이 회사의 재무를 찾지 못했습니다.</p>';
+  const disc=(dc&&dc.disc||[]).slice(0,15);
+  const discH=disc.length?`<ul class="lst">${disc.map(x=>`<li><span class="d">${md(x.d)}</span><span class="tag t-disc">${esc(x.cat)}</span><a href="${dartUrl(x.no)}" target="_blank" rel="noopener">${esc(x.nm)}</a></li>`).join("")}</ul>`:`<p class="hint">${DART?"최근 90일 주요 공시가 없습니다.":"준비 중입니다."}</p>`;
+  const nw=NEWS.filter(n=>n.reg===reg).slice(0,12);
+  const newsH=nw.length?`<ul class="lst">${nw.map(n=>`<li><span class="d">${md(n.d)}</span><span class="tag t-news">${esc(n.cat)}</span><span><a href="${esc(n.u)}" target="_blank" rel="noopener">${esc(n.t)}</a><span class="src">${esc(n.src||"")}${n.n>1?` 외 ${n.n-1}건`:""}</span></span></li>`).join("")}</ul>`:'<p class="hint">최근 30일 관련 기사가 없습니다.</p>';
+  const dartCo=dc?`https://dart.fss.or.kr/dsab007/main.do?autoSearch=Y&textCrpNm=${encodeURIComponent(r.name.replace(/㈜/g,""))}`:"";
+  return `<div class="dr-h"><div class="ttl"><h2 id="dr-title">${esc(r.name)}</h2>
+      <div class="meta"><span>시평 <b>${r.rank}</b>위</span><span>${mvt}</span><span>평가액 <b>${fmtAmt(r.amount)}</b>억원</span>${r.region?`<span>${esc(r.region)}</span>`:""}</div></div>
+      <button type="button" class="xbtn" id="dr-x" aria-label="닫기">×</button></div>
+    <div class="dr-b">
+      <div class="acts"><button type="button" class="dl" id="dr-star" aria-pressed="${WATCH.has(reg)}">${WATCH.has(reg)?"★ 관심 회사":"☆ 관심 회사로"}</button>
+        <button type="button" class="dl" id="dr-link">링크 복사</button>
+        <button type="button" class="dl" id="dr-doc" title="회사 개요 · 주주 · 주요 재무지표 · 수주 · 보증·약정을 심의서 Appendix 양식의 워드 파일로 받습니다"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11"/></svg>심의서 Appendix(워드)</button></div>
+      <div class="card"><h3>회사 개요 <span>DART 기업개황</span></h3>${overviewHTML(r,dc)}</div>
+      <div class="card"><h3>주주 현황 ${dc&&dc.sh?`<button type="button" class="xlb" id="xl-sh" title="주주 현황을 엑셀 파일로 받습니다"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11"/></svg>엑셀</button>`:""}</h3>${holdersHTML(dc)}</div>
+      <div class="card"><h3>${finTitle()} <span class="h3r">${dc&&dc.fin&&dc.fin_s?`<span class="seg finb" role="group" aria-label="재무 기준">${["연결","별도"].map(x=>`<button type="button" data-b="${x}" aria-pressed="${(f&&f.basis)===x}">${x}</button>`).join("")}</span>`:""}${dc?`<a href="${dartCo}" target="_blank" rel="noopener">DART 공시 검색 →</a>`:""}${ps.length?`<button type="button" class="xlb" id="xl-fin" title="주요 재무지표를 엑셀 파일로 받습니다"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11"/></svg>엑셀</button>`:""}</span></h3>${fin}</div>
+      ${ordCard(r)}
+      ${cgCard(r)}
+      <div class="card"><h3>신용등급 <span>평가사 3사 현재</span></h3><div class="rnow">${now}</div>${histT}</div>
+      <div class="card"><h3>최근 공시 <span>90일 · 주요 공시만</span></h3>${discH}</div>
+      <div class="card"><h3>최근 기사 <span>30일 · 제목·출처만</span></h3>${newsH}</div>
+      <div class="card"><h3>시공능력평가 <span>${META.year}년 · 억원</span></h3><div class="parts">${parts}</div>${r.civil!=null?`<p class="hint" style="margin-top:8px">토목분야 ${fmtAmt(r.civil)} · 건축분야 ${fmtAmt(r.arch)}억원</p>`:""}</div>
+      <p class="hint">공개 자료를 자동으로 모은 참고용 요약입니다. 등급·재무는 각 원문에서 한 번 더 확인하시기 바랍니다.</p>
+    </div>`;
+}
+
+// ---------- 공사비 지표 ----------
+const CSER=[["건설 전체","--c1"],["건축","--c2"],["토목","--c3"]];
+let CRANGE=60;
+function renderCost(){
+  const c=COST&&COST.cci;
+  if(!c||!c.series||!c.series["건설 전체"]){ $("#cost").innerHTML='<div class="placeholder">공사비 지표를 불러오지 못했습니다.</div>'; return; }
+  const s=c.series["건설 전체"], L=s[s.length-1], at=(m)=>{const x=s.find(v=>v[0]===m);return x?x[1]:null;};
+  const ym=(m,dy,dm=0)=>{let y=+m.slice(0,4)+dy, mo=+m.slice(5)+dm; while(mo<1){mo+=12;y--;} return `${y}-${String(mo).padStart(2,"0")}`;};
+  const ch=(a,b)=>a!=null&&b!=null?((a/b-1)*100):null;
+  const sg=v=>v==null?"–":`${v>0?"+":""}${v.toFixed(1)}%`;
+  const mom=ch(L[1],at(ym(L[0],0,-1))), yoy=ch(L[1],at(ym(L[0],-1))), y3=ch(L[1],at(ym(L[0],-3)));
+  $("#cost-sum").innerHTML=`${L[0].replace("-","년 ")}월${c.provisional?"(잠정)":""} <b>${L[1].toFixed(2)}</b> · 전년 동월 대비 <b>${sg(yoy)}</b> · 3년 전 대비 <b>${sg(y3)}</b>`;
+  $("#cost-k").innerHTML=`<div><div class="dim" style="font-size:.78rem">건설공사비지수 · ${L[0].replace("-","년 ")}월${c.provisional?" (잠정)":""}</div>
+      <div class="num">${L[1].toFixed(2)}<small>2020년 = 100</small></div></div>
+    <div class="kv"><span>전월 대비</span><b>${sg(mom)}</b><span>전년 동월 대비</span><b>${sg(yoy)}</b><span>3년 전 대비</span><b>${sg(y3)}</b>
+      <span>건축 / 토목</span><b>${(c.series["건축"]||[]).slice(-1)[0]?.[1].toFixed(1)??"–"} / ${(c.series["토목"]||[]).slice(-1)[0]?.[1].toFixed(1)??"–"}</b></div>
+    <p class="cnote">공사비 증액 협의나 물가변동 조정 때 기준 시점 대비 상승률을 보는 지표입니다. 한국건설기술연구원이 매월 말 전전월 지수를 발표합니다(최근 발표 ${c.posted.replace(/-/g,".")}).</p>
+    <p class="cnote"><a href="${esc(c.url)}" target="_blank" rel="noopener">원문 · 세부 지수 보기 →</a></p>`;
+  drawCost();
+}
+function drawCost(){
+  const c=COST.cci, box=$("#cost-chart"), W=Math.max(320,box.clientWidth||640), H=W<520?220:260, m={l:40,r:W<520?12:64,t:12,b:24};
+  const ser=CSER.map(([k,v])=>({k,v,pts:(c.series[k]||[]).slice(-CRANGE)}));
+  const xs=ser[0].pts.map(p=>p[0]); if(!xs.length) return;
+  const vals=ser.flatMap(s=>s.pts.map(p=>p[1]));
+  const span=Math.max(...vals)-Math.min(...vals), unit=span<8?1:span<20?2:5;
+  // 5년·10년은 기준선(2020년 = 100)이 보이게, 1년·3년은 변화가 보이게 실제 범위로
+  let lo=Math.floor(Math.min(...vals,...(CRANGE>=60?[100]:[]))/unit)*unit, hi=Math.ceil(Math.max(...vals)/unit)*unit;
+  if(hi===lo) hi=lo+unit;
+  const X=i=>m.l+(W-m.l-m.r)*(i/(xs.length-1||1)), Y=v=>m.t+(H-m.t-m.b)*(1-(v-lo)/(hi-lo||1));
+  const step=[1,2,5,10,20].find(v=>(hi-lo)/v<=6)||20;
+  let g="";
+  for(let v=lo;v<=hi;v+=step) g+=`<line class="gl" x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}"/><text class="ax" x="${m.l-6}" y="${Y(v)+4}" text-anchor="end">${v}</text>`;
+  if(lo<=100&&hi>=100) g+=`<line class="ref" x1="${m.l}" x2="${W-m.r}" y1="${Y(100)}" y2="${Y(100)}"/>`;
+  if(xs.length<=24){ // 1년: 월 눈금
+    const ev=W<520?(xs.length>12?6:3):(xs.length>12?3:2);
+    xs.forEach((x,j)=>{ if((xs.length-1-j)%ev) return; g+=`<text class="ax" x="${X(j)}" y="${H-6}" text-anchor="middle">${x.slice(2,4)}.${x.slice(5)}</text>`; });
+  } else {
+    const years=[...new Set(xs.map(x=>x.slice(0,4)))], every=Math.ceil(years.length/(W<520?4:7));
+    years.forEach((y,i)=>{ const j=xs.indexOf(`${y}-01`); if(j<0||i%every) return; g+=`<text class="ax" x="${X(j)}" y="${H-6}" text-anchor="middle">${y}</text>`; });
+  }
+  const lines=ser.map(s=>`<path class="ln" style="stroke:var(${s.v})" d="${s.pts.map((p,i)=>`${i?"L":"M"}${X(i).toFixed(1)},${Y(p[1]).toFixed(1)}`).join("")}"/>`).join("");
+  let labs="";
+  if(W>=520){ const ys=ser.map(s=>({s,y:Y(s.pts[s.pts.length-1][1])})).sort((a,b)=>a.y-b.y);
+    for(let i=1;i<ys.length;i++) if(ys[i].y-ys[i-1].y<13) ys[i].y=ys[i-1].y+13;
+    labs=ys.map(o=>`<text class="lab" x="${W-m.r+6}" y="${o.y+4}">${o.s.k}</text>`).join(""); }
+  box.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="건설공사비지수 추이(2020년=100), 건설 전체·건축·토목">${g}${lines}${labs}<line class="xh" id="cx" y1="${m.t}" y2="${H-m.b}" visibility="hidden"/>${ser.map((s,i)=>`<circle id="cd${i}" r="4" style="fill:var(${s.v});stroke:var(--surface);stroke-width:2" visibility="hidden"/>`).join("")}<rect x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" fill="transparent" id="chit"/></svg><div class="tip" id="ctip" hidden></div>`;
+  const hit=$("#chit"), tip=$("#ctip");
+  const move=ev=>{
+    const rc=box.querySelector("svg").getBoundingClientRect(), sx=W/rc.width;
+    const px=((ev.touches?ev.touches[0].clientX:ev.clientX)-rc.left)*sx;
+    const i=Math.max(0,Math.min(xs.length-1,Math.round((px-m.l)/(W-m.l-m.r)*(xs.length-1))));
+    $("#cx").setAttribute("x1",X(i)); $("#cx").setAttribute("x2",X(i)); $("#cx").setAttribute("visibility","visible");
+    ser.forEach((s,k)=>{const c=$(`#cd${k}`); c.setAttribute("cx",X(i)); c.setAttribute("cy",Y(s.pts[i][1])); c.setAttribute("visibility","visible");});
+    tip.hidden=false;
+    tip.innerHTML=`<div style="margin-bottom:3px">${xs[i].replace("-","년 ")}월</div>${ser.map(s=>`<div class="r"><i style="background:var(${s.v})"></i>${s.k} <b>${s.pts[i][1].toFixed(2)}</b></div>`).join("")}`;
+    const tx=X(i)/sx, left=tx>rc.width*.6?tx-tip.offsetWidth-12:tx+12;
+    tip.style.left=`${left}px`; tip.style.top=`${8}px`;
+  };
+  const hide=()=>{tip.hidden=true;$("#cx").setAttribute("visibility","hidden");ser.forEach((s,k)=>$(`#cd${k}`).setAttribute("visibility","hidden"));};
+  hit.addEventListener("mousemove",move); hit.addEventListener("touchstart",move,{passive:true}); hit.addEventListener("touchmove",move,{passive:true});
+  hit.addEventListener("mouseleave",hide);
+  // 표로 보기(최근 13개월)
+  const last=xs.slice(-13).reverse();
+  $("#cost-tbl").innerHTML=`<table class="mini"><thead><tr><th>월</th>${CSER.map(([k])=>`<th class="n">${k}</th>`).join("")}</tr></thead><tbody>${last.map(mm=>`<tr><td>${mm.replace("-",".")}</td>${CSER.map(([k])=>{const v=(c.series[k]||[]).find(p=>p[0]===mm);return `<td class="n">${v?v[1].toFixed(2):"–"}</td>`;}).join("")}</tr>`).join("")}</tbody></table>`;
+}
+function bindCost(){
+  $("#cost-fold").addEventListener("toggle",e=>{ if(e.target.open&&COST&&COST.cci) drawCost(); });
+  document.querySelectorAll("#cseg button").forEach(b=>b.addEventListener("click",()=>{
+    document.querySelectorAll("#cseg button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+    CRANGE=+b.dataset.v; drawCost(); }));
+  let t; window.addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(()=>COST&&COST.cci&&drawCost(),150);});
+}
+
+// ---------- 공통 바인딩 ----------
+document.addEventListener("click",e=>{
+  const ca=e.target.closest('a[href="#cost"]'); if(ca){ e.preventDefault(); const f=$("#cost-fold"); f.open=true; f.scrollIntoView({behavior:"smooth",block:"start"}); return; }
+  const d=e.target.closest(".docb"); if(d&&d.dataset.reg&&BYREG[d.dataset.reg]){ e.preventDefault(); appendixDownload(d,BYREG[d.dataset.reg]); return; }
+  const b=e.target.closest(".cob"); if(b&&b.dataset.reg){ e.preventDefault(); openCo(b.dataset.reg); }
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!$("#drawer").hidden) closeCo(); });
+$("#ov").addEventListener("click",closeCo);
+window.addEventListener("hashchange",()=>{ const m=location.hash.match(/^#co=(.+)$/); if(m) openCo(decodeURIComponent(m[1]),false); });
+
+bindFeed(); bindCost();
+(async()=>{
+  const [D,S,Hh,Ev,Nw,Dt,Ct,Bl]=await Promise.all(["contractors","status","history","events","news","dart","cost","backlog"].map(n=>getJSON(`data/${n}.json`)));
+  renderStatus(S);
+  if(!D||!D.rows){
+    $("#kpis").innerHTML='<div class="placeholder">데이터를 불러오지 못했습니다. 새로고침해 보세요.</div>';
+    $("#tbody").innerHTML='<tr><td colspan="9" class="empty">데이터를 불러오지 못했습니다.</td></tr>';
+    $("#updated").textContent="데이터 없음"; $("#feed-list").innerHTML='<div class="fempty">데이터를 불러오지 못했습니다.</div>'; return;
+  }
+  ROWS=D.rows.map(r=>({...r,mv:r.prev!=null?r.prev-r.rank:null}));
+  MAX=Math.max(...ROWS.map(r=>r.amount)); META=D; STAT=S;
+  $("#updated").textContent=S?.generated?`${D.year}년 시공능력평가 · 최종 수집 ${S.generated} KST`:`${D.year}년 시공능력평가`;
+  ROWS.forEach(r=>{BYREG[regOf(r)]=r;});
+  HIST=Hh||{}; EVENTS=(Ev&&Ev.events)||[]; NEWS=((Nw&&Nw.items)||[]).filter(n=>n.cat!=="리스크"&&!newsNeg(Nw).test(n.t||"")); DART=Dt&&Dt.co?Dt:null; COST=Ct||null; BL=Bl&&Bl.co?Bl:null;
+  renderSummary(D); render(); renderFeed(); renderCost();
+  const m=location.hash.match(/^#co=(.+)$/); if(m) openCo(decodeURIComponent(m[1]),false);
+})();
+</script>
+</body>
+</html>

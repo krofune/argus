@@ -285,22 +285,9 @@ td.mut{color:var(--tx3)}
 .nl{display:flex;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px solid var(--line2)}.nl .num{color:var(--tx3)}.nl .ct{font-weight:400}
 .tt td .ct{max-width:330px}
 .rail a.dis{opacity:.45;cursor:default}.rail a{position:relative}.wsbadge{display:none}
-.dash{display:flex;flex-direction:column}.dwrap{position:relative;flex:1;min-height:0;overflow:hidden}
-.dprev{padding:16px;display:grid;gap:14px;filter:blur(3px);opacity:.75}
-.dgrid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.dgrid2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
-.dcard,.dpanel{background:#fff;border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:10px}.dpanel{min-height:320px}
-.sk{background:linear-gradient(90deg,#e6eaf0,#f1f3f6,#e6eaf0);background-size:200% 100%;animation:skm 2.4s ease-in-out infinite}
-@keyframes skm{0%{background-position:100% 0}100%{background-position:-100% 0}}
-.dbars{flex:1;display:flex;align-items:flex-end;gap:8px;padding-top:12px}.dbars i{flex:1;background:#d5dde8}
-.drow{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid #eef1f5}
-.dveil{position:absolute;inset:0;background:rgba(238,241,245,.55);backdrop-filter:blur(1px);display:flex;align-items:center;justify-content:center}
-.dmsg{background:#fff;border:1px solid var(--line);border-top:3px solid #14243b;box-shadow:0 18px 50px rgba(20,35,58,.12);padding:30px 36px;text-align:center;max-width:460px}
-.dash .ph h1{color:#1d2733}.dmsg h2{font-size:18px;font-weight:600;margin:14px 0 8px;color:#14243b}.dmsg p{font-size:13px;line-height:1.75;color:var(--tx2);margin:0}
-.dic{display:flex;gap:6px;justify-content:center}.dic span{width:8px;height:8px;border-radius:50%;background:#2463a8;animation:dot 1.2s ease-in-out infinite}
-.dic span:nth-child(2){animation-delay:.15s}.dic span:nth-child(3){animation-delay:.3s}
-@keyframes dot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
-.dlinks{display:flex;gap:8px;justify-content:center;margin-top:18px}.dlinks a{border:1px solid var(--line);padding:6px 12px;font-size:12.5px;color:var(--tx);text-decoration:none}.dlinks a:hover{border-color:#14243b}
-@media (prefers-reduced-motion:reduce){.sk,.dic span{animation:none}}
+.dash{display:flex;flex-direction:column;min-height:0}.dash .ph h1{color:var(--tx)}.dtabs{border:0}.dtabs button{font-size:13px;color:var(--tx2);border:0;border-bottom:2px solid transparent;background:none;padding:0 1px;height:100%}.dtabs button.on{color:var(--tx);border-bottom-color:var(--ac);font-weight:500}
+.dpop{font-size:12px;color:var(--tx2);text-decoration:none;border:1px solid var(--line);padding:4px 10px;background:#fff}.dpop:hover{color:var(--ac);border-color:#b9c2ce}
+.dframe{flex:1;min-height:0;position:relative}.dframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#eef1f5}
 
 body{min-width:1200px}
 .rail a{text-decoration:none}
@@ -428,7 +415,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 <script>window.ARGUS_DATA=k=>new Promise((res,rej)=>ArgusAuth.ready(async({sb})=>{const r=await sb.from('site_data').select('payload').eq('key',k).single();if(r.error)rej(new Error('데이터를 불러오지 못했습니다: '+r.error.message));else res(r.data.payload)}));</script>
-<header class="top"><div class="brand"><svg class="logo" viewBox="0 0 20 20" aria-hidden="true" width="18" height="18"><g fill="none" stroke="#8fa3bd" stroke-width="1.2"><circle cx="4" cy="4" r="2"/><circle cx="10" cy="4" r="2"/><circle cx="16" cy="4" r="2"/><circle cx="4" cy="10" r="2"/><circle cx="16" cy="10" r="2"/><circle cx="4" cy="16" r="2"/><circle cx="10" cy="16" r="2"/><circle cx="16" cy="16" r="2"/></g><circle cx="10" cy="10" r="2.6" fill="#6ea6dd"/></svg>Argus <small>Research</small></div><span class="sep"></span><span class="crumb">홈 · <b>대시보드</b></span><span class="sp"></span><span data-ag-user style="display:flex;margin-left:12px"></span></header>
+<header class="top"><div class="brand"><svg class="logo" viewBox="0 0 20 20" aria-hidden="true" width="18" height="18"><g fill="none" stroke="#8fa3bd" stroke-width="1.2"><circle cx="4" cy="4" r="2"/><circle cx="10" cy="4" r="2"/><circle cx="16" cy="4" r="2"/><circle cx="4" cy="10" r="2"/><circle cx="16" cy="10" r="2"/><circle cx="4" cy="16" r="2"/><circle cx="10" cy="16" r="2"/><circle cx="16" cy="16" r="2"/></g><circle cx="10" cy="10" r="2.6" fill="#6ea6dd"/></svg>Argus <small>Research</small></div><span class="sep"></span><span class="crumb">홈 · <b>대시보드</b> · <span id="dbt"></span></span><span class="sp"></span><span data-ag-user style="display:flex"></span></header>
 <div class="main">
   <nav class="rail">
     <a href="dashboard.html" class="on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>대시보드</a>
@@ -442,16 +429,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   </nav>
 
   <section class="work dash">
-    <div class="ph"><h1>대시보드</h1><span class="sp"></span></div>
-    <div class="dwrap">
-      <div class="dprev" aria-hidden="true">
-        <div class="dgrid4"><div class="dcard"><div class="sk" style="width:40%;height:10px"></div><div class="sk" style="width:60%;height:22px"></div><div class="sk" style="width:90%;height:8px"></div></div><div class="dcard"><div class="sk" style="width:40%;height:10px"></div><div class="sk" style="width:60%;height:22px"></div><div class="sk" style="width:90%;height:8px"></div></div><div class="dcard"><div class="sk" style="width:40%;height:10px"></div><div class="sk" style="width:60%;height:22px"></div><div class="sk" style="width:90%;height:8px"></div></div><div class="dcard"><div class="sk" style="width:40%;height:10px"></div><div class="sk" style="width:60%;height:22px"></div><div class="sk" style="width:90%;height:8px"></div></div></div>
-        <div class="dgrid2"><div class="dpanel"><div class="sk" style="width:30%;height:10px"></div><div class="dbars"><i style="height:34%"></i><i style="height:52%"></i><i style="height:41%"></i><i style="height:66%"></i><i style="height:58%"></i><i style="height:73%"></i><i style="height:49%"></i><i style="height:81%"></i><i style="height:62%"></i><i style="height:70%"></i><i style="height:55%"></i><i style="height:88%"></i><i style="height:64%"></i><i style="height:77%"></i><i style="height:59%"></i><i style="height:92%"></i></div></div><div class="dpanel"><div class="sk" style="width:40%;height:10px"></div><div class="drow"><div class="sk" style="width:12%;height:9px"></div><div class="sk" style="width:38%;height:9px"></div><div class="sk" style="width:18%;height:9px"></div><div class="sk" style="width:14%;height:9px"></div></div><div class="drow"><div class="sk" style="width:12%;height:9px"></div><div class="sk" style="width:38%;height:9px"></div><div class="sk" style="width:18%;height:9px"></div><div class="sk" style="width:14%;height:9px"></div></div><div class="drow"><div class="sk" style="width:12%;height:9px"></div><div class="sk" style="width:38%;height:9px"></div><div class="sk" style="width:18%;height:9px"></div><div class="sk" style="width:14%;height:9px"></div></div><div class="drow"><div class="sk" style="width:12%;height:9px"></div><div class="sk" style="width:38%;height:9px"></div><div class="sk" style="width:18%;height:9px"></div><div class="sk" style="width:14%;height:9px"></div></div><div class="drow"><div class="sk" style="width:12%;height:9px"></div><div class="sk" style="width:38%;height:9px"></div><div class="sk" style="width:18%;height:9px"></div><div class="sk" style="width:14%;height:9px"></div></div><div class="drow"><div class="sk" style="width:12%;height:9px"></div><div class="sk" style="width:38%;height:9px"></div><div class="sk" style="width:18%;height:9px"></div><div class="sk" style="width:14%;height:9px"></div></div><div class="drow"><div class="sk" style="width:12%;height:9px"></div><div class="sk" style="width:38%;height:9px"></div><div class="sk" style="width:18%;height:9px"></div><div class="sk" style="width:14%;height:9px"></div></div></div></div>
-      </div>
-      <div class="dveil"><div class="dmsg">
-        <div class="dic"><span></span><span></span><span></span></div>
-        <h2>대시보드를 준비하고 있습니다</h2><p>딜·매물·시장지표 데이터를 한 화면에 모으기 위해 정리하는 중입니다.<br>그동안 왼쪽 메뉴에서 각 화면을 이용해 주세요.</p><div class="dlinks"><a href="index.html">딜 DB</a><a href="listings.html">매물·공고</a><a href="markets.html">시장지표</a><a href="research.html">리서치</a></div>
-      </div></div>
-    </div>
+    <div class="ph"><h1>대시보드</h1><div class="tabs dtabs"><button data-k="dc">데이터센터</button><button data-k="cons">시공사 · 신용등급</button><button data-k="abs">유동화 · 금리</button><button data-k="apt">아파트 수급 · 분양</button></div><span class="sp"></span><div class="tools"><a class="dpop" id="dpop" target="_blank" title="이 대시보드를 새 창에서 크게 보기">새 창으로 보기 ↗</a></div></div>
+    <div class="dframe"><iframe id="dbf-dc" title="데이터센터" loading="lazy"></iframe><iframe id="dbf-cons" title="시공사 · 신용등급" loading="lazy"></iframe><iframe id="dbf-abs" title="유동화 · 금리" loading="lazy"></iframe><iframe id="dbf-apt" title="아파트 수급 · 분양" loading="lazy"></iframe></div>
   </section>
-</div></body></html>
+</div>
+<script>(function(){var V="8c40ac40",K=["dc","cons","abs","apt"],B=document.querySelectorAll(".dtabs button");
+function go(k){if(K.indexOf(k)<0)k=K[0];B.forEach(function(b){b.classList.toggle("on",b.dataset.k===k)});
+ K.forEach(function(x){var f=document.getElementById("dbf-"+x);if(x===k&&!f.getAttribute("src"))f.src="npf-"+x+".html?v="+V;f.style.display=x===k?"block":"none"});
+ document.getElementById("dbt").textContent=document.querySelector('.dtabs button[data-k="'+k+'"]').textContent;
+ document.getElementById("dpop").href="npf-"+k+".html?v="+V;if(location.hash!=="#"+k)history.replaceState(null,"","#"+k)}
+B.forEach(function(b){b.onclick=function(){go(b.dataset.k)}});addEventListener("hashchange",function(){go(location.hash.slice(1))});go(location.hash.slice(1));})();</script></body></html>
