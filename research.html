@@ -140,6 +140,47 @@ td.m{color:var(--tx2)}
 .sbt.on svg .fill{fill:currentColor}
 .empty{padding:30px;text-align:center;color:var(--tx3)}
 @media (max-width:900px){.main{grid-template-columns:1fr}.rail,.top .crumb,.top .sep,.top .meta{display:none}.grid{grid-template-columns:1fr}.dd{grid-template-columns:1fr}.lf{display:none}.hl{grid-template-columns:1fr 1fr}.srch{width:160px}.ph .tabs{display:none}.foot .note{display:none}.psel>button{white-space:nowrap}}
+/* 뉴스 탭 */
+.nlx{padding:18px 24px 40px;font-size:13px;color:var(--tx)}
+.nl-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.nl-date{display:flex;align-items:center;border:1px solid var(--line);background:#fff}
+.nl-date button{width:30px;height:30px;color:var(--tx2);font-size:15px}.nl-date button:disabled{color:var(--line);cursor:default}.nl-date b{padding:0 12px;font-size:13.5px;font-weight:600;min-width:92px;text-align:center}
+.nl-sum{color:var(--tx2);font-size:12.5px}.nl-sum b{color:var(--tx);font-weight:600}
+.nl-sp{flex:1}.nl-q{border:1px solid var(--line);background:#fff;height:30px;width:280px;padding:0 10px;font:inherit;font-size:12.5px;outline:0}.nl-q:focus{border-color:var(--ac)}
+.nl-seg{display:flex;border:1px solid var(--line);background:#fff}.nl-seg button{padding:0 12px;height:30px;font-size:12.5px;color:var(--tx2);border-right:1px solid var(--line2)}.nl-seg button:last-child{border-right:0}.nl-seg button.on{background:var(--ac-bg);color:var(--ac2);font-weight:500}
+.nl-chip{display:inline-block;font-size:10.5px;line-height:16px;padding:0 6px;border:1px solid color-mix(in srgb,var(--hc) 35%,#fff);color:var(--hc);background:color-mix(in srgb,var(--hc) 7%,#fff);border-radius:3px;white-space:nowrap;font-weight:500}
+.nl-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;flex:none}
+.nl-src{color:var(--tx3);font-size:11.5px;white-space:nowrap}.nl-d{color:var(--tx3);font-size:11.5px}
+.nl-hl{color:var(--tx);text-decoration:none}a.nl-hl:hover{color:var(--ac);text-decoration:underline}
+.nl-hs{display:flex;gap:4px;justify-content:flex-end;flex-wrap:wrap}
+.nlb{display:grid;grid-template-columns:220px minmax(0,1fr);gap:16px;align-items:start}
+.nlb-side{background:#fff;border:1px solid var(--line);padding:8px 0;position:sticky;top:12px}
+.nlb-side h5{font-size:11px;color:var(--tx3);font-weight:500;margin:6px 14px 4px}.nlb-side h5.mt{margin-top:14px}.nlb-side h5 em{font-style:normal;font-weight:400}
+.nlb-side a{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;color:var(--tx);text-decoration:none;font-size:12.5px;cursor:pointer}.nlb-side a:hover{background:#f5f7fa}
+.nlb-side a.on{background:var(--ac-bg);color:var(--ac2);font-weight:500;box-shadow:inset 3px 0 var(--ac)}
+.nlb-side a span{color:var(--tx3);font-size:11.5px}.nlb-side a span.nm{flex:1;color:var(--tx);font-size:12.5px}
+.nlb-blk{background:#fff;border:1px solid var(--line);margin-bottom:14px}
+.nlb-blk h3{font-size:13.5px;margin:0;padding:11px 16px;border-bottom:1px solid var(--line2);display:flex;gap:8px;align-items:baseline}.nlb-blk h3 small{font-weight:400;color:var(--tx3);font-size:11.5px}
+.nl-hot{margin:0;padding:2px 16px 6px;counter-reset:n}
+.nl-hot li{list-style:none;display:grid;grid-template-columns:22px minmax(0,1fr) 110px 230px;gap:10px;padding:8px 0;border-bottom:1px solid var(--line2);align-items:center}.nl-hot li:last-child{border:0}
+.nl-hot li:before{counter-increment:n;content:counter(n);color:var(--ac);font-weight:600}
+.nl-rows{margin:0;padding:0}.nl-rows li{list-style:none;display:grid;grid-template-columns:minmax(0,1fr) 110px 230px;gap:10px;padding:7px 16px;border-bottom:1px solid var(--line2);align-items:center}.nl-rows li:last-child{border-bottom:0}
+.nl-rows li:has(.nl-d){grid-template-columns:44px minmax(0,1fr) 110px 230px}
+.nl-more{display:block;width:100%;padding:8px;color:var(--ac);font-size:12px;border-top:1px solid var(--line2);background:#fafbfc}
+.nlc{display:grid;grid-template-columns:330px minmax(0,1fr);border:1px solid var(--line);background:#fff;min-height:calc(100vh - 200px)}
+.nlc-list{border-right:1px solid var(--line);max-height:calc(100vh - 200px);overflow:auto}
+.nlc-list .grp{font-size:11px;color:var(--tx3);padding:9px 16px 6px;background:#f7f9fb;border-bottom:1px solid var(--line2);position:sticky;top:0}
+.nlc-list .it{padding:11px 16px;border-bottom:1px solid var(--line2);cursor:pointer}.nlc-list .it:hover{background:#f7f9fb}.nlc-list .it.on{background:var(--ac-bg);box-shadow:inset 3px 0 var(--ac)}
+.nlc-list .r1{display:flex;align-items:center;gap:6px}.nlc-list .r1 b{font-size:13px}.nlc-list .r1 em{margin-left:auto;font-style:normal;color:var(--tx3);font-size:11.5px}
+.nlc-list .r2{color:var(--tx2);font-size:12px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nlc-read{padding:22px 30px;max-height:calc(100vh - 200px);overflow:auto}
+.nlc-read .rh{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.nlc-read .rh h2{font-size:18px;margin:0}.nlc-read .rh span{color:var(--tx2)}.nlc-read .rh a{margin-left:auto;font-size:12px;color:var(--ac);text-decoration:none}
+.nlc-read .rs{margin-top:18px}.nlc-read .rs h4{font-size:12px;color:var(--tx2);font-weight:600;margin:0 0 6px;padding-bottom:5px;border-bottom:1px solid var(--line2)}
+.nlc-read .rs ul{margin:0;padding:0}.nlc-read .rs li{list-style:none;padding:7px 0}
+.nlc-read .rs .t{display:flex;gap:10px;align-items:baseline}.nlc-read .rs .t .nl-hl{font-size:13.5px;font-weight:500}
+.nlc-read .rs p{margin:3px 0 0;color:var(--tx2);font-size:12px}
+@media (max-width:900px){.nlb,.nlc{grid-template-columns:1fr}.nlb-side,.nlc-list{display:none}.nl-top{flex-wrap:wrap}.nl-q{width:100%}.nl-rows li,.nl-hot li{grid-template-columns:minmax(0,1fr)}.nl-hs,.nl-src{justify-content:flex-start}}
 /* 워크스페이스 공용 (메뉴·토스트·대화상자) */
 .wmenu{position:fixed;z-index:200;background:#fff;border:1px solid var(--line);box-shadow:0 10px 28px rgba(20,36,59,.16);padding:5px;min-width:190px;border-radius:8px}
 .wmenu button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:7px 9px;font-size:12.5px;color:var(--tx);border-radius:5px}
@@ -1026,14 +1067,56 @@ function coverage(){
    <tr class="sum"><td class="l">합계</td>${cs.map(c=>`<td class="num">${D.filter(x=>x.c===c).length}</td>`).join('')}<td class="num">${D.length}</td></tr></tbody></table></div></div>`;
   V.querySelectorAll('td[data-h]').forEach(td=>td.onclick=()=>{const c=td.dataset.c;S.cat=c;S.sub='';S.sel={h:new Set([td.dataset.h])};S.page=1;S.more={};location.hash='c-'+SLUG[c]});
 }
-// ── 뉴스 (매일 아침 뉴스레터 · 수집 준비 중)
+// ── 뉴스 (매일 아침 뉴스레터 헤드라인 · 회원 전용 site_data['news'] / 로컬은 news.json)
+const NLC={'신영':'#2463a8','젠스타메이트':'#1f8a6a','한화':'#e07a1f','코어비트':'#7a4bc2','부동산플래닛':'#c2416b','NAI코리아':'#0e7490','JLL':'#b91c1c'};
+const NLCATS=['금리·정책','오피스','캐피탈마켓·리츠','개발','리테일·호텔','물류·데이터센터','주거','해외','기타'];
+const NLRE=[['금리·정책',/금리|정책|제도|금통위|종부세|관세|PCE|규제|의무화|GDP|물가/],['캐피탈마켓·리츠',/capital|캐피탈|리츠|펀드|인수|매입|매각|투자|PF|자금조달|순익/i],['개발',/개발|재개발|재건축|착공|정비|지구단위|부지|신통|용적률/],['오피스',/오피스|사옥|빌딩|공실|타워|지식산업센터/],['리테일·호텔',/리테일|호텔|홈플러스|스타벅스|플래그십|상권|백화점|쇼핑|무신사|상가/],['물류·데이터센터',/물류|데이터센터|창고/],['주거',/주거|주택|아파트|전세|가구|분양/],['해외',/global|해외|美|미국|뉴욕|스페인|日|일본|도쿄|中|중국/i]];
+function nlCat(sec,t){if(/해외|global/i.test(sec))return '해외';if(/주거|주택/.test(sec))return '주거';if(/경제|정책/.test(sec)&&!/개발/.test(sec))return '금리·정책';
+  for(const [c,re] of NLRE)if(re.test(t))return c;for(const [c,re] of NLRE)if(re.test(sec))return c;return '기타'}
+const nlBig=t=>{const s=t.replace(/[^가-힣A-Za-z0-9]/g,'');const b=new Set();for(let i=0;i<s.length-1;i++)b.add(s.slice(i,i+2));return b};
+const nlSim=(a,b)=>{if(!a.size||!b.size)return 0;let n=0;a.forEach(x=>b.has(x)&&n++);return n/Math.min(a.size,b.size)};
+function nlFlat(mails){const all=[];mails.forEach(m=>m.secs.forEach(s=>s.i.forEach(it=>all.push({...it,h:m.h,tm:m.tm,d:m.d,sec:s.s,c:nlCat(s.s||'',it.t),b:nlBig(it.t)}))));
+  const G=[];all.forEach(x=>{const g=G.find(g=>g.d===x.d&&nlSim(g.b,x.b)>=.42);if(g){g.dup.push(x);if(!g.src&&x.src){g.src=x.src}if(!g.u&&x.u)g.u=x.u;if(!g.hs.includes(x.h))g.hs.push(x.h)}else G.push({...x,hs:[x.h],dup:[x]})});return G}
+const nlChip=h=>`<span class="nl-chip" style="--hc:${NLC[h]||'#5b6675'}">${esc(h)}</span>`;
+const nlDot=h=>`<i class="nl-dot" style="background:${NLC[h]||'#8b95a3'}"></i>`;
+const nlA=(it,cls='nl-hl')=>it.u?`<a class="${cls}" href="${esc(it.u)}" target="_blank" rel="noopener noreferrer">${esc(it.t)}</a>`:`<span class="${cls}">${esc(it.t)}</span>`;
+const WD='일월화수목금토';
+const nlDay=d=>{const x=new Date(d+'T00:00:00+09:00');return `${d.slice(5).replace('-','.')} (${WD[x.getDay()]})`};
+let NLD=null,NLP=null;const NS={d:'',v:'cat',c:'전체',sel:'',q:'',more:{}};
 function news(){
-  const sk=(w,h)=>`<div class="sk" style="width:${w};height:${h}px"></div>`;
-  V.innerHTML=`<div class="rxms"><div class="dprev" aria-hidden="true"><div class="dg3">${[0,1,2].map(()=>`<div class="dcard">${sk('35%',10)}${sk('55%',22)}${sk('85%',8)}</div>`).join('')}</div>
-    <div class="dg2"><div class="dpanel">${sk('30%',10)}${[0,1,2,3,4,5].map(()=>`<div class="drow">${sk('60%',9)}${sk('18%',9)}</div>`).join('')}</div><div class="dpanel">${sk('40%',10)}${[0,1,2,3,4,5].map(()=>`<div class="drow">${sk('22%',9)}${sk('46%',9)}${sk('16%',9)}</div>`).join('')}</div></div></div>
-    <div class="dveil"><div class="dmsg"><div class="dic"><span></span><span></span><span></span></div><h2>뉴스를 준비하고 있습니다</h2>
-    <p>매일 아침 받는 부동산 뉴스레터(신영·젠스타메이트·한화·코어비트 등)의<br>헤드라인과 원문 링크를 하우스·섹션별로 모아 보여드릴 예정입니다.</p>
-    <div class="dlinks"><a href="#f">발간 피드 보기</a><a href="#">카테고리별 최신 자료</a></div></div></div></div>`;
+  if(!NLD){V.innerHTML='<div class="empty">뉴스레터를 불러오는 중…</div>';
+    NLP=NLP||(window.ARGUS_DATA?window.ARGUS_DATA('news'):fetch('news.json').then(r=>r.ok?r.json():{items:[]})).then(d=>{NLD=(d&&d.items)||[];if(location.hash==='#news')news()}).catch(()=>{NLD=[];if(location.hash==='#news')news()});return}
+  if(!NLD.length){V.innerHTML=`<div class="nlx"><div class="empty">아직 수집된 뉴스레터가 없습니다. 평일 아침 7시 40분부터 자동으로 모입니다.</div></div>`;return}
+  const days=[...new Set(NLD.map(x=>x.d))].sort().reverse();if(!days.includes(NS.d))NS.d=days[0];
+  const today=NLD.filter(x=>x.d===NS.d).sort((a,b)=>a.tm<b.tm?1:-1);
+  const G=nlFlat(today);
+  const di=days.indexOf(NS.d);
+  const topbar=`<div class="nl-top"><div class="nl-date"><button data-nd="${di+1}" ${di>=days.length-1?'disabled':''} title="이전 날">‹</button><b>${nlDay(NS.d)}</b><button data-nd="${di-1}" ${di<=0?'disabled':''} title="다음 날">›</button></div>
+   <div class="nl-sum">뉴스레터 <b>${today.length}</b>개 · 헤드라인 <b>${G.length}</b>건</div><div class="nl-sp"></div>
+   <div class="nl-seg"><button data-nv="cat" class="${NS.v==='cat'?'on':''}">분야별</button><button data-nv="nl" class="${NS.v==='nl'?'on':''}">뉴스레터별</button></div>
+   <input class="nl-q" id="nlq" placeholder="헤드라인 · 언론사 검색 (최근 ${days.length}일)" value="${esc(NS.q)}"></div>`;
+  let body='';
+  if(NS.q.trim()){const q=NS.q.trim().toLowerCase();const R=nlFlat(NLD).filter(g=>(g.t+' '+(g.src||'')).toLowerCase().includes(q)).sort((a,b)=>a.d<b.d?1:-1);
+    body=`<div class="nlb-blk"><h3>검색 결과 <small>‘${esc(NS.q)}’ ${R.length}건</small></h3><ul class="nl-rows">${R.slice(0,200).map(g=>`<li><span class="nl-d">${g.d.slice(5).replace('-','.')}</span>${nlA(g)}<span class="nl-src">${esc(g.src||'')}</span><span class="nl-hs">${g.hs.map(nlChip).join('')}</span></li>`).join('')||'<li class="empty">결과가 없습니다</li>'}</ul></div>`}
+  else if(NS.v==='cat'){
+    const by=c=>G.filter(g=>g.c===c);const hot=G.filter(g=>g.hs.length>1).sort((a,b)=>b.hs.length-a.hs.length).slice(0,8);
+    const shown=NS.c==='전체'?NLCATS.filter(c=>by(c).length):[NS.c];
+    body=`<div class="nlb"><div class="nlb-side"><h5>분야</h5><a data-nc="전체" class="${NS.c==='전체'?'on':''}">전체<span>${G.length}</span></a>${NLCATS.filter(c=>by(c).length).map(c=>`<a data-nc="${c}" class="${NS.c===c?'on':''}">${c}<span>${by(c).length}</span></a>`).join('')}
+      <h5 class="mt">뉴스레터 <em>· 누르면 뉴스레터별 보기</em></h5>${today.map(m=>`<a data-ns="${m.id}">${nlDot(m.h)}<span class="nm">${esc(m.h)}</span><span>${m.tm} ›</span></a>`).join('')}</div>
+      <div>${NS.c==='전체'&&hot.length?`<div class="nlb-blk"><h3>오늘 여러 곳이 다룬 뉴스 <small>2곳 이상 뉴스레터에 실린 기사</small></h3><ol class="nl-hot">${hot.map(g=>`<li>${nlA(g)}<span class="nl-src">${esc(g.src||'')}</span><span class="nl-hs">${g.hs.map(nlChip).join('')}</span></li>`).join('')}</ol></div>`:''}
+      ${shown.map(c=>{const L=by(c),k=NS.c!=='전체'||NS.more[c]?L.length:8;return `<div class="nlb-blk"><h3>${c} <small>${L.length}건</small></h3><ul class="nl-rows">${L.slice(0,k).map(g=>`<li>${nlA(g)}<span class="nl-src">${esc(g.src||'')}</span><span class="nl-hs">${g.hs.map(nlChip).join('')}</span></li>`).join('')}</ul>${L.length>k?`<button class="nl-more" data-nm="${c}">${L.length-k}건 더 보기</button>`:''}</div>`}).join('')}</div></div>`}
+  else{
+    const sel=NLD.find(x=>x.id===NS.sel)||today[0];NS.sel=sel.id;const n=sel.secs.reduce((a,s)=>a+s.i.length,0);
+    body=`<div class="nlc"><div class="nlc-list">${days.slice(0,14).map(d=>`<div class="grp">${d===days[0]?'최근 · ':''}${nlDay(d)}</div>${NLD.filter(x=>x.d===d).sort((a,b)=>a.tm<b.tm?1:-1).map(m=>`<div class="it ${m.id===sel.id?'on':''}" data-ns="${m.id}"><div class="r1">${nlDot(m.h)}<b>${esc(m.h)}</b><span class="nl-src">${esc(m.nm)}</span><em>${m.tm}</em></div><div class="r2">${esc((m.secs[0]&&m.secs[0].i[0]||{}).t||m.subj)} 외 ${m.secs.reduce((a,s)=>a+s.i.length,0)-1}건</div></div>`).join('')}`).join('')}</div>
+      <div class="nlc-read"><div class="rh">${nlDot(sel.h)}<h2>${esc(sel.h)} · ${esc(sel.nm)}</h2><span>${nlDay(sel.d)} ${sel.tm} · ${n}건</span>${sel.gm?`<a href="${esc(sel.gm)}" target="_blank" rel="noopener noreferrer">Gmail에서 원문 열기 ↗</a>`:''}</div>
+      ${sel.secs.map(s=>`<div class="rs"><h4>${esc(s.s)}</h4><ul>${s.i.map(i=>`<li><div class="t">${nlA(i)}${i.src&&i.src!==sel.h?`<span class="nl-src">${esc(i.src)}</span>`:''}</div>${(i.pts||[]).length?`<p>${i.pts.map(esc).join(' · ')}</p>`:''}</li>`).join('')}</ul></div>`).join('')}</div></div>`}
+  V.innerHTML=`<div class="nlx">${topbar}${body}</div>`;
+  V.querySelectorAll('[data-nd]').forEach(b=>b.onclick=()=>{const d=days[+b.dataset.nd];if(d){NS.d=d;NS.sel='';NS.more={};news()}});
+  V.querySelectorAll('[data-nv]').forEach(b=>b.onclick=()=>{NS.v=b.dataset.nv;news()});
+  V.querySelectorAll('[data-nc]').forEach(b=>b.onclick=()=>{NS.c=b.dataset.nc;news()});
+  V.querySelectorAll('[data-nm]').forEach(b=>b.onclick=()=>{NS.more[b.dataset.nm]=1;news()});
+  V.querySelectorAll('[data-ns]').forEach(b=>b.onclick=()=>{const m=NLD.find(x=>x.id===b.dataset.ns);NS.sel=m.id;NS.d=m.d;NS.v='nl';news();V.scrollTop=0});
+  const qi=document.getElementById('nlq');let qt;qi.oninput=()=>{clearTimeout(qt);qt=setTimeout(()=>{NS.q=qi.value;const p=qi.selectionStart;news();const n=document.getElementById('nlq');n.focus();n.setSelectionRange(p,p)},250)};
 }
 // ── 마켓 사운딩 (준비 중)
 function sounding(){
